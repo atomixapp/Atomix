@@ -1,3 +1,4 @@
+// Datos locales de respaldo
 const respaldoLocal = [
   {
     titulo: 'Spiderman: De regreso a casa',
@@ -24,7 +25,7 @@ const ordenarSelect = document.getElementById('ordenar');
 // Mostrar mensaje de carga
 galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-// Función para mostrar películas
+// Mostrar películas
 function mostrarPeliculas(lista) {
   galeria.innerHTML = '';
   const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
@@ -106,7 +107,7 @@ ordenarSelect.addEventListener('change', () => {
   filtrar('todos');
 });
 
-// Cargar desde Firebase primero
+// Cargar películas desde Firebase
 db.collection('peliculas').get()
   .then(snap => {
     const datos = snap.docs.map(doc => doc.data());
@@ -119,7 +120,6 @@ db.collection('peliculas').get()
     peliculasOriginal = [...respaldoLocal];
     peliculas = [...peliculasOriginal];
     filtrar('todos');
-
     document.body.innerHTML += `
       <div style="
         position: fixed;
@@ -136,79 +136,117 @@ db.collection('peliculas').get()
     `;
   });
 
-// Modal de autenticación y sesión con Firebase Auth
+// --- Modal Autenticación ---
+
 const modalAuth = document.getElementById('modalAuth');
 const authForm = document.getElementById('authForm');
-const infoUsuario = document.getElementById('infoUsuario');
-const usuarioEmail = document.getElementById('usuarioEmail');
+const modalTitle = document.getElementById('modalTitle');
+const btnSubmit = document.getElementById('btnSubmit');
+const toggleAuth = document.getElementById('toggleAuth');
+const errorMsg = document.getElementById('errorMsg');
 
-// Mostrar el modal al hacer click en el avatar
-document.querySelector('.avatar').addEventListener('click', () => {
+let isLoginMode = true; // true = login, false = registro
+
+function abrirModalAuth() {
+  errorMsg.textContent = '';
+  authForm.reset();
+  isLoginMode = true;
+  modalTitle.textContent = 'Iniciar sesión';
+  btnSubmit.textContent = 'Iniciar sesión';
+  toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
   modalAuth.style.display = 'flex';
-  const user = firebase.auth().currentUser;
-  if (user) {
-    authForm.style.display = 'none';
-    infoUsuario.style.display = 'block';
-    usuarioEmail.textContent = "Bienvenido, " + user.email;
+}
+
+document.querySelector('.avatar').addEventListener('click', abrirModalAuth);
+
+toggleAuth.addEventListener('click', () => {
+  errorMsg.textContent = '';
+  authForm.reset();
+  if (isLoginMode) {
+    isLoginMode = false;
+    modalTitle.textContent = 'Registrarse';
+    btnSubmit.textContent = 'Registrarse';
+    toggleAuth.textContent = '¿Ya tienes cuenta? Inicia sesión aquí';
   } else {
-    authForm.style.display = 'block';
-    infoUsuario.style.display = 'none';
+    isLoginMode = true;
+    modalTitle.textContent = 'Iniciar sesión';
+    btnSubmit.textContent = 'Iniciar sesión';
+    toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
   }
 });
 
-// Función para cerrar modal
+authForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorMsg.textContent = '';
+
+  const email = authForm.email.value.trim();
+  const password = authForm.password.value.trim();
+
+  if (!email || !password) {
+    errorMsg.textContent = 'Por favor, completa todos los campos.';
+    return;
+  }
+  if (password.length < 6) {
+    errorMsg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+    return;
+  }
+
+  try {
+    if (isLoginMode) {
+      // Iniciar sesión
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+      if (!userCredential.user.emailVerified) {
+        errorMsg.textContent = 'Por favor, verifica tu correo antes de iniciar sesión.';
+        await firebase.auth().signOut();
+        return;
+      }
+      cerrarModal();
+      mostrarUsuario(userCredential.user);
+    } else {
+      // Registro
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      await userCredential.user.sendEmailVerification();
+      alert('Cuenta creada con éxito. Revisa tu correo para activar la cuenta.');
+      cerrarModal();
+    }
+  } catch (error) {
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        errorMsg.textContent = 'El correo ya está en uso.';
+        break;
+      case 'auth/invalid-email':
+        errorMsg.textContent = 'Correo inválido.';
+        break;
+      case 'auth/wrong-password':
+        errorMsg.textContent = 'Contraseña incorrecta.';
+        break;
+      case 'auth/user-not-found':
+        errorMsg.textContent = 'No existe una cuenta con ese correo.';
+        break;
+      default:
+        errorMsg.textContent = error.message;
+    }
+  }
+});
+
+function mostrarUsuario(user) {
+  document.querySelector('.avatar').style.border = '2px solid #4CAF50';
+}
+
 function cerrarModal() {
   modalAuth.style.display = 'none';
 }
 
-// Función para registrar nuevo usuario
-function registrar() {
-  const email = document.getElementById('correo').value;
-  const clave = document.getElementById('clave').value;
+async function cerrarSesion() {
+  await firebase.auth().signOut();
+  document.querySelector('.avatar').style.border = 'none';
+  alert('Sesión cerrada.');
+}
 
-  if (!email || !clave) {
-    alert("Rellena todos los campos.");
-    return;
+firebase.auth().onAuthStateChanged(user => {
+  if (user && user.emailVerified) {
+    mostrarUsuario(user);
+  } else {
+    document.querySelector('.avatar').style.border = 'none';
   }
-
-  firebase.auth().createUserWithEmailAndPassword(email, clave)
-    .then(userCredential => {
-      alert("Registro exitoso como: " + userCredential.user.email);
-      cerrarModal();
-    })
-    .catch(error => {
-      alert("Error: " + error.message);
-    });
-}
-
-// Función para iniciar sesión
-function ingresar() {
-  const email = document.getElementById('correo').value;
-  const clave = document.getElementById('clave').value;
-
-  if (!email || !clave) {
-    alert("Rellena todos los campos.");
-    return;
-  }
-
-  firebase.auth().signInWithEmailAndPassword(email, clave)
-    .then(userCredential => {
-      alert("Sesión iniciada como: " + userCredential.user.email);
-      cerrarModal();
-    })
-    .catch(error => {
-      alert("Error: " + error.message);
-    });
-}
-
-// Función para cerrar sesión
-function cerrarSesion() {
-  firebase.auth().signOut()
-    .then(() => {
-      alert("Sesión cerrada.");
-      cerrarModal();
-    })
-    .catch(error => {
-      alert("Error al cerrar sesión: " + error.message);
-    });
-}
+});
