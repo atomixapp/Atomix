@@ -24,6 +24,7 @@ const ordenarSelect = document.getElementById('ordenar');
 // Mostrar mensaje de carga
 galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
+// Mostrar películas
 function mostrarPeliculas(lista) {
   galeria.innerHTML = '';
   const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
@@ -33,6 +34,7 @@ function mostrarPeliculas(lista) {
     tarjeta.className = 'pelicula';
     const tituloCod = encodeURIComponent(p.titulo);
     const esFavorito = favoritos.includes(p.titulo);
+
     tarjeta.innerHTML = `
       <a href="detalles.html?titulo=${tituloCod}">
         <img src="${p.imagen}" alt="${p.titulo}">
@@ -81,25 +83,29 @@ function mostrarFavoritos() {
   const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
   const favoritas = peliculas.filter(p => favoritos.includes(p.titulo));
   mostrarPeliculas(favoritas);
-  document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
-  const liFav = Array.from(document.querySelectorAll('aside li')).find(li => li.textContent.includes('❤️'));
-  if (liFav) liFav.classList.add('activo');
 }
 
+// Buscador
 buscador.addEventListener('input', () => {
   const texto = buscador.value.toLowerCase();
   const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
   mostrarPeliculas(filtradas);
 });
 
+// Ordenar
 ordenarSelect.addEventListener('change', () => {
   const criterio = ordenarSelect.value;
-  if (criterio === 'añadido') peliculas = [...peliculasOriginal];
-  else if (criterio === 'titulo') peliculas.sort((a, b) => a.titulo.localeCompare(b.titulo));
-  else if (criterio === 'anio') peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
+  if (criterio === 'añadido') {
+    peliculas = [...peliculasOriginal];
+  } else if (criterio === 'titulo') {
+    peliculas.sort((a, b) => a.titulo.localeCompare(b.titulo));
+  } else if (criterio === 'anio') {
+    peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
+  }
   filtrar('todos');
 });
 
+// Cargar desde Firebase
 db.collection('peliculas').get()
   .then(snap => {
     const datos = snap.docs.map(doc => doc.data());
@@ -107,61 +113,83 @@ db.collection('peliculas').get()
     peliculas = [...peliculasOriginal];
     filtrar('todos');
   })
-  .catch(() => {
+  .catch(err => {
+    console.warn("Error Firebase:", err.message);
     peliculasOriginal = [...respaldoLocal];
     peliculas = [...peliculasOriginal];
     filtrar('todos');
   });
 
-// Autenticación Firebase moderna con verificación
-let esRegistro = false;
+// Modal de autenticación
+const modalAuth = document.getElementById('modalAuth');
+const authForm = document.getElementById('authForm');
 const modalTitle = document.getElementById('modalTitle');
-const btnSubmit = document.getElementById('btnSubmit');
 const toggleAuth = document.getElementById('toggleAuth');
+const btnSubmit = document.getElementById('btnSubmit');
 const errorMsg = document.getElementById('errorMsg');
 
-toggleAuth.addEventListener('click', () => {
-  esRegistro = !esRegistro;
-  modalTitle.textContent = esRegistro ? 'Registro de cuenta' : 'Iniciar sesión';
-  btnSubmit.textContent = esRegistro ? 'Registrarse' : 'Iniciar sesión';
-  toggleAuth.textContent = esRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí';
-  errorMsg.textContent = '';
-});
-
-document.getElementById('authForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  if (esRegistro) {
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then(userCredential => {
-        userCredential.user.sendEmailVerification().then(() => {
-          alert("Registro exitoso. Verifica tu correo antes de iniciar sesión.");
-          cerrarModal();
-        });
-      })
-      .catch(err => errorMsg.textContent = err.message);
-  } else {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(userCredential => {
-        if (userCredential.user.emailVerified) {
-          alert("Inicio de sesión exitoso.");
-          cerrarModal();
-        } else {
-          errorMsg.textContent = "Debes verificar tu correo antes de iniciar sesión.";
-          firebase.auth().signOut();
-        }
-      })
-      .catch(err => errorMsg.textContent = err.message);
-  }
+document.querySelector('.avatar').addEventListener('click', () => {
+  modalAuth.style.display = 'flex';
+  updateAuthView();
 });
 
 function cerrarModal() {
-  document.getElementById('modalAuth').style.display = 'none';
-  document.getElementById('authForm').reset();
-  errorMsg.textContent = '';
+  modalAuth.style.display = 'none';
 }
 
-document.querySelector('.avatar').addEventListener('click', () => {
-  document.getElementById('modalAuth').style.display = 'flex';
+// Cambiar entre registro y login
+let modoRegistro = false;
+toggleAuth.addEventListener('click', () => {
+  modoRegistro = !modoRegistro;
+  updateAuthView();
 });
+
+function updateAuthView() {
+  modalTitle.textContent = modoRegistro ? 'Crear cuenta nueva' : 'Iniciar sesión';
+  btnSubmit.textContent = modoRegistro ? 'Registrarme' : 'Iniciar sesión';
+  toggleAuth.textContent = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí';
+  errorMsg.textContent = '';
+  authForm.reset();
+}
+
+// Control de submit
+authForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const clave = document.getElementById('password').value;
+  errorMsg.textContent = '';
+
+  if (modoRegistro) {
+    // Registro de cuenta
+    auth.createUserWithEmailAndPassword(email, clave)
+      .then(userCredential => {
+        userCredential.user.sendEmailVerification();
+        cerrarModal();
+        alert("Registro exitoso. Revisa tu correo para activar tu cuenta.");
+      })
+      .catch(error => {
+        errorMsg.textContent = error.message;
+      });
+  } else {
+    // Inicio de sesión
+    auth.signInWithEmailAndPassword(email, clave)
+      .then(userCredential => {
+        if (!userCredential.user.emailVerified) {
+          errorMsg.textContent = "Verifica tu correo antes de continuar.";
+          auth.signOut();
+        } else {
+          cerrarModal();
+        }
+      })
+      .catch(error => {
+        errorMsg.textContent = error.message;
+      });
+  }
+});
+
+// Cerrar sesión
+function cerrarSesion() {
+  auth.signOut().then(() => {
+    cerrarModal();
+  });
+}
