@@ -1,11 +1,30 @@
-const respaldoLocal = [];
+const respaldoLocal = [
+  {
+    titulo: 'Spiderman: De regreso a casa',
+    imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg',
+    anio: '2025',
+    latino: true,
+    castellano: true
+  },
+  {
+    titulo: 'La leyenda de Ochi',
+    imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg',
+    anio: '2025',
+    castellano: true
+  }
+];
+
 let peliculasOriginal = [];
 let peliculas = [];
+
 const galeria = document.getElementById('galeria');
-galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 const buscador = document.getElementById('buscador');
 const ordenarSelect = document.getElementById('ordenar');
 
+// Mostrar mensaje de carga
+galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
+
+// Función para mostrar películas
 function mostrarPeliculas(lista) {
   galeria.innerHTML = '';
   const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
@@ -33,7 +52,7 @@ function mostrarPeliculas(lista) {
   });
 
   document.querySelectorAll('.corazon').forEach(icon => {
-    icon.addEventListener('click', (e) => {
+    icon.addEventListener('click', e => {
       const titulo = e.currentTarget.dataset.titulo;
       toggleFavorito(titulo);
       e.currentTarget.classList.toggle('activo');
@@ -87,18 +106,12 @@ ordenarSelect.addEventListener('change', () => {
   filtrar('todos');
 });
 
-// Luego intentar cargar desde Firebase
-
+// Cargar desde Firebase primero
 db.collection('peliculas').get()
   .then(snap => {
     const datos = snap.docs.map(doc => doc.data());
-    if (datos.length > 0) {
-      peliculasOriginal = datos;
-      peliculas = [...peliculasOriginal];
-    } else {
-      peliculasOriginal = [...respaldoLocal];
-      peliculas = [...peliculasOriginal];
-    }
+    peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
+    peliculas = [...peliculasOriginal];
     filtrar('todos');
   })
   .catch(err => {
@@ -122,97 +135,3 @@ db.collection('peliculas').get()
       ">⚠ Error al cargar desde Firebase. Usando respaldo local.</div>
     `;
   });
-
-// Navegación con teclado
-document.addEventListener('keydown', e => {
-  const tarjetas = [...document.querySelectorAll('.pelicula')];
-  if (!tarjetas.length) return;
-  let actual = tarjetas.findIndex(t => t.classList.contains('focus'));
-  if (actual === -1) {
-    tarjetas[0].classList.add('focus');
-    tarjetas[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-  const columnas = Math.floor(galeria.offsetWidth / tarjetas[0].offsetWidth);
-  if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) {
-    tarjetas[actual].classList.remove('focus');
-  }
-  if (e.key === 'ArrowRight' && actual < tarjetas.length - 1) actual++;
-  else if (e.key === 'ArrowLeft' && actual > 0) actual--;
-  else if (e.key === 'ArrowDown' && actual + columnas < tarjetas.length) actual += columnas;
-  else if (e.key === 'ArrowUp' && actual - columnas >= 0) actual -= columnas;
-  else if (e.key === 'Enter') {
-    const link = tarjetas[actual].querySelector('a');
-    if (link) link.click();
-    return;
-  }
-  tarjetas[actual].classList.add('focus');
-  tarjetas[actual].scrollIntoView({ behavior: 'smooth', block: 'center' });
-});
-
-const observer = new MutationObserver(() => {
-  const tarjetas = document.querySelectorAll('.pelicula');
-  if (tarjetas.length > 0 && !document.querySelector('.pelicula.focus')) {
-    tarjetas[0].classList.add('focus');
-  }
-});
-observer.observe(galeria, { childList: true });
-
-// Modal de autenticación y sesión con Firebase Auth
-const modalAuth = document.getElementById('modalAuth');
-const authForm = document.getElementById('authForm');
-const infoUsuario = document.getElementById('infoUsuario');
-const usuarioEmail = document.getElementById('usuarioEmail');
-
-document.querySelector('.avatar').addEventListener('click', () => {
-  modalAuth.style.display = 'flex';
-  const user = firebase.auth().currentUser;
-  if (user) {
-    authForm.style.display = 'none';
-    infoUsuario.style.display = 'block';
-    usuarioEmail.textContent = "Bienvenido, " + user.email;
-  } else {
-    authForm.style.display = 'block';
-    infoUsuario.style.display = 'none';
-  }
-});
-
-function cerrarModal() {
-  modalAuth.style.display = 'none';
-}
-
-function registrar() {
-  const email = document.getElementById('correo').value;
-  const clave = document.getElementById('clave').value;
-
-  firebase.auth().createUserWithEmailAndPassword(email, clave)
-    .then(userCredential => {
-      cerrarModal();
-      alert("Registrado correctamente");
-    })
-    .catch(error => {
-      alert("Error: " + error.message);
-    });
-}
-
-function ingresar() {
-  const email = document.getElementById('correo').value;
-  const clave = document.getElementById('clave').value;
-
-  firebase.auth().signInWithEmailAndPassword(email, clave)
-    .then(userCredential => {
-      cerrarModal();
-      alert("Bienvenido de nuevo");
-    })
-    .catch(error => {
-      alert("Error: " + error.message);
-    });
-}
-
-function cerrarSesion() {
-  firebase.auth().signOut()
-    .then(() => {
-      cerrarModal();
-      alert("Sesión cerrada");
-    });
-}
