@@ -95,17 +95,25 @@ ordenarSelect.addEventListener('change', () => {
 });
 
 // Luego intentar cargar desde Firebase
+
 db.collection('peliculas').get()
   .then(snap => {
     const datos = snap.docs.map(doc => doc.data());
     if (datos.length > 0) {
       peliculasOriginal = datos;
       peliculas = [...peliculasOriginal];
-      filtrar('todos');
+    } else {
+      peliculasOriginal = [...respaldoLocal];
+      peliculas = [...peliculasOriginal];
     }
+    filtrar('todos');
   })
   .catch(err => {
     console.warn("Error Firebase:", err.message);
+    peliculasOriginal = [...respaldoLocal];
+    peliculas = [...peliculasOriginal];
+    filtrar('todos');
+
     document.body.innerHTML += `
       <div style="
         position: fixed;
