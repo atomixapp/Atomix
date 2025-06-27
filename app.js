@@ -142,6 +142,7 @@ const authForm = document.getElementById('authForm');
 const infoUsuario = document.getElementById('infoUsuario');
 const usuarioEmail = document.getElementById('usuarioEmail');
 
+// Mostrar el modal al hacer click en el avatar
 document.querySelector('.avatar').addEventListener('click', () => {
   modalAuth.style.display = 'flex';
   const user = firebase.auth().currentUser;
@@ -155,17 +156,24 @@ document.querySelector('.avatar').addEventListener('click', () => {
   }
 });
 
+// Función para cerrar modal
 function cerrarModal() {
   modalAuth.style.display = 'none';
 }
 
+// Función para registrar nuevo usuario
 function registrar() {
   const email = document.getElementById('correo').value;
   const clave = document.getElementById('clave').value;
 
+  if (!email || !clave) {
+    alert("Rellena todos los campos.");
+    return;
+  }
+
   firebase.auth().createUserWithEmailAndPassword(email, clave)
     .then(userCredential => {
-      alert("Registro exitoso: " + userCredential.user.email);
+      alert("Registro exitoso como: " + userCredential.user.email);
       cerrarModal();
     })
     .catch(error => {
@@ -173,13 +181,19 @@ function registrar() {
     });
 }
 
+// Función para iniciar sesión
 function ingresar() {
   const email = document.getElementById('correo').value;
   const clave = document.getElementById('clave').value;
 
+  if (!email || !clave) {
+    alert("Rellena todos los campos.");
+    return;
+  }
+
   firebase.auth().signInWithEmailAndPassword(email, clave)
     .then(userCredential => {
-      alert("Bienvenido: " + userCredential.user.email);
+      alert("Sesión iniciada como: " + userCredential.user.email);
       cerrarModal();
     })
     .catch(error => {
@@ -187,9 +201,14 @@ function ingresar() {
     });
 }
 
+// Función para cerrar sesión
 function cerrarSesion() {
-  firebase.auth().signOut().then(() => {
-    alert("Sesión cerrada.");
-    cerrarModal();
-  });
+  firebase.auth().signOut()
+    .then(() => {
+      alert("Sesión cerrada.");
+      cerrarModal();
+    })
+    .catch(error => {
+      alert("Error al cerrar sesión: " + error.message);
+    });
 }
