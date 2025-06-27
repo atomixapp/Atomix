@@ -135,3 +135,26 @@ db.collection('peliculas').get()
       ">⚠ Error al cargar desde Firebase. Usando respaldo local.</div>
     `;
   });
+
+// Modal de autenticación y sesión con Firebase Auth
+const modalAuth = document.getElementById('modalAuth');
+const authForm = document.getElementById('authForm');
+const infoUsuario = document.getElementById('infoUsuario');
+const usuarioEmail = document.getElementById('usuarioEmail');
+
+document.querySelector('.avatar').addEventListener('click', () => {
+  modalAuth.style.display = 'flex';
+  const user = firebase.auth().currentUser;
+  if (user) {
+    authForm.style.display = 'none';
+    infoUsuario.style.display = 'block';
+    usuarioEmail.textContent = "Bienvenido, " + user.email;
+  } else {
+    authForm.style.display = 'block';
+    infoUsuario.style.display = 'none';
+  }
+});
+
+function cerrarModal() {
+  modalAuth.style.display = 'none';
+}
