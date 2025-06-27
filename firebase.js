@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
   apiKey: "AIzaSyCmMqUkiT_8zTdJYIfhs2VneW9p_33vow4",
   authDomain: "atomix-54e1a.firebaseapp.com",
