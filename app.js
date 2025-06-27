@@ -158,3 +158,38 @@ document.querySelector('.avatar').addEventListener('click', () => {
 function cerrarModal() {
   modalAuth.style.display = 'none';
 }
+
+function registrar() {
+  const email = document.getElementById('correo').value;
+  const clave = document.getElementById('clave').value;
+
+  firebase.auth().createUserWithEmailAndPassword(email, clave)
+    .then(userCredential => {
+      alert("Registro exitoso: " + userCredential.user.email);
+      cerrarModal();
+    })
+    .catch(error => {
+      alert("Error: " + error.message);
+    });
+}
+
+function ingresar() {
+  const email = document.getElementById('correo').value;
+  const clave = document.getElementById('clave').value;
+
+  firebase.auth().signInWithEmailAndPassword(email, clave)
+    .then(userCredential => {
+      alert("Bienvenido: " + userCredential.user.email);
+      cerrarModal();
+    })
+    .catch(error => {
+      alert("Error: " + error.message);
+    });
+}
+
+function cerrarSesion() {
+  firebase.auth().signOut().then(() => {
+    alert("Sesión cerrada.");
+    cerrarModal();
+  });
+}
