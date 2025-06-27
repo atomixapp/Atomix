@@ -1,11 +1,4 @@
-const respaldoLocal = [
-  { titulo: 'Spiderman: De regreso a casa', imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg', anio: '2025', latino: true, castellano: true },
-  { titulo: 'La leyenda de Ochi', imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg', anio: '2025', castellano: true },
-  { titulo: 'Fuente de la Juventud', imagen: 'https://image.tmdb.org/t/p/original/1QZeQEGEWWxQWJFg3r1ouhjRNQB.jpg', anio: '2024', latino: true },
-  { titulo: 'Doble Espionaje', imagen: 'https://upload.wikimedia.org/wikipedia/en/7/74/Tinker_Tailor_Soldier_Spy_poster.jpg', anio: '2023', castellano: true },
-  { titulo: 'Baila, Vini (2025)', imagen: 'https://m.media-amazon.com/images/I/71wF6Wexs+L._AC_UF894,1000_QL80_.jpg', anio: '2025', latino: true }
-];
-
+const respaldoLocal = [];
 let peliculasOriginal = [];
 let peliculas = [];
 const galeria = document.getElementById('galeria');
