@@ -9,6 +9,7 @@ const respaldoLocal = [
 let peliculasOriginal = [];
 let peliculas = [];
 const galeria = document.getElementById('galeria');
+galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 const buscador = document.getElementById('buscador');
 const ordenarSelect = document.getElementById('ordenar');
 
@@ -92,11 +93,6 @@ ordenarSelect.addEventListener('change', () => {
   }
   filtrar('todos');
 });
-
-// Mostrar respaldo local por defecto
-peliculasOriginal = [...respaldoLocal];
-peliculas = [...peliculasOriginal];
-filtrar('todos');
 
 // Luego intentar cargar desde Firebase
 db.collection('peliculas').get()
