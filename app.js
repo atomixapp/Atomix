@@ -32,9 +32,8 @@ function mostrarPeliculas(lista) {
         <h3>${p.titulo}</h3>
       </a>
       <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-  <i class="fa-solid fa-heart"></i>
-</div>
-
+        <i class="fa-solid fa-heart"></i>
+      </div>
     `;
     galeria.appendChild(tarjeta);
   });
@@ -127,7 +126,7 @@ db.collection('peliculas').get()
     `;
   });
 
-// Navegación con teclado para accesibilidad
+// Navegación con teclado
 document.addEventListener('keydown', e => {
   const tarjetas = [...document.querySelectorAll('.pelicula')];
   if (!tarjetas.length) return;
@@ -188,4 +187,35 @@ function cerrarModal() {
 function registrar() {
   const email = document.getElementById('correo').value;
   const clave = document.getElementById('clave').value;
-  firebase.auth().create
+
+  firebase.auth().createUserWithEmailAndPassword(email, clave)
+    .then(userCredential => {
+      cerrarModal();
+      alert("Registrado correctamente");
+    })
+    .catch(error => {
+      alert("Error: " + error.message);
+    });
+}
+
+function ingresar() {
+  const email = document.getElementById('correo').value;
+  const clave = document.getElementById('clave').value;
+
+  firebase.auth().signInWithEmailAndPassword(email, clave)
+    .then(userCredential => {
+      cerrarModal();
+      alert("Bienvenido de nuevo");
+    })
+    .catch(error => {
+      alert("Error: " + error.message);
+    });
+}
+
+function cerrarSesion() {
+  firebase.auth().signOut()
+    .then(() => {
+      cerrarModal();
+      alert("Sesión cerrada");
+    });
+}
