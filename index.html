@@ -183,14 +183,16 @@ main {
   font-size: 22px;
   cursor: pointer;
   user-select: none;
-  opacity: 0.8;
+  opacity: 0.9;
+  color: white;
+  transition: color 0.3s, text-shadow 0.3s;
   filter: drop-shadow(1px 1px 1px #000);
 }
-.corazon.activo {
-  color: red;
-  text-shadow: 0 0 5px red;
-}
 
+.corazon.activo {
+  color: hotpink; /* o usa "deeppink" si quieres más fuerza */
+  text-shadow: 0 0 6px hotpink;
+}
 
 .input-modern {
   width: 100%;
