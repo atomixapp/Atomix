@@ -454,57 +454,38 @@ ordenarSelect.addEventListener('change', () => {
   filtrar('todos');
 });
 
-// Intentar cargar desde Firebase, pero si falla, usar respaldo local
-try {
-  db.collection('peliculas').get()
-    .then(snap => {
-      peliculasOriginal = snap.docs.map(doc => doc.data());
-      if (!peliculasOriginal.length) throw new Error('Colección vacía');
+// Mostrar respaldo local por defecto
+peliculasOriginal = [...respaldoLocal];
+peliculas = [...peliculasOriginal];
+filtrar('todos');
+
+// Luego intentar cargar desde Firebase
+db.collection('peliculas').get()
+  .then(snap => {
+    const datos = snap.docs.map(doc => doc.data());
+    if (datos.length > 0) {
+      peliculasOriginal = datos;
       peliculas = [...peliculasOriginal];
       filtrar('todos');
-    })
-    .catch(err => {
-      console.warn("Error Firebase:", err.message);
-      document.body.innerHTML += `
-        <div style="
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          padding: 10px;
-          background: #cc0000;
-          color: white;
-          font-weight: bold;
-          text-align: center;
-          z-index: 9999;
-        ">⚠ Error al cargar desde Firebase. Se usa contenido de respaldo.</div>
-      `;
-      peliculasOriginal = [...respaldoLocal];
-      peliculas = [...peliculasOriginal];
-      filtrar('todos');
-    });
-} catch (e) {
-  console.error("Error general:", e.message);
-  document.body.innerHTML += `
-    <div style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      padding: 10px;
-      background: #cc0000;
-      color: white;
-      font-weight: bold;
-      text-align: center;
-      z-index: 9999;
-    ">⚠ Error general al cargar películas.</div>
-  `;
-  peliculasOriginal = [...respaldoLocal];
-  peliculas = [...peliculasOriginal];
-  filtrar('todos');
-}
-
-
+    }
+  })
+  .catch(err => {
+    console.warn("Error Firebase:", err.message);
+    document.body.innerHTML += `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        background: #cc0000;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        z-index: 9999;
+      ">⚠ Error al cargar desde Firebase. Usando respaldo local.</div>
+    `;
+  });
 </script>
 
 <script>
