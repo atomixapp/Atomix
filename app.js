@@ -1,4 +1,3 @@
-// Datos locales de respaldo
 const respaldoLocal = [
   {
     titulo: 'Spiderman: De regreso a casa',
@@ -25,7 +24,6 @@ const ordenarSelect = document.getElementById('ordenar');
 // Mostrar mensaje de carga
 galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-// Mostrar películas
 function mostrarPeliculas(lista) {
   galeria.innerHTML = '';
   const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
@@ -35,9 +33,8 @@ function mostrarPeliculas(lista) {
     tarjeta.className = 'pelicula';
     const tituloCod = encodeURIComponent(p.titulo);
     const esFavorito = favoritos.includes(p.titulo);
-
     tarjeta.innerHTML = `
-      <a href="https://atomixapp.github.io/Atomix/detalles.html?titulo=${tituloCod}">
+      <a href="detalles.html?titulo=${tituloCod}">
         <img src="${p.imagen}" alt="${p.titulo}">
         <div class="banderas">
           ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
@@ -97,17 +94,12 @@ buscador.addEventListener('input', () => {
 
 ordenarSelect.addEventListener('change', () => {
   const criterio = ordenarSelect.value;
-  if (criterio === 'añadido') {
-    peliculas = [...peliculasOriginal];
-  } else if (criterio === 'titulo') {
-    peliculas.sort((a, b) => a.titulo.localeCompare(b.titulo));
-  } else if (criterio === 'anio') {
-    peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
-  }
+  if (criterio === 'añadido') peliculas = [...peliculasOriginal];
+  else if (criterio === 'titulo') peliculas.sort((a, b) => a.titulo.localeCompare(b.titulo));
+  else if (criterio === 'anio') peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
   filtrar('todos');
 });
 
-// Cargar películas desde Firebase
 db.collection('peliculas').get()
   .then(snap => {
     const datos = snap.docs.map(doc => doc.data());
@@ -115,138 +107,61 @@ db.collection('peliculas').get()
     peliculas = [...peliculasOriginal];
     filtrar('todos');
   })
-  .catch(err => {
-    console.warn("Error Firebase:", err.message);
+  .catch(() => {
     peliculasOriginal = [...respaldoLocal];
     peliculas = [...peliculasOriginal];
     filtrar('todos');
-    document.body.innerHTML += `
-      <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        padding: 10px;
-        background: #cc0000;
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        z-index: 9999;
-      ">⚠ Error al cargar desde Firebase. Usando respaldo local.</div>
-    `;
   });
 
-// --- Modal Autenticación ---
-
-const modalAuth = document.getElementById('modalAuth');
-const authForm = document.getElementById('authForm');
+// Autenticación Firebase moderna con verificación
+let esRegistro = false;
 const modalTitle = document.getElementById('modalTitle');
 const btnSubmit = document.getElementById('btnSubmit');
 const toggleAuth = document.getElementById('toggleAuth');
 const errorMsg = document.getElementById('errorMsg');
 
-let isLoginMode = true; // true = login, false = registro
-
-function abrirModalAuth() {
-  errorMsg.textContent = '';
-  authForm.reset();
-  isLoginMode = true;
-  modalTitle.textContent = 'Iniciar sesión';
-  btnSubmit.textContent = 'Iniciar sesión';
-  toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
-  modalAuth.style.display = 'flex';
-}
-
-document.querySelector('.avatar').addEventListener('click', abrirModalAuth);
-
 toggleAuth.addEventListener('click', () => {
+  esRegistro = !esRegistro;
+  modalTitle.textContent = esRegistro ? 'Registro de cuenta' : 'Iniciar sesión';
+  btnSubmit.textContent = esRegistro ? 'Registrarse' : 'Iniciar sesión';
+  toggleAuth.textContent = esRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí';
   errorMsg.textContent = '';
-  authForm.reset();
-  if (isLoginMode) {
-    isLoginMode = false;
-    modalTitle.textContent = 'Registrarse';
-    btnSubmit.textContent = 'Registrarse';
-    toggleAuth.textContent = '¿Ya tienes cuenta? Inicia sesión aquí';
-  } else {
-    isLoginMode = true;
-    modalTitle.textContent = 'Iniciar sesión';
-    btnSubmit.textContent = 'Iniciar sesión';
-    toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
-  }
 });
 
-authForm.addEventListener('submit', async (e) => {
+document.getElementById('authForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  errorMsg.textContent = '';
-
-  const email = authForm.email.value.trim();
-  const password = authForm.password.value.trim();
-
-  if (!email || !password) {
-    errorMsg.textContent = 'Por favor, completa todos los campos.';
-    return;
-  }
-  if (password.length < 6) {
-    errorMsg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-    return;
-  }
-
-  try {
-    if (isLoginMode) {
-      // Iniciar sesión
-      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-      if (!userCredential.user.emailVerified) {
-        errorMsg.textContent = 'Por favor, verifica tu correo antes de iniciar sesión.';
-        await firebase.auth().signOut();
-        return;
-      }
-      cerrarModal();
-      mostrarUsuario(userCredential.user);
-    } else {
-      // Registro
-      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-      await userCredential.user.sendEmailVerification();
-      alert('Cuenta creada con éxito. Revisa tu correo para activar la cuenta.');
-      cerrarModal();
-    }
-  } catch (error) {
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        errorMsg.textContent = 'El correo ya está en uso.';
-        break;
-      case 'auth/invalid-email':
-        errorMsg.textContent = 'Correo inválido.';
-        break;
-      case 'auth/wrong-password':
-        errorMsg.textContent = 'Contraseña incorrecta.';
-        break;
-      case 'auth/user-not-found':
-        errorMsg.textContent = 'No existe una cuenta con ese correo.';
-        break;
-      default:
-        errorMsg.textContent = error.message;
-    }
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  if (esRegistro) {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        userCredential.user.sendEmailVerification().then(() => {
+          alert("Registro exitoso. Verifica tu correo antes de iniciar sesión.");
+          cerrarModal();
+        });
+      })
+      .catch(err => errorMsg.textContent = err.message);
+  } else {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        if (userCredential.user.emailVerified) {
+          alert("Inicio de sesión exitoso.");
+          cerrarModal();
+        } else {
+          errorMsg.textContent = "Debes verificar tu correo antes de iniciar sesión.";
+          firebase.auth().signOut();
+        }
+      })
+      .catch(err => errorMsg.textContent = err.message);
   }
 });
-
-function mostrarUsuario(user) {
-  document.querySelector('.avatar').style.border = '2px solid #4CAF50';
-}
 
 function cerrarModal() {
-  modalAuth.style.display = 'none';
+  document.getElementById('modalAuth').style.display = 'none';
+  document.getElementById('authForm').reset();
+  errorMsg.textContent = '';
 }
 
-async function cerrarSesion() {
-  await firebase.auth().signOut();
-  document.querySelector('.avatar').style.border = 'none';
-  alert('Sesión cerrada.');
-}
-
-firebase.auth().onAuthStateChanged(user => {
-  if (user && user.emailVerified) {
-    mostrarUsuario(user);
-  } else {
-    document.querySelector('.avatar').style.border = 'none';
-  }
+document.querySelector('.avatar').addEventListener('click', () => {
+  document.getElementById('modalAuth').style.display = 'flex';
 });
