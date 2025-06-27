@@ -6,7 +6,7 @@ body {
   color: #fff;
 }
 
-/* Estilos generales y navbar */
+/* Estilos navbar */
 .navbar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -49,12 +49,6 @@ body {
   font-size: 15px;
   background: #fff;
   color: #000;
-  transition: box-shadow 0.25s;
-}
-
-#buscador:focus {
-  box-shadow: 0 0 8px #00aaff;
-  outline: none;
 }
 
 .nav-right {
@@ -162,13 +156,6 @@ main {
   color: inherit;
 }
 
-.pelicula.focus {
-  outline: 3px solid #00aaff;
-  border-radius: 5px;
-  transform: scale(1.03);
-  transition: transform 0.2s;
-}
-
 .pelicula .banderas {
   position: absolute;
   top: 6px;
@@ -190,8 +177,6 @@ main {
   left: 8px;
   font-size: 22px;
   cursor: pointer;
-  user-select: none;
-  opacity: 0.9;
   color: white;
   transition: color 0.3s, transform 0.2s;
   filter: drop-shadow(1px 1px 1px #000);
@@ -212,7 +197,6 @@ main {
   color: #fff;
   font-size: 15px;
   box-sizing: border-box;
-  transition: border 0.3s, box-shadow 0.3s;
 }
 
 .input-modern:focus {
@@ -232,20 +216,10 @@ main {
   font-weight: bold;
   font-size: 15px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
 }
 
 .btn-modern:hover {
   background: linear-gradient(to right, #00c3ff, #0088ff);
-  transform: scale(1.03);
-}
-
-.btn-modern.cerrar {
-  background: #cc3333;
-}
-
-.btn-modern.cerrar:hover {
-  background: #e74c3c;
 }
 
 .modal-auth {
@@ -272,32 +246,6 @@ main {
   margin-bottom: 14px;
   font-size: 22px;
   color: #00aaff;
-}
-
-.input-modern {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.btn-modern {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-modern:hover {
-  background-color: #0056b3;
 }
 
 .cerrar-modal {
