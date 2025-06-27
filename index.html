@@ -5,6 +5,7 @@
   <title>Películas IPTV Style</title>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     body {
@@ -185,13 +186,13 @@ main {
   user-select: none;
   opacity: 0.9;
   color: white;
-  transition: color 0.3s, text-shadow 0.3s;
+  transition: color 0.3s, transform 0.2s;
   filter: drop-shadow(1px 1px 1px #000);
 }
 
 .corazon.activo {
-  color: hotpink; /* o usa "deeppink" si quieres más fuerza */
-  text-shadow: 0 0 6px hotpink;
+  color: hotpink;
+  transform: scale(1.2);
 }
 
 .input-modern {
@@ -390,7 +391,10 @@ function mostrarPeliculas(lista) {
         </div>
         <h3>${p.titulo}</h3>
       </a>
-      <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">❤️</div>
+      <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+  <i class="fa-solid fa-heart"></i>
+</div>
+
     `;
     galeria.appendChild(tarjeta);
   });
