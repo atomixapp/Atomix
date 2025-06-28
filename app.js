@@ -127,7 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputAvatar = document.getElementById('inputAvatar');
     const storage = firebase.storage();
 
-    avatar.src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+    function actualizarAvatar(url) {
+      avatar.src = url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+    }
+
+    actualizarAvatar(user.photoURL);
     avatar.title = user.displayName || user.email;
     nombreUsuario.textContent = user.displayName || "Usuario";
     correoUsuario.textContent = user.email;
@@ -147,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // ========== Cambiar imagen avatar y reflejarla al instante ==========
     inputAvatar.addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
@@ -156,13 +159,10 @@ document.addEventListener('DOMContentLoaded', () => {
       storageRef.put(file)
         .then(() => storageRef.getDownloadURL())
         .then(url => {
-          return user.updateProfile({ photoURL: url });
-        })
-        .then(() => user.reload()) // 🔁 Recargar usuario para aplicar el nuevo avatar
-        .then(() => {
-          const actualizado = firebase.auth().currentUser;
-          avatar.src = actualizado.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-          alert("Imagen de perfil actualizada correctamente.");
+          return user.updateProfile({ photoURL: url }).then(() => {
+            actualizarAvatar(url);
+            alert("Imagen de perfil actualizada correctamente.");
+          });
         })
         .catch(err => {
           console.error("Error al subir imagen:", err);
@@ -171,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Función para cerrar sesión
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
