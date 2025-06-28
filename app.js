@@ -10,16 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Función para generar ID consistente para favoritos
-  function generarIdFavorito(titulo) {
-    return titulo.toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '');
-  }
-
   function inicializarApp(user) {
     const respaldoLocal = [
       {
+        id: 'spiderman-de-regreso-a-casa',
         titulo: 'Spiderman: De regreso a casa',
         imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg',
         anio: '2025',
@@ -27,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         castellano: true
       },
       {
+        id: 'la-leyenda-de-ochi',
         titulo: 'La leyenda de Ochi',
         imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg',
         anio: '2025',
@@ -45,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
+    // 👉 Mostrar las películas en pantalla
     function mostrarPeliculas(lista) {
       galeria.innerHTML = '';
 
@@ -54,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tarjeta.className = 'pelicula';
 
           const tituloID = encodeURIComponent(p.titulo);
-          const esFavorito = favoritos.includes(p.titulo);
+          const esFavorito = favoritos.includes(p.id);
 
           tarjeta.innerHTML = `
             <a href="detalles.html?titulo=${tituloID}">
@@ -65,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <h3>${p.titulo}</h3>
             </a>
-            <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+            <div class="corazon ${esFavorito ? 'activo' : ''}" data-id="${p.id}">
               <i class="fa-solid fa-heart"></i>
             </div>
           `;
@@ -74,40 +70,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.corazon').forEach(icon => {
           icon.addEventListener('click', e => {
-            const titulo = e.currentTarget.dataset.titulo;
-            const pelicula = peliculas.find(p => p.titulo === titulo);
+            const id = e.currentTarget.dataset.id;
+            const pelicula = peliculas.find(p => p.id === id);
             if (!pelicula) return;
 
             e.currentTarget.classList.toggle('activo');
-            toggleFavoritoFirestore(pelicula, user.uid)
-              .then(() => {
-                if (navFavoritos.classList.contains('activo')) {
-                  cargarFavoritosFirestore(user.uid);
-                }
-              })
-              .catch(err => {
-                console.error("Error en toggleFavoritoFirestore:", err);
-                // Revertir cambio visual si error
-                e.currentTarget.classList.toggle('activo');
-              });
+            toggleFavoritoFirestore(pelicula, user.uid);
+
+            if (navFavoritos.classList.contains('activo')) {
+              cargarFavoritosFirestore(user.uid);
+            }
           });
         });
       });
     }
 
-    // Función para alternar favoritos en Firestore con promesas y manejo errores
+    // 🔧 Generar ID basado en el título (si no tiene uno)
+    function generarIdFavorito(titulo) {
+      return titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+    }
+
+    // ✅ Alternar favoritos en Firestore
     function toggleFavoritoFirestore(pelicula, userId) {
-      const tituloID = generarIdFavorito(pelicula.titulo);
+      const id = pelicula.id || generarIdFavorito(pelicula.titulo);
       const docRef = db.collection('usuarios')
         .doc(userId)
         .collection('favoritos')
-        .doc(tituloID);
+        .doc(id);
 
-      return docRef.get().then(docSnapshot => {
+      docRef.get().then(docSnapshot => {
         if (docSnapshot.exists) {
-          return docRef.delete();
+          docRef.delete();
         } else {
-          return docRef.set({
+          docRef.set({
+            id: id,
             titulo: pelicula.titulo,
             imagen: pelicula.imagen,
             anio: pelicula.anio,
@@ -118,31 +114,38 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // 🔥 Obtener lista de favoritos del usuario
     function obtenerFavoritosFirestore(userId) {
       return db.collection('usuarios')
         .doc(userId)
         .collection('favoritos')
         .get()
-        .then(snap => snap.docs.map(doc => doc.data().titulo));
+        .then(snap => snap.docs.map(doc => doc.id));
     }
 
+    // ❤️ Mostrar favoritos
     function cargarFavoritosFirestore(userId) {
       db.collection('usuarios')
         .doc(userId)
         .collection('favoritos')
         .get()
         .then(snap => {
-          const favoritas = snap.docs.map(doc => doc.data());
+          const favoritas = snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
           mostrarPeliculas(favoritas);
         });
     }
 
+    // 🔍 Buscador
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
       mostrarPeliculas(filtradas);
     });
 
+    // 🔽 Ordenar
     ordenarSelect.addEventListener('change', () => {
       const criterio = ordenarSelect.value;
       if (criterio === 'añadido') {
@@ -160,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // 🔗 Filtros por año
     function filtrar(anio = 'todos') {
       const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
       mostrarPeliculas(filtradas);
@@ -169,9 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (liActivo) liActivo.classList.add('activo');
     }
 
+    // 🌐 Cargar datos de Firebase
     db.collection('peliculas').get()
       .then(snap => {
-        const datos = snap.docs.map(doc => doc.data());
+        const datos = snap.docs.map(doc => ({
+          id: doc.id, // 🔥 Guardamos el ID del documento
+          ...doc.data()
+        }));
         peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
         peliculas = [...peliculasOriginal];
         filtrar('todos');
@@ -183,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       });
 
+    // 🧭 Navbar
     navPeliculas.addEventListener('click', () => {
       navFavoritos.classList.remove('activo');
       navPeliculas.classList.add('activo');
@@ -195,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cargarFavoritosFirestore(user.uid);
     });
 
+    // 👤 Menú usuario
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
@@ -219,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 🔓 Cerrar sesión
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
