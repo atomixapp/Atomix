@@ -5,14 +5,13 @@
   <title>Atomix IPTV Movies</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  
-  <!-- Configuración personalizada -->
+
   <script src="firebase.js"></script>
 
   <script>
@@ -26,6 +25,9 @@
 <body>
 
 <header class="navbar">
+  <div class="logo">
+    <img src="logo.png" alt="Atomix IPTV">
+  </div>
   <nav class="nav-left">
     <a id="navTv">TV</a>
     <a id="navPeliculas" class="activo">Películas</a>
@@ -39,8 +41,6 @@
     <button id="botonCuenta" style="cursor:pointer; padding:6px 12px; background:#333; color:white; border:none; border-radius:5px;">
       Mi cuenta
     </button>
-
-    <!-- Menú desplegable de cuenta -->
     <div id="menuUsuario" class="menu-usuario" style="display:none; position:absolute; top:60px; right:10px; background:#1e1e1e; padding:12px; border-radius:8px; box-shadow:0 0 12px rgba(0,0,0,0.5); color:#fff; z-index:999; width:200px;">
       <p id="nombreUsuario" style="margin:5px 0; font-weight:bold;">Usuario</p>
       <p id="correoUsuario" style="margin:5px 0; font-size:0.85em; color:#ccc;">correo@correo.com</p>
@@ -55,8 +55,8 @@
   <aside>
     <h2>Categorías</h2>
     <ul>
-      <li class="activo" onclick="filtrar('todos')">Todas <span>(2)</span></li>
-      <li onclick="filtrar('2025')">ESTRENOS 2025 <span>(2)</span></li>
+      <li class="activo" onclick="filtrar('todos')">Todas</li>
+      <li onclick="filtrar('2025')">ESTRENOS 2025</li>
     </ul>
   </aside>
 
