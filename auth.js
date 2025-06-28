@@ -3,6 +3,7 @@ const toggleAuth = document.getElementById('toggleAuth');
 const btnSubmit = document.getElementById('btnSubmit');
 const modalTitle = document.getElementById('modalTitle');
 const errorMsg = document.getElementById('errorMsg');
+const forgotPassword = document.getElementById('forgotPassword');
 
 let modoRegistro = false;
 
@@ -66,6 +67,22 @@ auth.onAuthStateChanged(user => {
   if (user && user.emailVerified) {
     window.location.href = "home.html";
   }
+});
+
+// Recuperar contraseña
+forgotPassword.addEventListener('click', () => {
+  const email = document.getElementById('email').value;
+  if (!email) {
+    errorMsg.textContent = "Por favor escribe tu correo primero.";
+    return;
+  }
+  auth.sendPasswordResetEmail(email)
+    .then(() => {
+      alert("Te hemos enviado un correo para restablecer tu contraseña.");
+    })
+    .catch(err => {
+      errorMsg.textContent = err.message;
+    });
 });
 
 updateForm();
