@@ -14,7 +14,9 @@ firebase.initializeApp(firebaseConfig);
 // Inicializa servicios
 const auth = firebase.auth();
 const db = firebase.firestore();
+const storage = firebase.storage(); // 🔧 ¡Faltaba esto!
 
-// Hacer accesibles globalmente para otros scripts como app.js o auth.js
+// Hacer accesibles globalmente
 window.auth = auth;
 window.db = db;
+window.storage = storage;
