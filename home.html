@@ -44,7 +44,8 @@
     <div id="menuUsuario" class="menu-usuario" style="display:none; position:absolute; top:60px; right:10px; background:#1e1e1e; padding:12px; border-radius:8px; box-shadow:0 0 12px rgba(0,0,0,0.5); color:#fff; z-index:999; width:200px;">
       <p id="nombreUsuario" style="margin:5px 0; font-weight:bold;">Usuario</p>
       <p id="correoUsuario" style="margin:5px 0; font-size:0.85em; color:#ccc;">correo@correo.com</p>
-      <input type="file" id="inputAvatar" accept="image/*" style="margin-top:10px; width:100%; color:white;">
+      <input type="file" id="inputAvatar" accept="image/*" style="display:none;">
+      <button onclick="document.getElementById('inputAvatar').click()">Cambiar imagen</button>
       <button onclick="cerrarSesion()" style="margin-top:10px; width:100%; padding:6px 0; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;">Cerrar sesión</button>
     </div>
   </div>
