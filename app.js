@@ -38,80 +38,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-function mostrarPeliculas(lista) {
-  galeria.innerHTML = '';
-  obtenerFavoritosFirestore(user.uid)
-    .then(favoritos => {
-      console.log("Favoritos obtenidos:", favoritos);
+    function mostrarPeliculas(lista) {
+      galeria.innerHTML = '';
+      obtenerFavoritosFirestore(user.uid)
+        .then(favoritos => {
+          peliculas = lista;
 
-      // Solo actualizamos `peliculas` si NO estamos en la vista de favoritos
-      if (!navFavoritos.classList.contains('activo')) {
-        peliculas = lista;
-      }
+          lista.forEach(p => {
+            const tarjeta = document.createElement('div');
+            tarjeta.className = 'pelicula';
 
-      lista.forEach(p => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'pelicula';
+            const tituloID = encodeURIComponent(p.titulo);
+            const esFavorito = favoritos.includes(p.titulo);
 
-        const tituloID = encodeURIComponent(p.titulo);
-        const esFavorito = favoritos.includes(p.titulo);
+            tarjeta.innerHTML = `
+              <a href="detalles.html?titulo=${tituloID}">
+                <img src="${p.imagen}" alt="${p.titulo}">
+                <div class="banderas">
+                  ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
+                  ${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}
+                </div>
+                <h3>${p.titulo}</h3>
+              </a>
+              <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+            `;
+            galeria.appendChild(tarjeta);
+          });
 
-        tarjeta.innerHTML = `
-          <a href="detalles.html?titulo=${tituloID}">
-            <img src="${p.imagen}" alt="${p.titulo}">
-            <div class="banderas">
-              ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
-              ${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}
-            </div>
-            <h3>${p.titulo}</h3>
-          </a>
-          <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-            <i class="fa-solid fa-heart"></i>
-          </div>
-        `;
-        galeria.appendChild(tarjeta);
-      });
+          document.querySelectorAll('.corazon').forEach(icon => {
+            icon.addEventListener('click', e => {
+              const titulo = e.currentTarget.dataset.titulo;
+              if (!titulo) return;
 
-      document.querySelectorAll('.corazon').forEach(icon => {
-        icon.addEventListener('click', e => {
-          const titulo = e.currentTarget.dataset.titulo;
-          if (!titulo) return;
+              const pelicula = peliculas.find(p => p.titulo === titulo);
+              if (!pelicula) return;
 
-          // Siempre buscamos en `peliculasOriginal` para tener todas
-          const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
-          if (!pelicula) {
-            console.warn("Película no encontrada en peliculasOriginal:", titulo);
-            return;
-          }
-
-          e.currentTarget.classList.toggle('activo');
-
-function toggleFavoritoFirestore(pelicula, userId) {
-  const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-
-  const docRef = db.collection('usuarios')
-    .doc(userId)
-    .collection('favoritos')
-    .doc(tituloID);
-
-  return docRef.get().then(docSnapshot => {
-    if (docSnapshot.exists) {
-      console.log("Eliminando favorito:", docSnapshot.data());
-      return docRef.delete();
-    } else {
-      console.log("Agregando a favoritos:", pelicula);
-      return docRef.set({
-        titulo: pelicula.titulo,
-        imagen: pelicula.imagen,
-        anio: pelicula.anio,
-        castellano: pelicula.castellano || false,
-        latino: pelicula.latino || false
-      });
+              e.currentTarget.classList.toggle('activo');
+              toggleFavoritoFirestore(pelicula, user.uid)
+                .then(() => {
+                  if (navFavoritos.classList.contains('activo')) {
+                    cargarFavoritosFirestore(user.uid);
+                  }
+                })
+                .catch(err => {
+                  console.error("Error toggle favorito:", err);
+                  e.currentTarget.classList.toggle('activo');
+                });
+            });
+          });
+        });
     }
-  });
-}
 
-    // Alternar favoritos en Firestore
     function toggleFavoritoFirestore(pelicula, userId) {
       const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
 
@@ -120,22 +99,21 @@ function toggleFavoritoFirestore(pelicula, userId) {
         .collection('favoritos')
         .doc(tituloID);
 
-      return docRef.get().then(docSnapshot => {
-        if (docSnapshot.exists) {
+      return docRef.get().then(doc => {
+        if (doc.exists) {
           return docRef.delete();
         } else {
           return docRef.set({
             titulo: pelicula.titulo,
             imagen: pelicula.imagen,
             anio: pelicula.anio,
-            castellano: pelicula.castellano || false,
-            latino: pelicula.latino || false
+            castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
+            latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
           });
         }
       });
     }
 
-    // Obtener lista de favoritos del usuario
     function obtenerFavoritosFirestore(userId) {
       return db.collection('usuarios')
         .doc(userId)
@@ -144,26 +122,30 @@ function toggleFavoritoFirestore(pelicula, userId) {
         .then(snap => snap.docs.map(doc => doc.data().titulo));
     }
 
-    // Mostrar favoritos
     function cargarFavoritosFirestore(userId) {
       db.collection('usuarios')
         .doc(userId)
         .collection('favoritos')
         .get()
         .then(snap => {
-          const favoritas = snap.docs.map(doc => doc.data());
+          const favoritas = snap.docs.map(doc => {
+            const data = doc.data();
+            return {
+              ...data,
+              castellano: typeof data.castellano === 'boolean' ? data.castellano : true,
+              latino: typeof data.latino === 'boolean' ? data.latino : false
+            };
+          });
           mostrarPeliculas(favoritas);
         });
     }
 
-    // Buscador
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
       mostrarPeliculas(filtradas);
     });
 
-    // Ordenar
     ordenarSelect.addEventListener('change', () => {
       const criterio = ordenarSelect.value;
       if (criterio === 'añadido') {
@@ -181,7 +163,6 @@ function toggleFavoritoFirestore(pelicula, userId) {
       }
     });
 
-    // Filtros por año
     function filtrar(anio = 'todos') {
       const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
       mostrarPeliculas(filtradas);
@@ -191,7 +172,6 @@ function toggleFavoritoFirestore(pelicula, userId) {
       if (liActivo) liActivo.classList.add('activo');
     }
 
-    // Cargar datos de Firebase
     db.collection('peliculas').get()
       .then(snap => {
         const datos = snap.docs.map(doc => doc.data());
@@ -206,7 +186,6 @@ function toggleFavoritoFirestore(pelicula, userId) {
         filtrar('todos');
       });
 
-    // Navbar
     navPeliculas.addEventListener('click', () => {
       navFavoritos.classList.remove('activo');
       navPeliculas.classList.add('activo');
@@ -219,7 +198,6 @@ function toggleFavoritoFirestore(pelicula, userId) {
       cargarFavoritosFirestore(user.uid);
     });
 
-    // Menú usuario
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
@@ -244,7 +222,6 @@ function toggleFavoritoFirestore(pelicula, userId) {
     });
   }
 
-  // Cerrar sesión
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
