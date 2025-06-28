@@ -150,6 +150,7 @@ function updateAuthView() {
   toggleAuth.textContent = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí';
   errorMsg.textContent = '';
   authForm.reset();
+  document.getElementById('nombreUsuario').style.display = modoRegistro ? 'block' : 'none';
 }
 
 // Control de submit
@@ -157,15 +158,22 @@ authForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const email = document.getElementById('email').value;
   const clave = document.getElementById('password').value;
+  const nombre = document.getElementById('nombreUsuario').value;
   errorMsg.textContent = '';
 
   if (modoRegistro) {
     // Registro de cuenta
     auth.createUserWithEmailAndPassword(email, clave)
       .then(userCredential => {
-        userCredential.user.sendEmailVerification();
-        cerrarModal();
-        alert("Registro exitoso. Revisa tu correo para activar tu cuenta.");
+        // Actualizar nombre y avatar por defecto
+        return userCredential.user.updateProfile({
+          displayName: nombre,
+          photoURL: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+        }).then(() => {
+          userCredential.user.sendEmailVerification();
+          cerrarModal();
+          alert("Registro exitoso. Revisa tu correo para activar tu cuenta.");
+        });
       })
       .catch(error => {
         errorMsg.textContent = error.message;
@@ -193,3 +201,15 @@ function cerrarSesion() {
     cerrarModal();
   });
 }
+
+// Mostrar avatar e info del usuario autenticado
+firebase.auth().onAuthStateChanged(user => {
+  const avatar = document.querySelector('.avatar');
+  if (user && user.emailVerified) {
+    avatar.src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+    avatar.title = user.displayName || user.email;
+  } else {
+    avatar.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+    avatar.title = 'Iniciar sesión';
+  }
+});
