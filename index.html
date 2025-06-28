@@ -1,30 +1,73 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Iniciar sesión - Atomix IPTV</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Atomix - Iniciar sesión</title>
+  <link rel="stylesheet" href="auth.css">
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
 </head>
-<body class="login-bg">
-
-  <div class="modal-auth" style="display:flex;">
-    <div class="modal-box">
-      <h2 id="modalTitle">Iniciar sesión</h2>
-      <form id="authForm">
-        <input type="text" id="nombreUsuario" placeholder="Tu nombre" class="input-modern" style="display:none;" />
-        <input type="email" id="email" placeholder="Correo electrónico" required class="input-modern" />
-        <input type="password" id="password" placeholder="Contraseña" required minlength="6" class="input-modern" />
-        <button type="submit" id="btnSubmit" class="btn-modern">Iniciar sesión</button>
-        <p id="toggleAuth" style="cursor:pointer; color:#00aaff; margin-top:10px;">¿No tienes cuenta? Regístrate aquí</p>
-        <p id="errorMsg" style="color:red; margin-top:10px;"></p>
-      </form>
-    </div>
+<body>
+  <div class="modal-box">
+    <h2 id="modalTitle">Iniciar sesión</h2>
+    <form id="authForm">
+      <input type="email" id="email" placeholder="Correo electrónico" required class="input-modern">
+      <input type="password" id="password" placeholder="Contraseña (mín 6 caracteres)" required class="input-modern" minlength="6">
+      <button type="submit" class="btn-modern" id="btnSubmit">Iniciar sesión</button>
+      <p id="toggleAuth" style="cursor:pointer; color:#00aaff; margin-top:10px;">¿No tienes cuenta? Regístrate aquí</p>
+      <p id="errorMsg" style="color:red; margin-top:10px;"></p>
+    </form>
   </div>
 
-  <script src="firebase.js"></script>
-  <script src="auth.js"></script>
+  <script>
+    const authForm = document.getElementById('authForm');
+    const toggleAuth = document.getElementById('toggleAuth');
+    const modalTitle = document.getElementById('modalTitle');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const errorMsg = document.getElementById('errorMsg');
+
+    let modoRegistro = false;
+
+    toggleAuth.addEventListener('click', () => {
+      modoRegistro = !modoRegistro;
+      modalTitle.textContent = modoRegistro ? 'Crear cuenta nueva' : 'Iniciar sesión';
+      btnSubmit.textContent = modoRegistro ? 'Registrarme' : 'Iniciar sesión';
+      toggleAuth.textContent = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí';
+      errorMsg.textContent = '';
+      authForm.reset();
+    });
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const clave = document.getElementById('password').value;
+      errorMsg.textContent = '';
+
+      if (modoRegistro) {
+        auth.createUserWithEmailAndPassword(email, clave)
+          .then(userCredential => {
+            userCredential.user.sendEmailVerification();
+            alert("Cuenta creada. Verifica tu correo.");
+          })
+          .catch(error => {
+            errorMsg.textContent = error.message;
+          });
+      } else {
+        auth.signInWithEmailAndPassword(email, clave)
+          .then(userCredential => {
+            if (!userCredential.user.emailVerified) {
+              errorMsg.textContent = "Verifica tu correo antes de continuar.";
+              auth.signOut();
+            } else {
+              window.location.href = "index.html";
+            }
+          })
+          .catch(error => {
+            errorMsg.textContent = error.message;
+          });
+      }
+    });
+  </script>
 </body>
 </html>
