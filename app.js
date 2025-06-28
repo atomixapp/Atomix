@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const buscador = document.getElementById('buscador');
     const ordenarSelect = document.getElementById('ordenar');
 
+    const navPeliculas = document.getElementById('navPeliculas');
+    const navFavoritos = document.getElementById('navFavoritos');
+
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
     function mostrarPeliculas(lista) {
@@ -64,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const titulo = e.currentTarget.dataset.titulo;
           toggleFavorito(titulo);
           e.currentTarget.classList.toggle('activo');
+          if (navFavoritos.classList.contains('activo')) {
+            cargarFavoritos();
+          }
         });
       });
     }
@@ -87,6 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (liActivo) liActivo.classList.add('activo');
     }
 
+    function cargarFavoritos() {
+      const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+      const favoritas = peliculas.filter(p => favoritos.includes(p.titulo));
+      mostrarPeliculas(favoritas);
+    }
+
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
@@ -102,7 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (criterio === 'anio') {
         peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
       }
-      filtrar('todos');
+
+      if (navFavoritos.classList.contains('activo')) {
+        cargarFavoritos();
+      } else {
+        filtrar('todos');
+      }
     });
 
     db.collection('peliculas').get()
@@ -118,6 +135,19 @@ document.addEventListener('DOMContentLoaded', () => {
         peliculas = [...peliculasOriginal];
         filtrar('todos');
       });
+
+    // Navbar eventos
+    navPeliculas.addEventListener('click', () => {
+      navFavoritos.classList.remove('activo');
+      navPeliculas.classList.add('activo');
+      filtrar('todos');
+    });
+
+    navFavoritos.addEventListener('click', () => {
+      navPeliculas.classList.remove('activo');
+      navFavoritos.classList.add('activo');
+      cargarFavoritos();
+    });
 
     // Menú usuario
     const botonCuenta = document.getElementById('botonCuenta');
