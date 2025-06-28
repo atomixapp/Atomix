@@ -38,77 +38,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-   function mostrarPeliculas(lista, actualizarLista = true) {
-  galeria.innerHTML = '';
-  
-  obtenerFavoritosFirestore(user.uid)
-    .then(favoritos => {
-      console.log("Favoritos obtenidos:", favoritos);
-      
-      if (actualizarLista) {
-        peliculas = lista; // solo si no es favoritos
-      }
+    function mostrarPeliculas(lista, actualizarLista = true) {
+      galeria.innerHTML = '';
 
-      lista.forEach(p => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'pelicula';
+      obtenerFavoritosFirestore(user.uid)
+        .then(favoritos => {
+          if (actualizarLista) {
+            peliculas = lista;
+          }
 
-        const tituloID = encodeURIComponent(p.titulo);
-        const esFavorito = favoritos.includes(p.titulo);
-
-        tarjeta.innerHTML = `
-          <a href="detalles.html?titulo=${tituloID}">
-            <img src="${p.imagen}" alt="${p.titulo}">
-            <div class="banderas">
-              ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
-              ${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}
-            </div>
-            <h3>${p.titulo}</h3>
-          </a>
-          <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-            <i class="fa-solid fa-heart"></i>
-          </div>
-        `;
-        galeria.appendChild(tarjeta);
-      });
-
-      // Reasigna evento a corazones
-      document.querySelectorAll('.corazon').forEach(icon => {
-        icon.addEventListener('click', e => {
-          const titulo = e.currentTarget.dataset.titulo;
-          const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
-
-          if (!pelicula) {
-            console.warn("Película no encontrada:", titulo);
+          if (lista.length === 0) {
+            galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
             return;
           }
 
-          e.currentTarget.classList.toggle('activo');
+          lista.forEach(p => {
+            const tarjeta = document.createElement('div');
+            tarjeta.className = 'pelicula';
 
-          toggleFavoritoFirestore(pelicula, user.uid)
-            .then(() => {
-              console.log("Favorito actualizado:", pelicula.titulo);
-              // Si estamos en favoritos, recargarlos
-              if (navFavoritos.classList.contains('activo')) {
-                cargarFavoritosFirestore(user.uid);
+            const tituloID = encodeURIComponent(p.titulo);
+            const esFavorito = favoritos.includes(p.titulo);
+
+            tarjeta.innerHTML = `
+              <a href="detalles.html?titulo=${tituloID}">
+                <img src="${p.imagen}" alt="${p.titulo}">
+                <div class="banderas">
+                  ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
+                  ${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}
+                </div>
+                <h3>${p.titulo}</h3>
+              </a>
+              <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+            `;
+            galeria.appendChild(tarjeta);
+          });
+
+          document.querySelectorAll('.corazon').forEach(icon => {
+            icon.addEventListener('click', async e => {
+              const titulo = e.currentTarget.dataset.titulo;
+              const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
+
+              if (!pelicula) {
+                console.warn("Película no encontrada:", titulo);
+                return;
               }
-            })
-            .catch(err => {
-              console.error("Error al actualizar favorito:", err);
-              e.currentTarget.classList.toggle('activo'); // Revertir cambio visual
+
+              e.currentTarget.classList.toggle('activo');
+
+              try {
+                await toggleFavoritoFirestore(pelicula, user.uid);
+                console.log("Favorito actualizado:", pelicula.titulo);
+
+                if (navFavoritos.classList.contains('activo')) {
+                  setTimeout(() => {
+                    cargarFavoritosFirestore(user.uid);
+                  }, 300);
+                }
+
+              } catch (err) {
+                console.error("Error al actualizar favorito:", err);
+                e.currentTarget.classList.toggle('activo');
+              }
             });
+          });
         });
-      });
-    });
-}
+    }
 
     function toggleFavoritoFirestore(pelicula, userId) {
       const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-
-      const docRef = db.collection('usuarios')
-        .doc(userId)
-        .collection('favoritos')
-        .doc(tituloID);
+      const docRef = db.collection('usuarios').doc(userId).collection('favoritos').doc(tituloID);
 
       return docRef.get().then(doc => {
         if (doc.exists) {
@@ -126,23 +126,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function obtenerFavoritosFirestore(userId) {
-      return db.collection('usuarios')
-        .doc(userId)
-        .collection('favoritos')
-        .get()
+      return db.collection('usuarios').doc(userId).collection('favoritos').get()
         .then(snap => snap.docs.map(doc => doc.data().titulo));
     }
 
-function cargarFavoritosFirestore(userId) {
-  db.collection('usuarios')
-    .doc(userId)
-    .collection('favoritos')
-    .get()
-    .then(snap => {
-      const favoritas = snap.docs.map(doc => doc.data());
-      mostrarPeliculas(favoritas, false); // <-- muy importante
-    });
-}
+    function cargarFavoritosFirestore(userId) {
+      db.collection('usuarios').doc(userId).collection('favoritos').get()
+        .then(snap => {
+          const favoritas = snap.docs.map(doc => doc.data());
+          mostrarPeliculas(favoritas, false);
+        });
+    }
 
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
