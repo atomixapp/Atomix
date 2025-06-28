@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
     const inputAvatar = document.getElementById('inputAvatar');
-    const storage = firebase.storage();
+    const storage = window.storage;
 
     function actualizarAvatar(url) {
       avatar.src = url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
