@@ -17,21 +17,16 @@ function updateForm() {
   toggleAuth.textContent = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí';
   errorMsg.textContent = '';
 
-  // Mostrar/ocultar nombre si es registro
-  if (modoRegistro) {
-    if (!document.getElementById('nombreUsuario')) {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = 'nombreUsuario';
-      input.placeholder = 'Tu nombre';
-      input.className = 'input-modern';
-      authForm.insertBefore(input, authForm.firstChild);
-    }
-  } else {
-    const nombreInput = document.getElementById('nombreUsuario');
-    if (nombreInput) {
-      authForm.removeChild(nombreInput);
-    }
+  const existing = document.getElementById('nombreUsuario');
+  if (modoRegistro && !existing) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'nombreUsuario';
+    input.placeholder = 'Tu nombre';
+    input.className = 'input-modern';
+    authForm.insertBefore(input, authForm.firstChild);
+  } else if (!modoRegistro && existing) {
+    existing.remove();
   }
 }
 
@@ -49,7 +44,7 @@ authForm.addEventListener('submit', (e) => {
           photoURL: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
         }).then(() => {
           userCredential.user.sendEmailVerification();
-          alert("Registro exitoso. Revisa tu correo.");
+          alert("Registro exitoso. Revisa tu correo antes de iniciar sesión.");
         });
       })
       .catch(err => errorMsg.textContent = err.message);
@@ -57,7 +52,7 @@ authForm.addEventListener('submit', (e) => {
     auth.signInWithEmailAndPassword(email, clave)
       .then(userCredential => {
         if (!userCredential.user.emailVerified) {
-          errorMsg.textContent = "Verifica tu correo antes.";
+          errorMsg.textContent = "Verifica tu correo antes de ingresar.";
           auth.signOut();
         } else {
           window.location.href = "home.html";
@@ -67,11 +62,10 @@ authForm.addEventListener('submit', (e) => {
   }
 });
 
-updateForm();
-
-// Si ya está logueado y verificado, redirigir a home directamente
 auth.onAuthStateChanged(user => {
   if (user && user.emailVerified) {
     window.location.href = "home.html";
   }
 });
+
+updateForm();
