@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function inicializarApp(user) {
+    // Variables para películas
     const respaldoLocal = [
       {
         titulo: 'Spiderman: De regreso a casa',
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-    // 👉 Mostrar las películas en pantalla
+    // Mostrar películas en pantalla
     function mostrarPeliculas(lista) {
       galeria.innerHTML = '';
 
@@ -66,9 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
           galeria.appendChild(tarjeta);
         });
 
+        // *** Añadir evento a cada corazón después de crearlos ***
         document.querySelectorAll('.corazon').forEach(icon => {
           icon.addEventListener('click', e => {
             const titulo = e.currentTarget.dataset.titulo;
+            // Usar la variable peliculas global aquí:
             const pelicula = peliculas.find(p => p.titulo === titulo);
             if (!pelicula) return;
 
@@ -83,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // ✅ Función para alternar favoritos en Firestore
+    // Alternar favoritos en Firestore
     function toggleFavoritoFirestore(pelicula, userId) {
       const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
 
@@ -107,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 🔥 Obtener lista de favoritos del usuario
+    // Obtener favoritos del usuario
     function obtenerFavoritosFirestore(userId) {
       return db.collection('usuarios')
         .doc(userId)
@@ -116,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(snap => snap.docs.map(doc => doc.data().titulo));
     }
 
-    // ❤️ Mostrar favoritos
+    // Mostrar favoritos
     function cargarFavoritosFirestore(userId) {
       db.collection('usuarios')
         .doc(userId)
@@ -128,14 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 🔍 Buscador
+    // Buscador
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
       mostrarPeliculas(filtradas);
     });
 
-    // 🔽 Ordenar
+    // Ordenar
     ordenarSelect.addEventListener('change', () => {
       const criterio = ordenarSelect.value;
       if (criterio === 'añadido') {
@@ -153,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 🔗 Filtros por año
+    // Filtrar por año
     function filtrar(anio = 'todos') {
       const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
       mostrarPeliculas(filtradas);
@@ -163,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (liActivo) liActivo.classList.add('activo');
     }
 
-    // 🌐 Cargar datos de Firebase
+    // Cargar datos de Firestore y fallback local
     db.collection('peliculas').get()
       .then(snap => {
         const datos = snap.docs.map(doc => doc.data());
@@ -178,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       });
 
-    // 🧭 Navbar
+    // Navegación entre películas y favoritos
     navPeliculas.addEventListener('click', () => {
       navFavoritos.classList.remove('activo');
       navPeliculas.classList.add('activo');
@@ -191,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cargarFavoritosFirestore(user.uid);
     });
 
-    // 👤 Menú usuario
+    // Menú usuario
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
@@ -216,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 🔓 Cerrar sesión
+  // Cerrar sesión
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
