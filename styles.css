@@ -6,7 +6,7 @@ body {
   color: #fff;
 }
 
-/* === NAVBAR === */
+/* Navbar */
 .navbar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -23,14 +23,21 @@ body {
   font-size: 17px;
 }
 
-.nav-left a {
+.nav-left a,
+.nav-left button {
   cursor: pointer;
   text-decoration: none;
   color: #eee;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
   transition: color 0.25s;
 }
 
 .nav-left a:hover,
+.nav-left button:hover,
 .nav-left .activo {
   color: #00aaff;
   font-weight: 600;
@@ -38,6 +45,13 @@ body {
 
 .nav-center {
   text-align: center;
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 
 #buscador {
@@ -51,27 +65,17 @@ body {
   color: #000;
 }
 
-.nav-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 18px;
+.logo-atomix {
+  height: 58px;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
+  transition: transform 0.35s ease-out;
 }
 
-#botonCuenta {
-  cursor: pointer;
-  padding: 6px 12px;
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+.logo-atomix:hover {
+  transform: scale(1.07);
 }
 
-#botonCuenta:hover {
-  background-color: #555;
-}
-
+/* Menú usuario */
 .menu-usuario {
   display: none;
   position: absolute;
@@ -103,71 +107,12 @@ body {
   background-color: #c0392b;
 }
 
-.avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-
-.logo-atomix {
-  height: 58px;
-  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
-  transition: transform 0.35s ease-out;
-}
-
-.logo-atomix:hover {
-  transform: scale(1.07);
-}
-
-/* === CONTENEDOR PRINCIPAL === */
-.app-container {
-  display: flex;
-}
-
-aside {
-  width: 220px;
-  background: rgba(0, 0, 0, 0.85);
-  padding: 20px;
-}
-
-aside ul {
-  list-style: none;
-  padding: 0;
-}
-
-aside li {
-  padding: 10px 0;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-}
-
-aside li.activo,
-aside li:hover {
-  color: #00aaff;
-}
-
-main {
-  flex: 1;
-  padding: 20px;
-}
-
-/* === ORDEN === */
-.orden {
-  margin-bottom: 20px;
-}
-
-.orden select {
-  padding: 8px;
-  border-radius: 5px;
-  border: none;
-}
-
-/* === GALERÍA === */
+/* Galería */
 .galeria {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 20px;
+  padding: 20px;
 }
 
 .pelicula {
@@ -198,26 +143,6 @@ main {
   text-overflow: ellipsis;
 }
 
-.pelicula a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.pelicula .banderas {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: flex;
-  gap: 4px;
-}
-
-.pelicula .banderas img {
-  width: 20px;
-  height: auto;
-  border-radius: 2px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-}
-
 .corazon {
   position: absolute;
   top: 8px;
@@ -234,81 +159,6 @@ main {
   transform: scale(1.2);
 }
 
-/* === INPUTS & BOTONES === */
-.input-modern {
-  width: 100%;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  background: #222;
-  border: 1px solid #333;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 15px;
-  box-sizing: border-box;
-}
-
-.input-modern:focus {
-  border-color: #00aaff;
-  box-shadow: 0 0 6px #00aaff88;
-  outline: none;
-}
-
-.btn-modern {
-  width: 100%;
-  padding: 11px;
-  margin-top: 10px;
-  background: linear-gradient(to right, #00aaff, #0077ff);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.btn-modern:hover {
-  background: linear-gradient(to right, #00c3ff, #0088ff);
-}
-
-/* === MODAL === */
-.modal-auth {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.modal-box {
-  position: relative;
-  background: #111;
-  padding: 2rem;
-  border-radius: 16px;
-  width: 320px;
-  max-width: 90%;
-  box-shadow: 0 0 25px rgba(0, 170, 255, 0.3);
-  border: 1px solid #00aaff55;
-  color: white;
-  text-align: center;
-}
-
-.modal-box h2 {
-  margin-bottom: 14px;
-  font-size: 22px;
-  color: #00c3ff;
-  font-weight: bold;
-  text-shadow: 0 0 4px #00c3ff66;
-}
-
-.cerrar-modal {
-  top: 12px;
-  right: 14px;
-  color: white;
-}
-
-/* === RESPONSIVE === */
 @media(max-width: 768px) {
   .navbar {
     grid-template-columns: 1fr auto auto;
