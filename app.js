@@ -1,4 +1,8 @@
+import { doc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
+import { auth, db } from './firebase-config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+
   auth.onAuthStateChanged(user => {
     if (!user || !user.emailVerified) {
       window.location.href = 'index.html';
@@ -10,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function inicializarApp(user) {
     const respaldoLocal = [
       {
+        id: 'spiderman-2025',
         titulo: 'Spiderman: De regreso a casa',
         imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg',
         anio: '2025',
@@ -17,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         castellano: true
       },
       {
+        id: 'la-leyenda-de-ochi-2025',
         titulo: 'La leyenda de Ochi',
         imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg',
         anio: '2025',
@@ -26,25 +32,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let peliculasOriginal = [];
     let peliculas = [];
+    let favoritosIds = [];
 
     const galeria = document.getElementById('galeria');
     const buscador = document.getElementById('buscador');
     const ordenarSelect = document.getElementById('ordenar');
-
     const navPeliculas = document.getElementById('navPeliculas');
     const navFavoritos = document.getElementById('navFavoritos');
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
+    async function cargarFavoritosUsuario() {
+      try {
+        const favoritosRef = collection(db, 'usuarios', user.uid, 'favoritos');
+        const snapshot = await getDocs(favoritosRef);
+        favoritosIds = snapshot.docs.map(doc => doc.id);
+      } catch (error) {
+        console.error('Error cargando favoritos:', error);
+        favoritosIds = [];
+      }
+    }
+
+    async function toggleFavorito(pelicula) {
+      const docRef = doc(db, 'usuarios', user.uid, 'favoritos', pelicula.id);
+
+      if (favoritosIds.includes(pelicula.id)) {
+        // Eliminar de favoritos
+        try {
+          await deleteDoc(docRef);
+          favoritosIds = favoritosIds.filter(id => id !== pelicula.id);
+        } catch (error) {
+          console.error('Error eliminando favorito:', error);
+        }
+      } else {
+        // Agregar a favoritos
+        try {
+          await setDoc(docRef, {
+            titulo: pelicula.titulo,
+            imagen: pelicula.imagen,
+            anio: pelicula.anio
+          });
+          favoritosIds.push(pelicula.id);
+        } catch (error) {
+          console.error('Error agregando favorito:', error);
+        }
+      }
+    }
+
     function mostrarPeliculas(lista) {
       galeria.innerHTML = '';
-      const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
 
       lista.forEach(p => {
         const tarjeta = document.createElement('div');
         tarjeta.className = 'pelicula';
         const tituloCod = encodeURIComponent(p.titulo);
-        const esFavorito = favoritos.includes(p.titulo);
+        const esFavorito = favoritosIds.includes(p.id);
 
         tarjeta.innerHTML = `
           <a href="detalles.html?titulo=${tituloCod}">
@@ -55,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <h3>${p.titulo}</h3>
           </a>
-          <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+          <div class="corazon ${esFavorito ? 'activo' : ''}" data-id="${p.id}">
             <i class="fa-solid fa-heart"></i>
           </div>
         `;
@@ -63,10 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       document.querySelectorAll('.corazon').forEach(icon => {
-        icon.addEventListener('click', e => {
-          const titulo = e.currentTarget.dataset.titulo;
-          toggleFavorito(titulo);
+        icon.addEventListener('click', async e => {
+          const id = e.currentTarget.dataset.id;
+          const pelicula = peliculas.find(p => p.id === id);
+
+          await toggleFavorito(pelicula);
+
           e.currentTarget.classList.toggle('activo');
+
           if (navFavoritos.classList.contains('activo')) {
             cargarFavoritos();
           }
@@ -74,19 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    function toggleFavorito(titulo) {
-      let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
-      if (favoritos.includes(titulo)) {
-        favoritos = favoritos.filter(t => t !== titulo);
-      } else {
-        favoritos.push(titulo);
-      }
-      localStorage.setItem('favoritos', JSON.stringify(favoritos));
-    }
-
     function filtrar(anio = 'todos') {
       const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
       mostrarPeliculas(filtradas);
+
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
       const liActivo = Array.from(document.querySelectorAll('aside li'))
         .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
@@ -94,8 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function cargarFavoritos() {
-      const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
-      const favoritas = peliculas.filter(p => favoritos.includes(p.titulo));
+      const favoritas = peliculas.filter(p => favoritosIds.includes(p.id));
       mostrarPeliculas(favoritas);
     }
 
@@ -123,16 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     db.collection('peliculas').get()
-      .then(snap => {
-        const datos = snap.docs.map(doc => doc.data());
+      .then(async snap => {
+        const datos = snap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
         peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
         peliculas = [...peliculasOriginal];
+
+        await cargarFavoritosUsuario();
         filtrar('todos');
       })
-      .catch(err => {
-        console.warn("Error Firebase:", err.message);
+      .catch(async err => {
+        console.warn('Error Firebase:', err.message);
         peliculasOriginal = [...respaldoLocal];
         peliculas = [...peliculasOriginal];
+
+        await cargarFavoritosUsuario();
         filtrar('todos');
       });
 
@@ -155,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
 
-    nombreUsuario.textContent = user.displayName || "Usuario";
+    nombreUsuario.textContent = user.displayName || 'Usuario';
     correoUsuario.textContent = user.email;
 
     function isMenuVisible() {
@@ -175,9 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.cerrarSesion = function () {
-    firebase.auth().signOut()
+    auth.signOut()
       .then(() => {
-        window.location.href = "index.html";
+        window.location.href = 'index.html';
       });
   };
 });
