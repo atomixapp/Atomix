@@ -129,4 +129,30 @@ function inicializarApp() {
     avatar.src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
     avatar.title = user.displayName || user.email;
   }
+
+  // ========== Menú de cuenta del usuario ==========
+  const menuUsuario = document.getElementById('menuUsuario');
+  const nombreUsuario = document.getElementById('nombreUsuario');
+  const correoUsuario = document.getElementById('correoUsuario');
+
+  if (user && user.emailVerified) {
+    nombreUsuario.textContent = user.displayName || "Usuario";
+    correoUsuario.textContent = user.email;
+  }
+
+  avatar.addEventListener('click', () => {
+    menuUsuario.style.display = menuUsuario.style.display === 'none' ? 'block' : 'none';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!avatar.contains(e.target) && !menuUsuario.contains(e.target)) {
+      menuUsuario.style.display = 'none';
+    }
+  });
+}
+
+function cerrarSesion() {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "index.html";
+  });
 }
