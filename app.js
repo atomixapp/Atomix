@@ -142,18 +142,16 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         menuUsuario.style.display = 'block';
       }
-      console.log("Toggle menú, visible:", isMenuVisible());
     });
 
     document.addEventListener('click', () => {
       if (isMenuVisible()) {
         menuUsuario.style.display = 'none';
-        console.log("Click fuera: ocultando menú");
       }
     });
   }
 
-  // Función para cerrar sesión
+  // Función para cerrar sesión, global para el botón
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
