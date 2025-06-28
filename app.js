@@ -11,24 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function inicializarApp(user) {
-    const respaldoLocal = [
-      {
-        id: 'spiderman-de-regreso-a-casa',
-        titulo: 'Spiderman: De regreso a casa',
-        imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg',
-        anio: '2025',
-        latino: true,
-        castellano: true
-      },
-      {
-        id: 'la-leyenda-de-ochi',
-        titulo: 'La leyenda de Ochi',
-        imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg',
-        anio: '2025',
-        castellano: true
-      }
-    ];
-
     let peliculasOriginal = [];
     let peliculas = [];
 
@@ -50,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
           tarjeta.className = 'pelicula';
 
           const tituloID = encodeURIComponent(p.titulo);
-          const esFavorito = favoritos.includes(p.id);
+          const esFavorito = favoritos.includes(p.titulo);
 
           tarjeta.innerHTML = `
             <a href="detalles.html?titulo=${tituloID}">
@@ -61,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <h3>${p.titulo}</h3>
             </a>
-            <div class="corazon ${esFavorito ? 'activo' : ''}" data-id="${p.id}">
+            <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
               <i class="fa-solid fa-heart"></i>
             </div>
           `;
@@ -70,8 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.corazon').forEach(icon => {
           icon.addEventListener('click', e => {
-            const id = e.currentTarget.dataset.id;
-            const pelicula = peliculas.find(p => p.id === id);
+            const titulo = e.currentTarget.dataset.titulo;
+            const pelicula = peliculas.find(p => p.titulo.trim().toLowerCase() === titulo.trim().toLowerCase());
             if (!pelicula) return;
 
             e.currentTarget.classList.toggle('activo');
@@ -85,25 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 🔧 Generar ID basado en el título (si no tiene uno)
-    function generarIdFavorito(titulo) {
-      return titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-    }
-
-    // ✅ Alternar favoritos en Firestore
+    // ✅ Alternar favorito en Firestore
     function toggleFavoritoFirestore(pelicula, userId) {
-      const id = pelicula.id || generarIdFavorito(pelicula.titulo);
+      const tituloID = pelicula.titulo
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9\-]/g, '');
+
       const docRef = db.collection('usuarios')
         .doc(userId)
         .collection('favoritos')
-        .doc(id);
+        .doc(tituloID);
 
       docRef.get().then(docSnapshot => {
         if (docSnapshot.exists) {
           docRef.delete();
         } else {
           docRef.set({
-            id: id,
             titulo: pelicula.titulo,
             imagen: pelicula.imagen,
             anio: pelicula.anio,
@@ -120,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .doc(userId)
         .collection('favoritos')
         .get()
-        .then(snap => snap.docs.map(doc => doc.id));
+        .then(snap => snap.docs.map(doc => doc.data().titulo));
     }
 
     // ❤️ Mostrar favoritos
@@ -130,10 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .collection('favoritos')
         .get()
         .then(snap => {
-          const favoritas = snap.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
+          const favoritas = snap.docs.map(doc => doc.data());
           mostrarPeliculas(favoritas);
         });
     }
@@ -176,19 +153,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🌐 Cargar datos de Firebase
     db.collection('peliculas').get()
       .then(snap => {
-        const datos = snap.docs.map(doc => ({
-          id: doc.id, // 🔥 Guardamos el ID del documento
-          ...doc.data()
-        }));
-        peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
+        const datos = snap.docs.map(doc => doc.data());
+        peliculasOriginal = datos;
         peliculas = [...peliculasOriginal];
         filtrar('todos');
       })
       .catch(err => {
-        console.warn("Error Firebase:", err.message);
-        peliculasOriginal = [...respaldoLocal];
-        peliculas = [...peliculasOriginal];
-        filtrar('todos');
+        console.error("Error Firebase:", err.message);
+        galeria.innerHTML = '<p class="error">No se pudieron cargar las películas.</p>';
       });
 
     // 🧭 Navbar
