@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.querySelectorAll('.corazon').forEach(icon => {
         icon.addEventListener('click', e => {
+          e.stopPropagation();
           const titulo = e.currentTarget.dataset.titulo;
           toggleFavorito(titulo);
           e.currentTarget.classList.toggle('activo');
@@ -138,14 +139,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Navbar eventos
     navPeliculas.addEventListener('click', () => {
-      navFavoritos.classList.remove('activo');
       navPeliculas.classList.add('activo');
+      navFavoritos.classList.remove('activo');
       filtrar('todos');
     });
 
     navFavoritos.addEventListener('click', () => {
-      navPeliculas.classList.remove('activo');
       navFavoritos.classList.add('activo');
+      navPeliculas.classList.remove('activo');
       cargarFavoritos();
     });
 
