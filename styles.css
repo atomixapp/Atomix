@@ -23,21 +23,14 @@ body {
   font-size: 17px;
 }
 
-.nav-left a,
-.nav-left button {
+.nav-left a {
   cursor: pointer;
   text-decoration: none;
   color: #eee;
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: inherit;
-  padding: 0;
   transition: color 0.25s;
 }
 
 .nav-left a:hover,
-.nav-left button:hover,
 .nav-left .activo {
   color: #00aaff;
   font-weight: 600;
@@ -45,13 +38,6 @@ body {
 
 .nav-center {
   text-align: center;
-}
-
-.nav-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 18px;
 }
 
 #buscador {
@@ -65,6 +51,19 @@ body {
   color: #000;
 }
 
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
 .logo-atomix {
   height: 58px;
   filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6));
@@ -73,6 +72,21 @@ body {
 
 .logo-atomix:hover {
   transform: scale(1.07);
+}
+
+/* Botón Mi cuenta */
+#botonCuenta {
+  background: none;
+  border: 1px solid #00aaff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #00aaff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#botonCuenta:hover {
+  background-color: rgba(0, 170, 255, 0.2);
 }
 
 /* Menú usuario */
