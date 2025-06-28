@@ -1,13 +1,16 @@
-// 🔐 Verificar si el usuario está autenticado
+// 🔐 Verificar si el usuario está autenticado y obtener el usuario
 auth.onAuthStateChanged(user => {
   if (!user || !user.emailVerified) {
-    window.location.href = 'index.html'; // Asegúrate que tu login se llama index.html
+    window.location.href = 'index.html'; // Redirigir al login
   } else {
-    inicializarApp();
+    // Esperar a que el DOM esté listo y luego inicializar la app
+    document.addEventListener('DOMContentLoaded', () => {
+      inicializarApp(user);
+    });
   }
 });
 
-function inicializarApp() {
+function inicializarApp(user) {
   const respaldoLocal = [
     {
       titulo: 'Spiderman: De regreso a casa',
@@ -122,29 +125,25 @@ function inicializarApp() {
       filtrar('todos');
     });
 
-  // Mostrar avatar personalizado
+  // Mostrar avatar personalizado y datos usuario
   const avatar = document.querySelector('.avatar');
-  const user = firebase.auth().currentUser;
-  if (user) {
-    avatar.src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-    avatar.title = user.displayName || user.email;
-  }
-
-  // ======= Menú usuario desplegable =======
   const menuUsuario = document.getElementById('menuUsuario');
   const nombreUsuario = document.getElementById('nombreUsuario');
   const correoUsuario = document.getElementById('correoUsuario');
 
-  if (user && user.emailVerified) {
-    nombreUsuario.textContent = user.displayName || "Usuario";
-    correoUsuario.textContent = user.email;
-  }
+  avatar.src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  avatar.title = user.displayName || user.email;
 
+  nombreUsuario.textContent = user.displayName || "Usuario";
+  correoUsuario.textContent = user.email;
+
+  // Toggle menú usuario al hacer click en avatar
   avatar.addEventListener('click', (e) => {
-    e.stopPropagation(); // Evita que el clic se propague y cierre el menú inmediatamente
+    e.stopPropagation(); // Evitar cierre inmediato
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
   });
 
+  // Cerrar menú si se hace click fuera
   document.addEventListener('click', () => {
     menuUsuario.style.display = 'none';
   });
