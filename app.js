@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const buscador = document.getElementById('buscador');
     const ordenarSelect = document.getElementById('ordenar');
 
+    const navPeliculas = document.getElementById('navPeliculas');
+    const navFavoritos = document.getElementById('navFavoritos');
+
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
     function mostrarPeliculas(lista) {
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tituloCod = encodeURIComponent(p.titulo);
         const esFavorito = favoritos.includes(p.titulo);
 
-        tarjeta.innerHTML = 
+        tarjeta.innerHTML = `
           <a href="detalles.html?titulo=${tituloCod}">
             <img src="${p.imagen}" alt="${p.titulo}">
             <div class="banderas">
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
             <i class="fa-solid fa-heart"></i>
           </div>
-        ;
+        `;
         galeria.appendChild(tarjeta);
       });
 
@@ -64,6 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const titulo = e.currentTarget.dataset.titulo;
           toggleFavorito(titulo);
           e.currentTarget.classList.toggle('activo');
+          if (navFavoritos.classList.contains('activo')) {
+            cargarFavoritos();
+          }
         });
       });
     }
@@ -87,6 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (liActivo) liActivo.classList.add('activo');
     }
 
+    function cargarFavoritos() {
+      const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+      const favoritas = peliculas.filter(p => favoritos.includes(p.titulo));
+      mostrarPeliculas(favoritas);
+    }
+
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
@@ -102,7 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (criterio === 'anio') {
         peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
       }
-      filtrar('todos');
+
+      if (navFavoritos.classList.contains('activo')) {
+        cargarFavoritos();
+      } else {
+        filtrar('todos');
+      }
     });
 
     db.collection('peliculas').get()
@@ -119,20 +136,25 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       });
 
-    // Avatar y menú usuario
-    const avatar = document.querySelector('.avatar');
+    // Navbar eventos
+    navPeliculas.addEventListener('click', () => {
+      navFavoritos.classList.remove('activo');
+      navPeliculas.classList.add('activo');
+      filtrar('todos');
+    });
+
+    navFavoritos.addEventListener('click', () => {
+      navPeliculas.classList.remove('activo');
+      navFavoritos.classList.add('activo');
+      cargarFavoritos();
+    });
+
+    // Menú usuario
+    const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
-    const inputAvatar = document.getElementById('inputAvatar');
-    const storage = window.storage;
 
-    function actualizarAvatar(url) {
-      avatar.src = url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-    }
-
-    actualizarAvatar(user.photoURL);
-    avatar.title = user.displayName || user.email;
     nombreUsuario.textContent = user.displayName || "Usuario";
     correoUsuario.textContent = user.email;
 
@@ -140,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return window.getComputedStyle(menuUsuario).display === 'block';
     }
 
-    avatar.addEventListener('click', e => {
+    botonCuenta.addEventListener('click', e => {
       e.stopPropagation();
       menuUsuario.style.display = isMenuVisible() ? 'none' : 'block';
     });
@@ -149,25 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMenuVisible()) {
         menuUsuario.style.display = 'none';
       }
-    });
-
-    inputAvatar.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const storageRef = storage.ref(avatars/${user.uid}.jpg);
-      storageRef.put(file)
-        .then(() => storageRef.getDownloadURL())
-        .then(url => {
-          return user.updateProfile({ photoURL: url }).then(() => {
-            actualizarAvatar(url);
-            alert("Imagen de perfil actualizada correctamente.");
-          });
-        })
-        .catch(err => {
-          console.error("Error al subir imagen:", err);
-          alert("No se pudo actualizar la imagen. Inténtalo más tarde.");
-        });
     });
   }
 
