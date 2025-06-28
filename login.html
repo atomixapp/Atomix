@@ -1,0 +1,30 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar sesión - Atomix IPTV</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+<body class="login-bg">
+
+  <div class="modal-auth" style="display:flex;">
+    <div class="modal-box">
+      <h2 id="modalTitle">Iniciar sesión</h2>
+      <form id="authForm">
+        <input type="text" id="nombreUsuario" placeholder="Tu nombre" class="input-modern" style="display:none;" />
+        <input type="email" id="email" placeholder="Correo electrónico" required class="input-modern" />
+        <input type="password" id="password" placeholder="Contraseña" required minlength="6" class="input-modern" />
+        <button type="submit" id="btnSubmit" class="btn-modern">Iniciar sesión</button>
+        <p id="toggleAuth" style="cursor:pointer; color:#00aaff; margin-top:10px;">¿No tienes cuenta? Regístrate aquí</p>
+        <p id="errorMsg" style="color:red; margin-top:10px;"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
