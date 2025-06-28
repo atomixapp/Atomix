@@ -5,6 +5,7 @@ const modalTitle = document.getElementById('modalTitle');
 const errorMsg = document.getElementById('errorMsg');
 
 let modoRegistro = false;
+
 toggleAuth.addEventListener('click', () => {
   modoRegistro = !modoRegistro;
   updateForm();
@@ -15,14 +16,30 @@ function updateForm() {
   btnSubmit.textContent = modoRegistro ? 'Registrarme' : 'Iniciar sesión';
   toggleAuth.textContent = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí';
   errorMsg.textContent = '';
-  document.getElementById('nombreUsuario').style.display = modoRegistro ? 'block' : 'none';
+
+  // Mostrar/ocultar nombre si es registro
+  if (modoRegistro) {
+    if (!document.getElementById('nombreUsuario')) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'nombreUsuario';
+      input.placeholder = 'Tu nombre';
+      input.className = 'input-modern';
+      authForm.insertBefore(input, authForm.firstChild);
+    }
+  } else {
+    const nombreInput = document.getElementById('nombreUsuario');
+    if (nombreInput) {
+      authForm.removeChild(nombreInput);
+    }
+  }
 }
 
 authForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const email = document.getElementById('email').value;
   const clave = document.getElementById('password').value;
-  const nombre = document.getElementById('nombreUsuario').value;
+  const nombre = document.getElementById('nombreUsuario')?.value || "";
 
   if (modoRegistro) {
     auth.createUserWithEmailAndPassword(email, clave)
@@ -43,7 +60,7 @@ authForm.addEventListener('submit', (e) => {
           errorMsg.textContent = "Verifica tu correo antes.";
           auth.signOut();
         } else {
-          window.location.href = "index.html";
+          window.location.href = "home.html";
         }
       })
       .catch(err => errorMsg.textContent = err.message);
@@ -52,8 +69,9 @@ authForm.addEventListener('submit', (e) => {
 
 updateForm();
 
+// Si ya está logueado y verificado, redirigir a home directamente
 auth.onAuthStateChanged(user => {
   if (user && user.emailVerified) {
-    window.location.href = "index.html";
+    window.location.href = "home.html";
   }
 });
