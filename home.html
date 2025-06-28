@@ -2,52 +2,78 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atomix Series</title>
-  <link rel="stylesheet" href="estilos.css">
+  <title>Atomix IPTV Movies</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  
+  <!-- Tu configuración personalizada -->
+  <script src="firebase.js"></script>
+
+  <!-- Protección de acceso -->
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user || !user.emailVerified) {
+        window.location.href = "index.html"; // Redirigir al login real
+      } else {
+        console.log("Usuario verificado:", user.email);
+      }
+    });
+  </script>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-left">
-      <a class="activo" id="link-series">Series</a>
-      <a id="link-favoritos">Favoritos</a>
-    </div>
-
-    <div class="nav-center">
-      <img class="logo-atomix" src="logo.png" alt="Logo Atomix">
-    </div>
-
-    <div class="nav-right">
-      <input type="text" id="buscador" placeholder="Buscar...">
-      <button id="botonCuenta">Mi cuenta</button>
-    </div>
+<header class="navbar">
+  <nav class="nav-left">
+    <a>TV</a>
+    <a class="activo">Películas</a>
+    <a>Series</a>
   </nav>
-
-  <!-- Menú cuenta -->
-  <div class="menu-usuario" id="menuUsuario">
-    <p id="emailUsuario">usuario@email.com</p>
-    <button id="logout">Cerrar sesión</button>
+  <div class="nav-center">
+    <input type="text" id="buscador" placeholder="Buscar…">
   </div>
+  <div class="nav-right" style="position:relative;">
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User" class="avatar" style="cursor:pointer;">
+    <img src="https://i.postimg.cc/265p1hGs/atomix-1-Photoroom.png" alt="Logo Atomix" class="logo-atomix">
 
-  <!-- Contenido principal -->
-  <div class="galeria" id="galeria">
-    <div class="pelicula">
-      <div class="corazon">❤️</div>
-      <img src="https://image.tmdb.org/t/p/w300/2CAL2433ZeIihfX1Hb2139CX0pW.jpg" alt="Pelicula">
-      <h3>Película 1</h3>
-    </div>
-    <div class="pelicula">
-      <div class="corazon">❤️</div>
-      <img src="https://image.tmdb.org/t/p/w300/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg" alt="Pelicula">
-      <h3>Película 2</h3>
+    <!-- Menú desplegable de cuenta -->
+    <div id="menuUsuario" class="menu-usuario" style="display:none; position:absolute; top:60px; right:10px; background:#1e1e1e; padding:12px; border-radius:8px; box-shadow:0 0 12px rgba(0,0,0,0.5); color:#fff; z-index:999; width:200px;">
+      <p id="nombreUsuario" style="margin:5px 0; font-weight:bold;">Usuario</p>
+      <p id="correoUsuario" style="margin:5px 0; font-size:0.85em; color:#ccc;">correo@correo.com</p>
+      <input type="file" id="inputAvatar" accept="image/*" style="display:none;">
+      <button onclick="document.getElementById('inputAvatar').click()">Cambiar imagen</button>
+      <button onclick="cerrarSesion()" style="margin-top:10px; width:100%; padding:6px 0; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;">Cerrar sesión</button>
     </div>
   </div>
+</header>
 
-  <!-- Sección favoritos -->
-  <div class="galeria" id="favoritos" style="display: none;"></div>
+<div class="app-container">
+  <aside>
+    <h2>Categorías</h2>
+    <ul>
+      <li class="activo" onclick="filtrar('todos')">Todas <span>(2)</span></li>
+      <li onclick="filtrar('2025')">ESTRENOS 2025 <span>(2)</span></li>
+    </ul>
+  </aside>
 
-  <script src="app.js"></script>
+  <main>
+    <div class="orden">
+      <select id="ordenar">
+        <option value="añadido">Ordenar por añadido</option>
+        <option value="titulo">Ordenar alfabéticamente</option>
+        <option value="anio">Ordenar por año</option>
+      </select>
+    </div>
+    <div id="galeria" class="galeria"></div>
+  </main>
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
