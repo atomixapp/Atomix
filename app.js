@@ -124,10 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
+    const inputAvatar = document.getElementById('inputAvatar');
 
     avatar.src = user.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
     avatar.title = user.displayName || user.email;
-
     nombreUsuario.textContent = user.displayName || "Usuario";
     correoUsuario.textContent = user.email;
 
@@ -137,11 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     avatar.addEventListener('click', e => {
       e.stopPropagation();
-      if (isMenuVisible()) {
-        menuUsuario.style.display = 'none';
-      } else {
-        menuUsuario.style.display = 'block';
-      }
+      menuUsuario.style.display = isMenuVisible() ? 'none' : 'block';
     });
 
     document.addEventListener('click', () => {
@@ -149,9 +145,31 @@ document.addEventListener('DOMContentLoaded', () => {
         menuUsuario.style.display = 'none';
       }
     });
+
+    // ========== Cambiar imagen avatar ==========
+    const storage = firebase.storage();
+    inputAvatar.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const storageRef = storage.ref(`avatars/${user.uid}.jpg`);
+      storageRef.put(file)
+        .then(() => storageRef.getDownloadURL())
+        .then(url => {
+          return user.updateProfile({ photoURL: url });
+        })
+        .then(() => {
+          avatar.src = user.photoURL;
+          alert("Imagen de perfil actualizada correctamente.");
+        })
+        .catch(err => {
+          console.error("Error al subir imagen:", err);
+          alert("No se pudo actualizar la imagen. Inténtalo más tarde.");
+        });
+    });
   }
 
-  // Función para cerrar sesión, global para el botón
+  // Función para cerrar sesión
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
