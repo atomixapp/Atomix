@@ -38,69 +38,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-    // Mostrar las películas en pantalla
-    function mostrarPeliculas(lista) {
-      galeria.innerHTML = '';
-      obtenerFavoritosFirestore(user.uid)
-        .then(favoritos => {
-          console.log("Favoritos obtenidos:", favoritos);
-          peliculas = lista; // Importante para que toggleFavorito encuentre la película
+function mostrarPeliculas(lista) {
+  galeria.innerHTML = '';
+  obtenerFavoritosFirestore(user.uid)
+    .then(favoritos => {
+      console.log("Favoritos obtenidos:", favoritos);
 
-          lista.forEach(p => {
-            const tarjeta = document.createElement('div');
-            tarjeta.className = 'pelicula';
+      // Solo actualizamos `peliculas` si NO estamos en la vista de favoritos
+      if (!navFavoritos.classList.contains('activo')) {
+        peliculas = lista;
+      }
 
-            const tituloID = encodeURIComponent(p.titulo);
-            const esFavorito = favoritos.includes(p.titulo);
+      lista.forEach(p => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'pelicula';
 
-            tarjeta.innerHTML = `
-              <a href="detalles.html?titulo=${tituloID}">
-                <img src="${p.imagen}" alt="${p.titulo}">
-                <div class="banderas">
-                  ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
-                  ${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}
-                </div>
-                <h3>${p.titulo}</h3>
-              </a>
-              <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-                <i class="fa-solid fa-heart"></i>
-              </div>
-            `;
-            galeria.appendChild(tarjeta);
-          });
+        const tituloID = encodeURIComponent(p.titulo);
+        const esFavorito = favoritos.includes(p.titulo);
 
-          document.querySelectorAll('.corazon').forEach(icon => {
-            icon.addEventListener('click', e => {
-              const titulo = e.currentTarget.dataset.titulo;
-              if (!titulo) {
-                console.warn("No se encontró data-titulo en el corazón");
-                return;
-              }
+        tarjeta.innerHTML = `
+          <a href="detalles.html?titulo=${tituloID}">
+            <img src="${p.imagen}" alt="${p.titulo}">
+            <div class="banderas">
+              ${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}
+              ${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}
+            </div>
+            <h3>${p.titulo}</h3>
+          </a>
+          <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+        `;
+        galeria.appendChild(tarjeta);
+      });
 
-              const pelicula = peliculas.find(p => p && p.titulo && p.titulo === titulo);
-              if (!pelicula) {
-                console.warn("Película no encontrada para título:", titulo);
-                console.log("Contenido actual de peliculas:", peliculas);
-                return;
-              }
+      document.querySelectorAll('.corazon').forEach(icon => {
+        icon.addEventListener('click', e => {
+          const titulo = e.currentTarget.dataset.titulo;
+          if (!titulo) return;
 
-              e.currentTarget.classList.toggle('activo');
-              toggleFavoritoFirestore(pelicula, user.uid)
-                .then(() => {
-                  console.log("Toggle favorito completado para", pelicula.titulo);
-                  // Si estamos viendo favoritos, recarga para actualizar lista
-                  if (navFavoritos.classList.contains('activo')) {
-                    cargarFavoritosFirestore(user.uid);
-                  }
-                })
-                .catch(err => {
-                  console.error("Error toggle favorito:", err);
-                  e.currentTarget.classList.toggle('activo'); // revertir toggle si falla
-                });
-            });
-          });
-        });
+          // Siempre buscamos en `peliculasOriginal` para tener todas
+          const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
+          if (!pelicula) {
+            console.warn("Película no encontrada en peliculasOriginal:", titulo);
+            return;
+          }
+
+          e.currentTarget.classList.toggle('activo');
+
+function toggleFavoritoFirestore(pelicula, userId) {
+  const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+
+  const docRef = db.collection('usuarios')
+    .doc(userId)
+    .collection('favoritos')
+    .doc(tituloID);
+
+  return docRef.get().then(docSnapshot => {
+    if (docSnapshot.exists) {
+      console.log("Eliminando favorito:", docSnapshot.data());
+      return docRef.delete();
+    } else {
+      console.log("Agregando a favoritos:", pelicula);
+      return docRef.set({
+        titulo: pelicula.titulo,
+        imagen: pelicula.imagen,
+        anio: pelicula.anio,
+        castellano: pelicula.castellano || false,
+        latino: pelicula.latino || false
+      });
     }
+  });
+}
 
     // Alternar favoritos en Firestore
     function toggleFavoritoFirestore(pelicula, userId) {
