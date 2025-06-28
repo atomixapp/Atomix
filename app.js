@@ -119,20 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       });
 
-    // Avatar y menú usuario
-    const avatar = document.querySelector('.avatar');
+    // Menú usuario
+    const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
-    const inputAvatar = document.getElementById('inputAvatar');
-    const storage = window.storage;
 
-    function actualizarAvatar(url) {
-      avatar.src = url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-    }
-
-    actualizarAvatar(user.photoURL);
-    avatar.title = user.displayName || user.email;
     nombreUsuario.textContent = user.displayName || "Usuario";
     correoUsuario.textContent = user.email;
 
@@ -140,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return window.getComputedStyle(menuUsuario).display === 'block';
     }
 
-    avatar.addEventListener('click', e => {
+    botonCuenta.addEventListener('click', e => {
       e.stopPropagation();
       menuUsuario.style.display = isMenuVisible() ? 'none' : 'block';
     });
@@ -149,25 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMenuVisible()) {
         menuUsuario.style.display = 'none';
       }
-    });
-
-    inputAvatar.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const storageRef = storage.ref(`avatars/${user.uid}.jpg`);
-      storageRef.put(file)
-        .then(() => storageRef.getDownloadURL())
-        .then(url => {
-          return user.updateProfile({ photoURL: url }).then(() => {
-            actualizarAvatar(url);
-            alert("Imagen de perfil actualizada correctamente.");
-          });
-        })
-        .catch(err => {
-          console.error("Error al subir imagen:", err);
-          alert("No se pudo actualizar la imagen. Inténtalo más tarde.");
-        });
     });
   }
 
