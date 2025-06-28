@@ -2,73 +2,50 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Atomix IPTV Movies</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-  <script src="firebase.js"></script>
-
-  <script>
-    firebase.auth().onAuthStateChanged(user => {
-      if (!user || !user.emailVerified) {
-        window.location.href = "index.html";
-      }
-    });
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomix Series</title>
+  <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
 
-<header class="navbar">
-  <div class="logo">
-    <img src="logo.png" alt="Atomix IPTV">
-  </div>
-  <nav class="nav-left">
-    <a id="navTv">TV</a>
-    <a id="navPeliculas" class="activo">Películas</a>
-    <a id="navSeries">Series</a>
-    <a id="navFavoritos">Favoritos</a>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a class="activo" id="link-series">Series</a>
+      <a id="link-favoritos">Favoritos</a>
+      <button id="botonCuenta">Mi cuenta</button>
+    </div>
+    <div class="nav-center">
+      <img class="logo-atomix" src="logo.png" alt="Logo Atomix">
+    </div>
+    <div class="nav-right">
+      <input type="text" id="buscador" placeholder="Buscar...">
+    </div>
   </nav>
-  <div class="nav-center">
-    <input type="text" id="buscador" placeholder="Buscar…">
+
+  <!-- Menú cuenta -->
+  <div class="menu-usuario" id="menuUsuario">
+    <p id="emailUsuario">usuario@email.com</p>
+    <button id="logout">Cerrar sesión</button>
   </div>
-  <div class="nav-right">
-    <button id="botonCuenta">Mi cuenta</button>
-    <div id="menuUsuario" class="menu-usuario">
-      <p id="nombreUsuario">Usuario</p>
-      <p id="correoUsuario">correo@correo.com</p>
-      <button onclick="cerrarSesion()">Cerrar sesión</button>
+
+  <!-- Galería principal -->
+  <div class="galeria" id="galeria">
+    <div class="pelicula">
+      <div class="corazon">❤️</div>
+      <img src="https://image.tmdb.org/t/p/w300/2CAL2433ZeIihfX1Hb2139CX0pW.jpg" alt="Pelicula">
+      <h3>Película 1</h3>
+    </div>
+    <div class="pelicula">
+      <div class="corazon">❤️</div>
+      <img src="https://image.tmdb.org/t/p/w300/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg" alt="Pelicula">
+      <h3>Película 2</h3>
     </div>
   </div>
-</header>
 
-<div class="app-container">
-  <aside>
-    <h2>Categorías</h2>
-    <ul>
-      <li class="activo" onclick="filtrar('todos')">Todas</li>
-      <li onclick="filtrar('2025')">ESTRENOS 2025</li>
-    </ul>
-  </aside>
+  <!-- Favoritos -->
+  <div class="galeria" id="favoritos" style="display:none;"></div>
 
-  <main>
-    <div class="orden">
-      <select id="ordenar">
-        <option value="añadido">Ordenar por añadido</option>
-        <option value="titulo">Ordenar alfabéticamente</option>
-        <option value="anio">Ordenar por año</option>
-      </select>
-    </div>
-    <div id="galeria" class="galeria"></div>
-  </main>
-</div>
-
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
