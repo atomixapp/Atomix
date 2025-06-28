@@ -1,12 +1,9 @@
-// 🔐 Verificar si el usuario está autenticado y obtener el usuario
+// 🔐 Verificar si el usuario está autenticado
 auth.onAuthStateChanged(user => {
   if (!user || !user.emailVerified) {
-    window.location.href = 'index.html'; // Redirigir al login
+    window.location.href = 'index.html'; // Asegúrate que tu login se llama index.html
   } else {
-    // Esperar a que el DOM esté listo y luego inicializar la app
-    document.addEventListener('DOMContentLoaded', () => {
-      inicializarApp(user);
-    });
+    inicializarApp(user);
   }
 });
 
@@ -137,15 +134,26 @@ function inicializarApp(user) {
   nombreUsuario.textContent = user.displayName || "Usuario";
   correoUsuario.textContent = user.email;
 
-  // Toggle menú usuario al hacer click en avatar
+  // Función para comprobar si menú está visible
+  function isMenuVisible() {
+    return window.getComputedStyle(menuUsuario).display === 'block';
+  }
+
   avatar.addEventListener('click', (e) => {
-    e.stopPropagation(); // Evitar cierre inmediato
-    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+    e.stopPropagation();
+    if (isMenuVisible()) {
+      menuUsuario.style.display = 'none';
+    } else {
+      menuUsuario.style.display = 'block';
+    }
+    console.log("Toggle menú, visible:", isMenuVisible());
   });
 
-  // Cerrar menú si se hace click fuera
   document.addEventListener('click', () => {
-    menuUsuario.style.display = 'none';
+    if (isMenuVisible()) {
+      menuUsuario.style.display = 'none';
+      console.log("Click fuera: ocultando menú");
+    }
   });
 }
 
