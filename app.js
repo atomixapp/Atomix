@@ -1,7 +1,7 @@
 // 🔐 Verificar si el usuario está autenticado
 auth.onAuthStateChanged(user => {
   if (!user || !user.emailVerified) {
-    window.location.href = 'login.html';
+    window.location.href = 'index.html'; // Asegúrate que tu login se llama index.html
   } else {
     inicializarApp();
   }
@@ -130,7 +130,7 @@ function inicializarApp() {
     avatar.title = user.displayName || user.email;
   }
 
-  // ========== Menú de cuenta del usuario ==========
+  // ======= Menú usuario desplegable =======
   const menuUsuario = document.getElementById('menuUsuario');
   const nombreUsuario = document.getElementById('nombreUsuario');
   const correoUsuario = document.getElementById('correoUsuario');
@@ -140,19 +140,20 @@ function inicializarApp() {
     correoUsuario.textContent = user.email;
   }
 
-  avatar.addEventListener('click', () => {
-    menuUsuario.style.display = menuUsuario.style.display === 'none' ? 'block' : 'none';
+  avatar.addEventListener('click', (e) => {
+    e.stopPropagation(); // Evita que el clic se propague y cierre el menú inmediatamente
+    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
   });
 
-  document.addEventListener('click', (e) => {
-    if (!avatar.contains(e.target) && !menuUsuario.contains(e.target)) {
-      menuUsuario.style.display = 'none';
-    }
+  document.addEventListener('click', () => {
+    menuUsuario.style.display = 'none';
   });
 }
 
+// Función para cerrar sesión
 function cerrarSesion() {
-  firebase.auth().signOut().then(() => {
-    window.location.href = "index.html";
-  });
+  firebase.auth().signOut()
+    .then(() => {
+      window.location.href = "index.html";
+    });
 }
