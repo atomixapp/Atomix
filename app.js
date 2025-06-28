@@ -10,8 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Función para generar ID consistente para favoritos
+  function generarIdFavorito(titulo) {
+    return titulo.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '');
+  }
+
   function inicializarApp(user) {
-    // Variables para películas
     const respaldoLocal = [
       {
         titulo: 'Spiderman: De regreso a casa',
@@ -39,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-    // Mostrar películas en pantalla
     function mostrarPeliculas(lista) {
       galeria.innerHTML = '';
 
@@ -67,39 +72,42 @@ document.addEventListener('DOMContentLoaded', () => {
           galeria.appendChild(tarjeta);
         });
 
-        // *** Añadir evento a cada corazón después de crearlos ***
         document.querySelectorAll('.corazon').forEach(icon => {
           icon.addEventListener('click', e => {
             const titulo = e.currentTarget.dataset.titulo;
-            // Usar la variable peliculas global aquí:
             const pelicula = peliculas.find(p => p.titulo === titulo);
             if (!pelicula) return;
 
             e.currentTarget.classList.toggle('activo');
-            toggleFavoritoFirestore(pelicula, user.uid);
-
-            if (navFavoritos.classList.contains('activo')) {
-              cargarFavoritosFirestore(user.uid);
-            }
+            toggleFavoritoFirestore(pelicula, user.uid)
+              .then(() => {
+                if (navFavoritos.classList.contains('activo')) {
+                  cargarFavoritosFirestore(user.uid);
+                }
+              })
+              .catch(err => {
+                console.error("Error en toggleFavoritoFirestore:", err);
+                // Revertir cambio visual si error
+                e.currentTarget.classList.toggle('activo');
+              });
           });
         });
       });
     }
 
-    // Alternar favoritos en Firestore
+    // Función para alternar favoritos en Firestore con promesas y manejo errores
     function toggleFavoritoFirestore(pelicula, userId) {
-      const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-
+      const tituloID = generarIdFavorito(pelicula.titulo);
       const docRef = db.collection('usuarios')
         .doc(userId)
         .collection('favoritos')
         .doc(tituloID);
 
-      docRef.get().then(docSnapshot => {
+      return docRef.get().then(docSnapshot => {
         if (docSnapshot.exists) {
-          docRef.delete();
+          return docRef.delete();
         } else {
-          docRef.set({
+          return docRef.set({
             titulo: pelicula.titulo,
             imagen: pelicula.imagen,
             anio: pelicula.anio,
@@ -110,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Obtener favoritos del usuario
     function obtenerFavoritosFirestore(userId) {
       return db.collection('usuarios')
         .doc(userId)
@@ -119,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(snap => snap.docs.map(doc => doc.data().titulo));
     }
 
-    // Mostrar favoritos
     function cargarFavoritosFirestore(userId) {
       db.collection('usuarios')
         .doc(userId)
@@ -131,14 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Buscador
     buscador.addEventListener('input', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
       mostrarPeliculas(filtradas);
     });
 
-    // Ordenar
     ordenarSelect.addEventListener('change', () => {
       const criterio = ordenarSelect.value;
       if (criterio === 'añadido') {
@@ -156,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Filtrar por año
     function filtrar(anio = 'todos') {
       const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
       mostrarPeliculas(filtradas);
@@ -166,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (liActivo) liActivo.classList.add('activo');
     }
 
-    // Cargar datos de Firestore y fallback local
     db.collection('peliculas').get()
       .then(snap => {
         const datos = snap.docs.map(doc => doc.data());
@@ -181,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       });
 
-    // Navegación entre películas y favoritos
     navPeliculas.addEventListener('click', () => {
       navFavoritos.classList.remove('activo');
       navPeliculas.classList.add('activo');
@@ -194,7 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
       cargarFavoritosFirestore(user.uid);
     });
 
-    // Menú usuario
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const nombreUsuario = document.getElementById('nombreUsuario');
@@ -219,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Cerrar sesión
   window.cerrarSesion = function () {
     firebase.auth().signOut()
       .then(() => {
