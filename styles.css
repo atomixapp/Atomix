@@ -1,3 +1,4 @@
+/* === GLOBAL === */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -56,6 +57,7 @@ body {
   display: flex;
   align-items: center;
   gap: 18px;
+  position: relative;
 }
 
 #botonCuenta {
@@ -75,8 +77,8 @@ body {
 .menu-usuario {
   display: none;
   position: absolute;
-  top: 58px;
-  right: 32px;
+  top: 50px;
+  right: 0;
   background-color: #1e1e1e;
   border-radius: 8px;
   padding: 12px;
@@ -122,29 +124,49 @@ body {
 /* === CONTENEDOR PRINCIPAL === */
 .app-container {
   display: flex;
+  min-height: calc(100vh - 70px);
 }
 
 aside {
   width: 220px;
   background: rgba(0, 0, 0, 0.85);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+aside h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 20px;
+  color: #00aaff;
 }
 
 aside ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 aside li {
-  padding: 10px 0;
+  padding: 10px 8px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+aside li span {
+  color: #888;
+  font-size: 13px;
 }
 
 aside li.activo,
 aside li:hover {
   color: #00aaff;
+  background-color: rgba(0, 170, 255, 0.15);
 }
 
 main {
@@ -161,6 +183,8 @@ main {
   padding: 8px;
   border-radius: 5px;
   border: none;
+  background: #fff;
+  color: #000;
 }
 
 /* === GALERÍA === */
@@ -177,12 +201,17 @@ main {
   text-align: center;
   backdrop-filter: blur(5px);
   position: relative;
+  transition: transform 0.2s;
+}
+
+.pelicula:hover {
+  transform: scale(1.03);
 }
 
 .pelicula img {
   width: 100%;
   height: 240px;
-  object-fit: fill;
+  object-fit: cover;
   display: block;
 }
 
@@ -306,6 +335,9 @@ main {
   top: 12px;
   right: 14px;
   color: white;
+  cursor: pointer;
+  position: absolute;
+  font-size: 20px;
 }
 
 /* === RESPONSIVE === */
@@ -325,7 +357,21 @@ main {
     padding: 7px 12px;
   }
 
+  aside {
+    width: 180px;
+    padding: 15px;
+  }
+
   .logo-atomix {
     height: 56px;
+  }
+
+  .galeria {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+
+  .pelicula img {
+    height: 200px;
   }
 }
