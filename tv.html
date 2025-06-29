@@ -5,9 +5,13 @@
   <title>Canales de TV - Atomix IPTV</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
   <script src="firebase.js"></script>
 </head>
 <body>
@@ -17,6 +21,7 @@
     <a class="activo" href="tv.html">TV</a>
     <a href="home.html">Películas</a>
     <a href="#">Series</a>
+    <a href="#">Favoritos</a>
   </nav>
 
   <div class="nav-center">
@@ -24,16 +29,12 @@
   </div>
 
   <div class="nav-right" style="position:relative;">
-    <button id="botonCuenta" style="cursor:pointer; padding:6px 12px; background:#333; color:white; border:none; border-radius:5px;">
-      Mi cuenta
-    </button>
+    <button id="botonCuenta" class="btn-modern">Mi cuenta</button>
 
-    <div id="menuUsuario" class="menu-usuario" style="display:none; position:absolute; top:60px; right:10px; background:#1e1e1e; padding:12px; border-radius:8px; box-shadow:0 0 12px rgba(0,0,0,0.5); color:#fff; z-index:999; width:200px;">
-      <p id="nombreUsuario" style="margin:5px 0; font-weight:bold;">Usuario</p>
-      <p id="correoUsuario" style="margin:5px 0; font-size:0.85em; color:#ccc;">correo@correo.com</p>
-      <button onclick="cerrarSesion()" style="margin-top:10px; width:100%; padding:6px 0; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;">
-        Cerrar sesión
-      </button>
+    <div id="menuUsuario" class="menu-usuario" style="display:none;">
+      <p id="nombreUsuario">Usuario</p>
+      <p id="correoUsuario">correo@correo.com</p>
+      <button onclick="cerrarSesion()" class="btn-modern cerrar">Cerrar sesión</button>
     </div>
   </div>
 </header>
@@ -51,10 +52,16 @@
   </aside>
 
   <main>
-    <div id="canales" class="galeria">
-      <!-- Canales dinámicos -->
-    </div>
+    <div id="canales" class="galeria"></div>
   </main>
+</div>
+
+<!-- Modal Reproductor -->
+<div id="playerModal" class="modal-auth" style="display:none;">
+  <div class="modal-box" style="width:90%; max-width:800px; background:black; padding:0;">
+    <video id="playerVideo" controls autoplay style="width:100%; height:auto; border-radius:6px;"></video>
+    <button onclick="cerrarPlayer()" class="cerrar-modal" style="color:white; top:5px; right:15px;">&times;</button>
+  </div>
 </div>
 
 <script src="tv.js"></script>
