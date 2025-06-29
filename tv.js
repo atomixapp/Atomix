@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Abrir/cerrar buscador
     iconoBuscar.addEventListener('click', (e) => {
-      e.stopPropagation(); // evita que el documento lo cierre inmediatamente
+      e.stopPropagation();
       buscadorInput.style.display =
         buscadorInput.style.display === 'none' || buscadorInput.style.display === '' ? 'inline-block' : 'none';
       if (buscadorInput.style.display === 'inline-block') buscadorInput.focus();
@@ -28,11 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Abrir/cerrar menú de cuenta
     botonCuenta.addEventListener('click', (e) => {
-      e.stopPropagation(); // evita que el documento lo cierre inmediatamente
+      e.stopPropagation();
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
     });
 
-    // Cierre automático si se hace clic fuera
+    // Cierre automático al hacer clic fuera
     document.addEventListener('click', function (event) {
       if (!menuUsuario.contains(event.target) && !botonCuenta.contains(event.target)) {
         menuUsuario.style.display = 'none';
@@ -53,12 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
       canales.forEach(canal => {
         const tarjeta = document.createElement('div');
         tarjeta.className = 'canal';
+        tarjeta.setAttribute('tabindex', '0'); // para permitir navegación con teclas
         tarjeta.innerHTML = `
           <img src="${canal.logo}" alt="${canal.titulo}">
           <h3 style="font-size:14px; margin-top:6px;">${canal.titulo}</h3>
         `;
+
+        // Al presionar Enter sobre un canal
+        tarjeta.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            // Aquí puedes abrir el canal o reproductor
+            alert(`Canal seleccionado: ${canal.titulo}`);
+          }
+        });
+
         contenedorCanales.appendChild(tarjeta);
       });
+
+      // Enfocar el primer canal automáticamente (útil para Android TV)
+      const primerCanal = contenedorCanales.querySelector('.canal');
+      if (primerCanal) primerCanal.focus();
     }
 
     let todosCanales = [];
@@ -91,6 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
       });
     };
+
+    // Activar navegación con teclas en la barra lateral
+    const asideItems = document.querySelectorAll('aside li');
+    asideItems.forEach(li => {
+      li.setAttribute('tabindex', '0');
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          li.click();
+        }
+      });
+    });
 
     cargarCanales();
   }
