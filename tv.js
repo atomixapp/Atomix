@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function inicializarTV(user) {
-    const contenedorCanales = document.getElementById('contenedorCanales');
+    const contenedorCanales = document.getElementById('canales'); // Ajustado aquí
     const buscador = document.getElementById('buscador');
 
     function renderCanales(canales) {
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(snap => snap.docs.map(doc => doc.data()));
     }
 
-    // ✅ Implementar mostrarFavoritos
+    // Función para mostrar favoritos
     window.mostrarFavoritos = function () {
       db.collection('usuarios').doc(user.uid).collection('favoritos')
         .where('tipo', '==', 'canal')
@@ -103,6 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
           const favoritos = snapshot.docs.map(doc => doc.data());
           renderCanales(favoritos);
         });
+    };
+
+    // Función para mostrar canales por categoría o todos
+    window.mostrarCanal = function(categoria) {
+      db.collection('canales').get().then(snapshot => {
+        let canales = snapshot.docs.map(doc => doc.data());
+
+        if (categoria !== 'todos') {
+          canales = canales.filter(c => c.categoria === categoria);
+        }
+
+        renderCanales(canales);
+      });
     };
 
     cargarCanales();
