@@ -6,42 +6,76 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
   <script src="firebase.js"></script>
 
 <style>
-
-body {
-  background: linear-gradient(180deg, #001f4d, #003366);
+.tv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid #005599;
   color: #fff;
 }
 
-.nav-center {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#buscador {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: none;
-  font-size: 15px;
+.tv-header h2 {
+  font-size: 22px;
+  margin: 0;
 }
 
 .lupa {
-  font-size: 18px;
+  font-size: 22px;
   cursor: pointer;
-  color: #fff;
+  color: #00c3ff;
+  transition: transform 0.2s;
 }
-  
+
+.lupa:hover {
+  transform: scale(1.2);
+}
+
+.buscador-box {
+  margin-bottom: 14px;
+}
+
+.buscador-box input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 15px;
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 6px #0088ff88;
+  outline: none;
+}
+
+.canal {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  transition: transform 0.25s;
+}
+
+.canal img {
+  max-width: 100px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.canal h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+}
 </style>
-  
+
 </head>
 <body>
 
@@ -50,22 +84,12 @@ body {
     <a class="activo" href="tv.html">TV</a>
     <a href="home.html">Películas</a>
     <a href="#">Series</a>
-    <a href="#">Favoritos</a>
   </nav>
 
-<div class="nav-center">
-  <input type="text" id="buscador" placeholder="Buscar canales…">
-  <i class="fa-solid fa-magnifying-glass lupa"></i>
-</div>
-
   <div class="nav-right" style="position:relative;">
-    <button id="botonCuenta" class="btn-modern">Mi cuenta</button>
-
-    <div id="menuUsuario" class="menu-usuario" style="display:none;">
-      <p id="nombreUsuario">Usuario</p>
-      <p id="correoUsuario">correo@correo.com</p>
-      <button onclick="cerrarSesion()" class="btn-modern cerrar">Cerrar sesión</button>
-    </div>
+    <button id="botonCuenta" style="cursor:pointer; padding:6px 12px; background:#333; color:white; border:none; border-radius:5px;">
+      Mi cuenta
+    </button>
   </div>
 </header>
 
@@ -77,20 +101,21 @@ body {
       <li onclick="mostrarCanal('noticias')">Noticias</li>
       <li onclick="mostrarCanal('deportes')">Deportes</li>
       <li onclick="mostrarCanal('entretenimiento')">Entretenimiento</li>
-      <li onclick="mostrarFavoritos()">Favoritos</li>
     </ul>
   </aside>
 
   <main>
+    <div class="tv-header">
+      <h2>TV || PREMIUM CHANNELS</h2>
+      <i class="fa-solid fa-magnifying-glass lupa" id="btnBuscar"></i>
+    </div>
+
+    <div id="buscadorBox" class="buscador-box" style="display:none;">
+      <input type="text" id="buscador" placeholder="Buscar canal…" />
+    </div>
+
     <div id="canales" class="galeria"></div>
   </main>
-</div>
-
-<div id="playerModal" class="modal-auth" style="display:none;">
-  <div class="modal-box" style="padding:0; background:#000;">
-    <video id="tvPlayer" controls style="width:100%; height:auto; background:#000;"></video>
-    <button onclick="cerrarPlayer()" class="cerrar-modal" style="color:white;">&times;</button>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
