@@ -10,24 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-document.addEventListener('click', function (event) {
-  const menuUsuario = document.getElementById('menuUsuario');
-  const botonCuenta = document.getElementById('botonCuenta');
-  const buscadorInput = document.getElementById('buscadorCanales');
-  const iconoBuscar = document.getElementById('iconoBuscar');
-
-  const clickEnMiCuenta = botonCuenta.contains(event.target) || menuUsuario.contains(event.target);
-  const clickEnBuscador = iconoBuscar.contains(event.target) || buscadorInput.contains(event.target);
-
-  if (!clickEnMiCuenta) {
-    menuUsuario.style.display = 'none';
-  }
-
-  if (!clickEnBuscador) {
-    buscadorInput.style.display = 'none';
-  }
-});
-  
   function inicializarTV(user) {
     const contenedorCanales = document.getElementById('canales');
     const buscadorInput = document.getElementById('buscadorCanales');
@@ -36,13 +18,28 @@ document.addEventListener('click', function (event) {
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
 
-    iconoBuscar.addEventListener('click', () => {
-      buscadorInput.style.display = buscadorInput.style.display === 'none' || buscadorInput.style.display === '' ? 'inline-block' : 'none';
+    // Abrir/cerrar buscador
+    iconoBuscar.addEventListener('click', (e) => {
+      e.stopPropagation(); // evita que el documento lo cierre inmediatamente
+      buscadorInput.style.display =
+        buscadorInput.style.display === 'none' || buscadorInput.style.display === '' ? 'inline-block' : 'none';
       if (buscadorInput.style.display === 'inline-block') buscadorInput.focus();
     });
 
-    botonCuenta.addEventListener('click', () => {
+    // Abrir/cerrar menú de cuenta
+    botonCuenta.addEventListener('click', (e) => {
+      e.stopPropagation(); // evita que el documento lo cierre inmediatamente
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Cierre automático si se hace clic fuera
+    document.addEventListener('click', function (event) {
+      if (!menuUsuario.contains(event.target) && !botonCuenta.contains(event.target)) {
+        menuUsuario.style.display = 'none';
+      }
+      if (!buscadorInput.contains(event.target) && !iconoBuscar.contains(event.target)) {
+        buscadorInput.style.display = 'none';
+      }
     });
 
     function renderCanales(canales) {
