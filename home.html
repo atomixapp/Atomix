@@ -29,6 +29,7 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(to bottom, #000428, #004e92);
       color: #fff;
+      height: 100vh;
       display: flex;
       flex-direction: column;
     }
@@ -39,14 +40,15 @@
       background-color: #101010;
       padding: 20px 30px;
       font-size: 20px;
+      height: 80px;
     }
     .nav-left {
       display: flex;
       align-items: center;
+      gap: 30px;
     }
     .nav-left a {
       color: white;
-      margin-right: 25px;
       text-decoration: none;
       font-size: 22px;
       font-weight: 500;
@@ -68,7 +70,7 @@
     #menuUsuario {
       display: none;
       position: absolute;
-      top: 70px;
+      top: 80px;
       right: 20px;
       background-color: #222;
       padding: 12px;
@@ -82,7 +84,7 @@
     .app-container {
       display: flex;
       flex: 1;
-      min-height: calc(100vh - 80px);
+      height: calc(100vh - 80px);
     }
     aside {
       width: 240px;
@@ -90,6 +92,9 @@
       padding: 30px 15px;
       border-right: 1px solid #222;
       font-size: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
     aside h2 {
       font-size: 22px;
@@ -100,6 +105,7 @@
     aside ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
     aside li {
       padding: 14px;
@@ -127,6 +133,7 @@
     main {
       flex: 1;
       padding: 30px 40px;
+      overflow-y: auto;
     }
     .orden {
       margin-bottom: 20px;
