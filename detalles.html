@@ -205,26 +205,26 @@
       background: #0088cc;
     }
 
-#idiomaError {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 60, 60, 0.9);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 1.4rem;
-  display: none;
-  z-index: 10001;
-  animation: fadeInOut 3s forwards;
-}
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
-}
+    #idiomaError {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 60, 60, 0.9);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1.4rem;
+      display: none;
+      z-index: 10001;
+      animation: fadeInOut 3s forwards;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
     
     @media (max-width: 900px) {
       .titulo {
@@ -280,8 +280,8 @@
     <video id="player" playsinline controls></video>
   </div>
 
-<div id="idiomaError">Este idioma no está disponible.</div>
-  
+  <div id="idiomaError">Este idioma no está disponible.</div>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyCmMqUkiT_8zTdJYIfhs2VneW9p_33vow4",
