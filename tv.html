@@ -5,13 +5,9 @@
   <title>Canales de TV - Atomix IPTV</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
   <script src="firebase.js"></script>
   <style>
     body {
@@ -48,10 +44,19 @@
       color:#fff;
       z-index:999;
     }
+    .canal {
+      display: inline-block;
+      margin: 10px;
+      text-align: center;
+    }
+    .canal img {
+      width: 140px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-
 <header class="navbar">
   <nav class="nav-left">
     <a class="activo" href="tv.html">TV</a>
@@ -67,7 +72,6 @@
     </div>
   </div>
 </header>
-
 <div class="app-container">
   <aside>
     <h2>Canales</h2>
@@ -77,17 +81,15 @@
       <li onclick="seleccionarCategoria('Deportes')">Deportes</li>
     </ul>
   </aside>
-
   <main>
     <div class="titulo-galeria" id="tituloGaleria">Todos</div>
     <div class="buscador-box">
       <i class="fa-solid fa-magnifying-glass" id="iconoBuscar" style="cursor:pointer; margin-right:10px;"></i>
       <input type="text" id="buscadorCanales" placeholder="Buscar canales…">
     </div>
-    <div id="canales" class="galeria"></div>
+    <div id="canales"></div>
   </main>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script src="tv.js"></script>
 </body>
