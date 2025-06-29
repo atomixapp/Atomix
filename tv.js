@@ -1,68 +1,59 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Atomix TV - Canales</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
+</head>
+<body>
 
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = 'index.html';
-    } else {
-      inicializarTV(user);
-    }
-  });
+<header class="navbar">
+  <nav class="nav-left">
+    <a class="activo" href="tv.html">TV</a>
+    <a href="home.html">Películas</a>
+    <a href="#">Series</a>
+  </nav>
+  <div class="nav-right">
+    <button id="botonCuenta">Mi cuenta</button>
+    <div id="menuUsuario" class="menu-usuario">
+      <p id="nombreUsuario">Usuario</p>
+      <p id="correoUsuario">correo@correo.com</p>
+      <button onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </div>
+</header>
 
-  function inicializarTV(user) {
-    const contenedorCanales = document.getElementById('canales');
-    const buscador = document.getElementById('buscador');
-    const btnBuscar = document.getElementById('btnBuscar');
-    const buscadorBox = document.getElementById('buscadorBox');
+<div class="app-container">
+  <aside>
+    <h2>Categorías</h2>
+    <ul>
+      <li class="activo" onclick="mostrarCanal('todos')">Todos</li>
+      <li onclick="mostrarCanal('noticias')">Noticias</li>
+      <li onclick="mostrarCanal('deportes')">Deportes</li>
+      <li onclick="mostrarCanal('entretenimiento')">Entretenimiento</li>
+      <li onclick="mostrarFavoritos()">Favoritos</li>
+    </ul>
+  </aside>
 
-    btnBuscar.addEventListener('click', () => {
-      buscadorBox.style.display = buscadorBox.style.display === 'none' ? 'block' : 'none';
-      buscador.focus();
-    });
+  <main>
+    <div class="top-bar">
+      <h1 id="tituloGaleria">Todos</h1>
+      <button id="lupaBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
 
-    function renderCanales(canales) {
-      contenedorCanales.innerHTML = '';
+    <div id="busquedaBar" class="busqueda-bar">
+      <input type="text" id="buscador" placeholder="Buscar canal...">
+    </div>
 
-      if (canales.length === 0) {
-        contenedorCanales.innerHTML = '<p style="color:white;">No hay canales para mostrar.</p>';
-        return;
-      }
+    <div id="canales" class="galeria"></div>
+  </main>
+</div>
 
-      canales.forEach(canal => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'canal';
-        tarjeta.innerHTML = `
-          <img src="${canal.logo}" alt="${canal.titulo}">
-          <h3>${canal.titulo}</h3>
-        `;
-        contenedorCanales.appendChild(tarjeta);
-      });
-    }
-
-    function cargarCanales() {
-      db.collection('canales').get().then(snapshot => {
-        const canales = snapshot.docs.map(doc => doc.data());
-        renderCanales(canales);
-
-        buscador.addEventListener('input', () => {
-          const texto = buscador.value.toLowerCase();
-          const filtrados = canales.filter(c => c.titulo.toLowerCase().includes(texto));
-          renderCanales(filtrados);
-        });
-      });
-    }
-
-    window.mostrarCanal = function(categoria) {
-      db.collection('canales').get().then(snapshot => {
-        let canales = snapshot.docs.map(doc => doc.data());
-        if (categoria !== 'todos') {
-          canales = canales.filter(c => c.categoria === categoria);
-        }
-        renderCanales(canales);
-      });
-    };
-
-    cargarCanales();
-  }
-});
+<script src="tv.js"></script>
+</body>
+</html>
