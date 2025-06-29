@@ -29,13 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const esFavorito = favoritos.some(f => f.titulo === canal.titulo && f.tipo === 'canal');
 
-          tarjeta.innerHTML = `
-            <img src="${canal.logo}" alt="${canal.titulo}" style="max-width:160px; border-radius:8px; cursor:pointer;" data-stream="${canal.stream}">
-            <h3>${canal.titulo}</h3>
-          `;
+tarjeta.innerHTML = `
+  <img src="${canal.logo}" alt="${canal.titulo}" style="max-width:160px; border-radius:8px; cursor:pointer;" data-stream="${canal.url}">
+  <h3>${canal.titulo}</h3>
+`;
 
-          const img = tarjeta.querySelector('img');
-          img.addEventListener('click', () => abrirPlayer(canal.stream));
+const img = tarjeta.querySelector('img');
+img.addEventListener('click', () => abrirPlayer(canal.url));
 
           contenedorCanales.appendChild(tarjeta);
         });
