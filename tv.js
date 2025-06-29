@@ -19,12 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuUsuario = document.getElementById('menuUsuario');
 
     iconoBuscar.addEventListener('click', () => {
-      if (buscadorInput.style.display === 'none' || buscadorInput.style.display === '') {
-        buscadorInput.style.display = 'inline-block';
-        buscadorInput.focus();
-      } else {
-        buscadorInput.style.display = 'none';
-      }
+      buscadorInput.style.display = buscadorInput.style.display === 'none' || buscadorInput.style.display === '' ? 'inline-block' : 'none';
+      if (buscadorInput.style.display === 'inline-block') buscadorInput.focus();
     });
 
     botonCuenta.addEventListener('click', () => {
@@ -43,8 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const tarjeta = document.createElement('div');
         tarjeta.className = 'canal';
         tarjeta.innerHTML = `
-          <img src="${canal.logo}" alt="${canal.titulo}" style="max-width:100px;">
-          <h3>${canal.titulo}</h3>
+          <img src="${canal.logo}" alt="${canal.titulo}">
+          <h3 style="font-size:14px; margin-top:6px;">${canal.titulo}</h3>
         `;
         contenedorCanales.appendChild(tarjeta);
       });
