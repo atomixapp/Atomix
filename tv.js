@@ -2,21 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  const botonCuenta = document.getElementById('botonCuenta');
-  const menuUsuario = document.getElementById('menuUsuario');
-  const nombreUsuario = document.getElementById('nombreUsuario');
-  const correoUsuario = document.getElementById('correoUsuario');
-
-  botonCuenta.addEventListener('click', () => {
-    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-  });
-
   auth.onAuthStateChanged(user => {
     if (!user || !user.emailVerified) {
       window.location.href = 'index.html';
     } else {
-      nombreUsuario.textContent = user.displayName || 'Usuario';
-      correoUsuario.textContent = user.email;
       inicializarTV(user);
     }
   });
@@ -33,16 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      canales.forEach(canal => {
-        const tarjeta = document.createElement('div');
-        tarjeta.className = 'canal';
+      obtenerFavoritosFirestore(user.uid).then(favoritos => {
+        canales.forEach(canal => {
+          const tarjeta = document.createElement('div');
+          tarjeta.className = 'canal';
 
-        tarjeta.innerHTML = `
-          <img src="${canal.logo}" alt="${canal.titulo}" style="max-width:100px;">
-          <h3>${canal.titulo}</h3>
-        `;
+          const esFavorito = favoritos.some(f => f.titulo === canal.titulo && f.tipo === 'canal');
 
-        contenedorCanales.appendChild(tarjeta);
+          tarjeta.innerHTML = `
+            <img src="${canal.logo}" alt="${canal.titulo}" style="max-width:160px; border-radius:8px; cursor:pointer;" data-stream="${canal.stream}">
+            <h3>${canal.titulo}</h3>
+          `;
+
+          const img = tarjeta.querySelector('img');
+          img.addEventListener('click', () => abrirPlayer(canal.stream));
+
+          contenedorCanales.appendChild(tarjeta);
+        });
       });
     }
 
@@ -59,7 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Mostrar canales por categoría
+    function obtenerFavoritosFirestore(userId) {
+      return db.collection('usuarios').doc(userId).collection('favoritos').get()
+        .then(snap => snap.docs.map(doc => doc.data()));
+    }
+
     window.mostrarCanal = function (categoria) {
       db.collection('canales').get().then(snapshot => {
         let canales = snapshot.docs.map(doc => doc.data());
@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    // Mostrar favoritos — opcional si quieres dejarlo
     window.mostrarFavoritos = function () {
       db.collection('usuarios').doc(user.uid).collection('favoritos')
         .where('tipo', '==', 'canal')
@@ -85,9 +84,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Cerrar sesión
-function cerrarSesion() {
-  firebase.auth().signOut().then(() => {
-    window.location.href = 'index.html';
-  });
+// Reproductor pantalla completa
+function abrirPlayer(streamUrl) {
+  document.getElementById('playerVideo').src = streamUrl;
+  document.getElementById('playerModal').style.display = 'flex';
+}
+
+function cerrarPlayer() {
+  const player = document.getElementById('playerVideo');
+  player.pause();
+  player.src = '';
+  document.getElementById('playerModal').style.display = 'none';
 }
