@@ -11,7 +11,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <script src="firebase.js"></script>
 </head>
@@ -57,14 +56,14 @@
   </main>
 </div>
 
-<!-- Modal Reproductor -->
 <div id="playerModal" class="modal-auth" style="display:none;">
-  <div class="modal-box" style="width:90%; max-width:800px; background:black; padding:0;">
-    <video id="playerVideo" controls autoplay style="width:100%; height:auto; border-radius:6px;"></video>
-    <button onclick="cerrarPlayer()" class="cerrar-modal" style="color:white; top:5px; right:15px;">&times;</button>
+  <div class="modal-box" style="padding:0; background:#000;">
+    <video id="tvPlayer" controls style="width:100%; height:auto; background:#000;"></video>
+    <button onclick="cerrarPlayer()" class="cerrar-modal" style="color:white;">&times;</button>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script src="tv.js"></script>
 </body>
 </html>
