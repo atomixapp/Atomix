@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Canales de TV - Atomix IPTV</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
+  <!-- Configuración personalizada -->
+  <script src="firebase.js"></script>
+
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user || !user.emailVerified) {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+</head>
+<body>
+
+<header class="navbar">
+  <nav class="nav-left">
+    <a class="activo">TV</a>
+    <a href="home.html">Películas</a>
+    <a href="#">Series</a>
+    <a href="#">Favoritos</a>
+  </nav>
+  <div class="nav-center">
+    <input type="text" placeholder="Buscar canales…">
+  </div>
+  <div class="nav-right" style="position:relative;">
+    <button id="botonCuenta" style="cursor:pointer; padding:6px 12px; background:#333; color:white; border:none; border-radius:5px;">
+      Mi cuenta
+    </button>
+
+    <div id="menuUsuario" class="menu-usuario" style="display:none; position:absolute; top:60px; right:10px; background:#1e1e1e; padding:12px; border-radius:8px; box-shadow:0 0 12px rgba(0,0,0,0.5); color:#fff; z-index:999; width:200px;">
+      <p id="nombreUsuario" style="margin:5px 0; font-weight:bold;">Usuario</p>
+      <p id="correoUsuario" style="margin:5px 0; font-size:0.85em; color:#ccc;">correo@correo.com</p>
+      <button onclick="cerrarSesion()" style="margin-top:10px; width:100%; padding:6px 0; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="app-container">
+  <aside>
+    <h2>Canales</h2>
+    <ul>
+      <li class="activo" onclick="mostrarCanal('todos')">Todos</li>
+      <li onclick="mostrarCanal('noticias')">Noticias</li>
+      <li onclick="mostrarCanal('deportes')">Deportes</li>
+      <li onclick="mostrarCanal('entretenimiento')">Entretenimiento</li>
+    </ul>
+  </aside>
+
+  <main>
+    <div id="canales" class="galeria">
+      <!-- Aquí se cargan los reproductores o enlaces a canales -->
+    </div>
+  </main>
+</div>
+
+<script src="tv.js"></script>
+
+</body>
+</html>
