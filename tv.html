@@ -6,76 +6,49 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+
   <script src="firebase.js"></script>
-
-<style>
-.tv-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  padding: 10px 0;
-  border-bottom: 1px solid #005599;
-  color: #fff;
-}
-
-.tv-header h2 {
-  font-size: 22px;
-  margin: 0;
-}
-
-.lupa {
-  font-size: 22px;
-  cursor: pointer;
-  color: #00c3ff;
-  transition: transform 0.2s;
-}
-
-.lupa:hover {
-  transform: scale(1.2);
-}
-
-.buscador-box {
-  margin-bottom: 14px;
-}
-
-.buscador-box input {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 15px;
-  background: #fff;
-  color: #000;
-  box-shadow: 0 0 6px #0088ff88;
-  outline: none;
-}
-
-.canal {
-  background: rgba(255, 255, 255, 0.06);
-  padding: 12px;
-  border-radius: 6px;
-  text-align: center;
-  transition: transform 0.25s;
-}
-
-.canal img {
-  max-width: 100px;
-  margin-bottom: 8px;
-  border-radius: 4px;
-}
-
-.canal h3 {
-  margin: 0;
-  color: #fff;
-  font-size: 14px;
-}
-</style>
-
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0a3c68, #00518f);
+      color: #fff;
+    }
+    .titulo-galeria {
+      font-size: 22px;
+      text-align: center;
+      margin: 20px 0 10px;
+    }
+    .buscador-box {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    #buscadorCanales {
+      display: none;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      width: 220px;
+    }
+    #menuUsuario {
+      display:none;
+      position:absolute;
+      top:50px;
+      right:10px;
+      background:#1e1e1e;
+      padding:12px;
+      border-radius:8px;
+      box-shadow:0 0 12px rgba(0,0,0,0.5);
+      color:#fff;
+      z-index:999;
+    }
+  </style>
 </head>
 <body>
 
@@ -85,11 +58,13 @@
     <a href="home.html">Películas</a>
     <a href="#">Series</a>
   </nav>
-
   <div class="nav-right" style="position:relative;">
-    <button id="botonCuenta" style="cursor:pointer; padding:6px 12px; background:#333; color:white; border:none; border-radius:5px;">
-      Mi cuenta
-    </button>
+    <button id="botonCuenta" style="cursor:pointer; padding:6px 12px; background:#333; color:white; border:none; border-radius:5px;">Mi cuenta</button>
+    <div id="menuUsuario">
+      <p id="nombreUsuario">Usuario</p>
+      <p id="correoUsuario">correo@correo.com</p>
+      <button onclick="cerrarSesion()" style="margin-top:10px; width:100%; padding:6px 0; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;">Cerrar sesión</button>
+    </div>
   </div>
 </header>
 
@@ -97,23 +72,18 @@
   <aside>
     <h2>Canales</h2>
     <ul>
-      <li class="activo" onclick="mostrarCanal('todos')">Todos</li>
-      <li onclick="mostrarCanal('noticias')">Noticias</li>
-      <li onclick="mostrarCanal('deportes')">Deportes</li>
-      <li onclick="mostrarCanal('entretenimiento')">Entretenimiento</li>
+      <li class="activo" onclick="seleccionarCategoria('Todos')">Todos</li>
+      <li onclick="seleccionarCategoria('Noticias')">Noticias</li>
+      <li onclick="seleccionarCategoria('Deportes')">Deportes</li>
     </ul>
   </aside>
 
   <main>
-    <div class="tv-header">
-      <h2>TV || PREMIUM CHANNELS</h2>
-      <i class="fa-solid fa-magnifying-glass lupa" id="btnBuscar"></i>
+    <div class="titulo-galeria" id="tituloGaleria">Todos</div>
+    <div class="buscador-box">
+      <i class="fa-solid fa-magnifying-glass" id="iconoBuscar" style="cursor:pointer; margin-right:10px;"></i>
+      <input type="text" id="buscadorCanales" placeholder="Buscar canales…">
     </div>
-
-    <div id="buscadorBox" class="buscador-box" style="display:none;">
-      <input type="text" id="buscador" placeholder="Buscar canal…" />
-    </div>
-
     <div id="canales" class="galeria"></div>
   </main>
 </div>
