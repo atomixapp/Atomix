@@ -89,7 +89,7 @@
     aside {
       width: 240px;
       background: #111;
-      padding: 30px 15px;
+      padding: 30px 15px 0;
       border-right: 1px solid #222;
       font-size: 20px;
       display: flex;
@@ -105,9 +105,13 @@
     aside ul {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     aside li {
+      width: 90%;
       padding: 14px;
       margin-bottom: 12px;
       background: #222;
@@ -173,8 +177,8 @@
     <aside>
       <h2>Categorías</h2>
       <ul>
-        <li class="activo" onclick="filtrar('todos')">Todas <span>(2)</span></li>
-        <li onclick="filtrar('2025')">ESTRENOS 2025 <span>(2)</span></li>
+        <li class="activo" onclick="filtrar('todos')">Todas</li>
+        <li onclick="filtrar('2025')">ESTRENOS 2025</li>
         <li onclick="filtrar('favoritos')">Favoritos</li>
       </ul>
     </aside>
