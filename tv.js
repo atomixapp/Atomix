@@ -10,6 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+document.addEventListener('click', function (event) {
+  const menuUsuario = document.getElementById('menuUsuario');
+  const botonCuenta = document.getElementById('botonCuenta');
+  const buscadorInput = document.getElementById('buscadorCanales');
+  const iconoBuscar = document.getElementById('iconoBuscar');
+
+  const clickEnMiCuenta = botonCuenta.contains(event.target) || menuUsuario.contains(event.target);
+  const clickEnBuscador = iconoBuscar.contains(event.target) || buscadorInput.contains(event.target);
+
+  if (!clickEnMiCuenta) {
+    menuUsuario.style.display = 'none';
+  }
+
+  if (!clickEnBuscador) {
+    buscadorInput.style.display = 'none';
+  }
+});
+  
   function inicializarTV(user) {
     const contenedorCanales = document.getElementById('canales');
     const buscadorInput = document.getElementById('buscadorCanales');
