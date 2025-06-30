@@ -5,7 +5,7 @@
 }
 
 body {
-  background-color: #0f0f0f;
+  background-color: #06142e; /* Fondo azul oscuro */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   height: 100vh;
   display: flex;
@@ -14,19 +14,20 @@ body {
 }
 
 .contenedor-login {
-  background-color: #1a1a1a;
+  background-color: #0a1a3a;
   padding: 40px;
   border-radius: 16px;
-  box-shadow: 0 0 25px rgba(255, 60, 60, 0.5);
+  box-shadow: 0 0 25px rgba(0, 119, 255, 0.5);
   width: 100%;
   max-width: 400px;
   text-align: center;
 }
 
 .contenedor-login h1 {
-  color: #ff3c3c;
+  color: #0077ff;
   margin-bottom: 25px;
-  font-size: 32px;
+  font-size: 34px;
+  letter-spacing: 2px;
 }
 
 .formulario {
@@ -39,39 +40,41 @@ body {
   padding: 14px;
   border: none;
   border-radius: 10px;
-  background-color: #2a2a2a;
+  background-color: #122244;
   color: white;
   font-size: 16px;
   outline: none;
-  transition: border 0.3s;
+  transition: border 0.3s, box-shadow 0.3s;
 }
 
 .formulario input:focus {
-  border: 1.5px solid #ff3c3c;
+  border: 1.5px solid #0077ff;
+  box-shadow: 0 0 8px rgba(0, 119, 255, 0.7);
 }
 
 .formulario input::placeholder {
-  color: #999;
+  color: #aaa;
 }
 
 .formulario button {
   padding: 14px;
   border: none;
   border-radius: 10px;
-  background-color: #ff3c3c;
+  background-color: #0077ff;
   color: white;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .formulario button:hover {
-  background-color: #e33232;
+  background-color: #005fcc;
+  transform: scale(1.02);
 }
 
 #mensajeError {
   margin-top: 15px;
-  color: #ff3c3c;
+  color: #ff5c5c;
   font-size: 14px;
 }
 
