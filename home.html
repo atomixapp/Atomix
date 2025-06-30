@@ -26,14 +26,14 @@
       display: flex;
       flex-direction: column;
     }
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #101010;
-  padding: 20px 30px;
-  font-size: 20px; /* Más grande para TV */
-}
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #101010;
+      padding: 20px 30px;
+      font-size: 20px;
+    }
     .nav-left {
       display: flex;
       align-items: center;
@@ -86,7 +86,6 @@ header {
       font-size: 20px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
     }
     aside h2 {
       font-size: 22px;
@@ -108,7 +107,6 @@ header {
       cursor: pointer;
       text-align: center;
       transition: background 0.3s, transform 0.2s;
-      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -121,54 +119,110 @@ header {
       font-weight: bold;
       box-shadow: 0 0 10px rgba(0,170,255,0.4);
     }
-    aside li:focus {
-      outline: 2px solid #00aaff;
-      background: #00aaff;
-      color: #000;
-    }
     main {
       flex: 1;
       padding: 30px 40px;
       overflow-y: auto;
     }
-    .orden {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    #ordenar {
-      padding: 10px;
-      font-size: 18px;
-      border-radius: 5px;
-      border: none;
-    }
+
+    /* Galeria header con buscador y ordenar */
     .galeria-header {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      position: relative;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-bottom: 20px;
     }
-    .galeria-header .fa-magnifying-glass {
+    .galeria-header .buscador {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .fa-magnifying-glass {
       font-size: 20px;
       cursor: pointer;
-      left: 5px;
     }
     #buscadorPeliculas {
       display: none;
-      margin-left: 10px;
       padding: 6px 10px;
       border-radius: 5px;
       border: none;
       width: 200px;
     }
+    #ordenar {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background-color: #2c3e50;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Galeria */
     .galeria {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
     }
+    .pelicula {
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 180px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.3s;
+    }
+    .pelicula:hover {
+      transform: scale(1.05);
+    }
+    .pelicula img {
+      width: 100%;
+      height: 270px;
+      object-fit: cover;
+      display: block;
+    }
+    .pelicula h3 {
+      margin: 10px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .banderas {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: flex;
+      gap: 4px;
+    }
+    .banderas img {
+      width: 20px;
+      height: auto;
+    }
+    .corazon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      cursor: pointer;
+      color: white;
+      font-size: 18px;
+    }
+    .corazon.activo {
+      color: red;
+    }
+
+    .vacio, .cargando {
+      text-align: center;
+      font-size: 20px;
+      width: 100%;
+      margin-top: 40px;
+    }
   </style>
 </head>
+
 <body>
   <header>
     <nav class="nav-left">
@@ -185,6 +239,7 @@ header {
       </div>
     </div>
   </header>
+
   <div class="app-container">
     <aside>
       <h2>Categorías</h2>
@@ -194,21 +249,26 @@ header {
         <li onclick="filtrar('favoritos')">Favoritos</li>
       </ul>
     </aside>
+
     <main>
       <div class="galeria-header">
-        <i class="fa-solid fa-magnifying-glass" id="iconoBuscar"></i>
-        <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
+        <div class="buscador">
+          <i class="fa-solid fa-magnifying-glass" id="iconoBuscar"></i>
+          <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
+        </div>
+        <div class="orden">
+          <select id="ordenar">
+            <option value="añadido">Ordenar por añadido</option>
+            <option value="titulo">Ordenar alfabéticamente</option>
+            <option value="anio">Ordenar por año</option>
+          </select>
+        </div>
       </div>
-      <div class="orden">
-        <select id="ordenar">
-          <option value="añadido">Ordenar por añadido</option>
-          <option value="titulo">Ordenar alfabéticamente</option>
-          <option value="anio">Ordenar por año</option>
-        </select>
-      </div>
+
       <div id="galeria" class="galeria"></div>
     </main>
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>
