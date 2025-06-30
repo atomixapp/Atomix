@@ -13,65 +13,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script src="firebase.js"></script>
 
-  <script>
-    firebase.auth().onAuthStateChanged(user => {
-      if (!user || !user.emailVerified) {
-        window.location.href = "index.html";
-      } else {
-        document.getElementById("nombreUsuario").textContent = user.displayName || "Usuario";
-        document.getElementById("correoUsuario").textContent = user.email;
-      }
-    });
-
-    function cerrarSesion() {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "index.html";
-      });
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const botonCuenta = document.getElementById("botonCuenta");
-      const menuUsuario = document.getElementById("menuUsuario");
-
-      botonCuenta.addEventListener("click", () => {
-        const visible = menuUsuario.style.display === "block";
-        menuUsuario.style.display = visible ? "none" : "block";
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!botonCuenta.contains(e.target) && !menuUsuario.contains(e.target)) {
-          menuUsuario.style.display = "none";
-        }
-      });
-
-      // Lupa funcional
-      const iconoBuscar = document.getElementById("iconoBuscar");
-      const buscador = document.getElementById("buscadorPeliculas");
-
-      iconoBuscar.addEventListener("click", () => {
-        if (buscador.style.display === "block") {
-          buscador.style.display = "none";
-          buscador.value = "";
-          filtrarBusqueda();
-        } else {
-          buscador.style.display = "block";
-          buscador.focus();
-        }
-      });
-
-      buscador.addEventListener("input", filtrarBusqueda);
-
-      function filtrarBusqueda() {
-        const texto = buscador.value.toLowerCase();
-        const tarjetas = document.querySelectorAll(".galeria > div");
-        tarjetas.forEach(tarjeta => {
-          const titulo = tarjeta.textContent.toLowerCase();
-          tarjeta.style.display = titulo.includes(texto) ? "block" : "none";
-        });
-      }
-    });
-  </script>
-
   <style>
     * {
       box-sizing: border-box;
