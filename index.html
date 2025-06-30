@@ -33,5 +33,21 @@
 <script src="firebase.js"></script>
 <script src="auth.js"></script>
 
+<!-- Script para asegurar foco automático en TV -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const primerElemento = document.querySelector('[tabindex]');
+    if (primerElemento) primerElemento.focus();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const focoActual = document.activeElement;
+    if (!focoActual || focoActual === document.body) {
+      const primerElemento = document.querySelector('[tabindex]');
+      if (primerElemento) primerElemento.focus();
+    }
+  });
+</script>
+
 </body>
 </html>
