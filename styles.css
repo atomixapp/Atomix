@@ -110,14 +110,15 @@
     }
 
     /* Galeria header con buscador y ordenar */
-    .galeria-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+  .titulo-categoria {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: center;
+    flex: 1;
+  }
     .galeria-header .buscador {
       display: flex;
       align-items: center;
