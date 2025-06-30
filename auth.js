@@ -1,88 +1,105 @@
-const authForm = document.getElementById('authForm');
-const toggleAuth = document.getElementById('toggleAuth');
-const btnSubmit = document.getElementById('btnSubmit');
-const modalTitle = document.getElementById('modalTitle');
-const errorMsg = document.getElementById('errorMsg');
-const forgotPassword = document.getElementById('forgotPassword');
+document.addEventListener('DOMContentLoaded', () => {
 
-let modoRegistro = false;
+  const authForm = document.getElementById('authForm');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const btnSubmit = document.getElementById('btnSubmit');
+  const toggleAuth = document.getElementById('toggleAuth');
+  const forgotPassword = document.getElementById('forgotPassword');
+  const errorMsg = document.getElementById('errorMsg');
 
-toggleAuth.addEventListener('click', () => {
-  modoRegistro = !modoRegistro;
+  let modoRegistro = false;
+
+  // 👉 Actualiza los textos según el modo (login o registro)
+  function updateForm() {
+    if (modoRegistro) {
+      btnSubmit.textContent = 'Registrarse';
+      toggleAuth.textContent = '¿Ya tienes cuenta? Inicia sesión aquí';
+    } else {
+      btnSubmit.textContent = 'Iniciar sesión';
+      toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
+    }
+    errorMsg.textContent = '';
+  }
+
+  // 👉 Alternar entre login y registro
+  toggleAuth.addEventListener('click', (e) => {
+    e.preventDefault();
+    modoRegistro = !modoRegistro;
+    updateForm();
+  });
+
+  // 👉 Enviar formulario (login o registro)
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    try {
+      if (modoRegistro) {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.sendEmailVerification();
+        errorMsg.style.color = 'green';
+        errorMsg.textContent = 'Registro exitoso. Revisa tu correo para verificar la cuenta.';
+      } else {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        if (userCredential.user.emailVerified) {
+          window.location.href = 'home.html';
+        } else {
+          await auth.signOut();
+          errorMsg.style.color = 'red';
+          errorMsg.textContent = 'Por favor verifica tu correo antes de iniciar sesión.';
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      mostrarError(error);
+    }
+  });
+
+  // 👉 Olvidó la contraseña
+  forgotPassword.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value;
+    if (!email) {
+      errorMsg.style.color = 'red';
+      errorMsg.textContent = 'Por favor ingresa tu correo para recuperar la contraseña.';
+      return;
+    }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      errorMsg.style.color = 'green';
+      errorMsg.textContent = 'Se envió un correo para restablecer la contraseña.';
+    } catch (error) {
+      console.error(error);
+      mostrarError(error);
+    }
+  });
+
+  // 👉 Mostrar errores amigables
+  function mostrarError(error) {
+    errorMsg.style.color = 'red';
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        errorMsg.textContent = 'El correo ya está registrado.';
+        break;
+      case 'auth/invalid-email':
+        errorMsg.textContent = 'Correo no válido.';
+        break;
+      case 'auth/weak-password':
+        errorMsg.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        break;
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        errorMsg.textContent = 'Correo o contraseña incorrectos.';
+        break;
+      case 'auth/too-many-requests':
+        errorMsg.textContent = 'Demasiados intentos. Inténtalo más tarde.';
+        break;
+      default:
+        errorMsg.textContent = 'Error: ' + error.message;
+    }
+  }
+
   updateForm();
 });
-
-function updateForm() {
-  modalTitle.textContent = modoRegistro ? 'Crear cuenta nueva' : 'Iniciar sesión';
-  btnSubmit.textContent = modoRegistro ? 'Registrarme' : 'Iniciar sesión';
-  toggleAuth.textContent = modoRegistro ? '¿Ya tienes cuenta? Inicia sesión aquí' : '¿No tienes cuenta? Regístrate aquí';
-  errorMsg.textContent = '';
-
-  const existing = document.getElementById('nombreUsuario');
-  if (modoRegistro && !existing) {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.id = 'nombreUsuario';
-    input.placeholder = 'Tu nombre';
-    input.className = 'input-modern';
-    authForm.insertBefore(input, authForm.firstChild);
-  } else if (!modoRegistro && existing) {
-    existing.remove();
-  }
-}
-
-authForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-  const clave = document.getElementById('password').value;
-  const nombre = document.getElementById('nombreUsuario')?.value || "";
-
-  if (modoRegistro) {
-    auth.createUserWithEmailAndPassword(email, clave)
-      .then(userCredential => {
-        return userCredential.user.updateProfile({
-          displayName: nombre,
-          photoURL: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-        }).then(() => {
-          userCredential.user.sendEmailVerification();
-          alert("Registro exitoso. Revisa tu correo antes de iniciar sesión.");
-        });
-      })
-      .catch(err => errorMsg.textContent = err.message);
-  } else {
-    auth.signInWithEmailAndPassword(email, clave)
-      .then(userCredential => {
-        if (!userCredential.user.emailVerified) {
-          errorMsg.textContent = "Verifica tu correo antes de ingresar.";
-          auth.signOut();
-        } else {
-          window.location.href = "home.html";
-        }
-      })
-      .catch(err => errorMsg.textContent = err.message);
-  }
-});
-
-auth.onAuthStateChanged(user => {
-  if (user && user.emailVerified) {
-    window.location.href = "home.html";
-  }
-});
-
-// Recuperar contraseña
-forgotPassword.addEventListener('click', () => {
-  const email = document.getElementById('email').value;
-  if (!email) {
-    errorMsg.textContent = "Por favor escribe tu correo primero.";
-    return;
-  }
-  auth.sendPasswordResetEmail(email)
-    .then(() => {
-      alert("Te hemos enviado un correo para restablecer tu contraseña.");
-    })
-    .catch(err => {
-      errorMsg.textContent = err.message;
-    });
-});
-
-updateForm();
