@@ -17,9 +17,61 @@
     firebase.auth().onAuthStateChanged(user => {
       if (!user || !user.emailVerified) {
         window.location.href = "index.html";
+      } else {
+        document.getElementById("nombreUsuario").textContent = user.displayName || "Usuario";
+        document.getElementById("correoUsuario").textContent = user.email;
+      }
+    });
+
+    function cerrarSesion() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const botonCuenta = document.getElementById("botonCuenta");
+      const menuUsuario = document.getElementById("menuUsuario");
+
+      botonCuenta.addEventListener("click", () => {
+        const visible = menuUsuario.style.display === "block";
+        menuUsuario.style.display = visible ? "none" : "block";
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!botonCuenta.contains(e.target) && !menuUsuario.contains(e.target)) {
+          menuUsuario.style.display = "none";
+        }
+      });
+
+      // Lupa funcional
+      const iconoBuscar = document.getElementById("iconoBuscar");
+      const buscador = document.getElementById("buscadorPeliculas");
+
+      iconoBuscar.addEventListener("click", () => {
+        if (buscador.style.display === "block") {
+          buscador.style.display = "none";
+          buscador.value = "";
+          filtrarBusqueda();
+        } else {
+          buscador.style.display = "block";
+          buscador.focus();
+        }
+      });
+
+      buscador.addEventListener("input", filtrarBusqueda);
+
+      function filtrarBusqueda() {
+        const texto = buscador.value.toLowerCase();
+        const tarjetas = document.querySelectorAll(".galeria > div");
+        tarjetas.forEach(tarjeta => {
+          const titulo = tarjeta.textContent.toLowerCase();
+          tarjeta.style.display = titulo.includes(texto) ? "block" : "none";
+        });
       }
     });
   </script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -89,7 +141,7 @@
     aside {
       width: 240px;
       background: #111;
-      padding: 30px 15px 0; /* Ajuste preciso */
+      padding: 30px 15px 0;
       border-right: 1px solid #222;
       font-size: 20px;
       display: flex;
@@ -149,6 +201,25 @@
       border-radius: 5px;
       border: none;
     }
+    .galeria-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .galeria-header .fa-magnifying-glass {
+      font-size: 20px;
+      cursor: pointer;
+    }
+    #buscadorPeliculas {
+      display: none;
+      margin-left: 10px;
+      padding: 6px 10px;
+      border-radius: 5px;
+      border: none;
+      width: 200px;
+    }
     .galeria {
       display: flex;
       flex-wrap: wrap;
@@ -183,6 +254,10 @@
       </ul>
     </aside>
     <main>
+      <div class="galeria-header">
+        <i class="fa-solid fa-magnifying-glass" id="iconoBuscar"></i>
+        <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
+      </div>
       <div class="orden">
         <select id="ordenar">
           <option value="añadido">Ordenar por añadido</option>
