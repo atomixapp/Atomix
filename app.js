@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function inicializarApp(user) {
+    const userId = user.uid;
+
     const respaldoLocal = [
       {
         titulo: 'Spiderman: De regreso a casa',
@@ -41,8 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
 
-    galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
+    if (!galeria || !buscador || !ordenarSelect) {
+      console.error('Error: Elementos clave del DOM no encontrados.');
+      return;
+    }
 
+    galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
     nombreUsuario.textContent = user.displayName || "Usuario";
     correoUsuario.textContent = user.email;
 
@@ -62,9 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    iconoBuscar.addEventListener('click', (e) => {
+    iconoBuscar.addEventListener('click', e => {
       e.stopPropagation();
-      buscador.style.display = (buscador.style.display === 'block') ? 'none' : 'block';
+      buscador.style.display = buscador.style.display === 'block' ? 'none' : 'block';
       if (buscador.style.display === 'block') buscador.focus();
     });
 
@@ -73,8 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function filtrarBusqueda() {
       const texto = buscador.value.toLowerCase();
       const tarjetas = document.querySelectorAll(".galeria > div");
+
       tarjetas.forEach(tarjeta => {
-        const titulo = tarjeta.textContent.toLowerCase();
+        const titulo = tarjeta.querySelector('h3')?.textContent.toLowerCase() || '';
         tarjeta.style.display = titulo.includes(texto) ? "block" : "none";
       });
     }
@@ -82,11 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function mostrarPeliculas(lista, actualizarLista = true) {
       galeria.innerHTML = '';
 
-      obtenerFavoritosFirestore(user.uid)
+      obtenerFavoritosFirestore(userId)
         .then(favoritos => {
           if (actualizarLista) {
-            // Mantener respaldo actualizado
-          if (actualizarLista) peliculasOriginal = [...lista];
+            peliculasOriginal = [...lista];
             peliculas = lista;
           }
 
@@ -128,10 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
               e.currentTarget.classList.toggle('activo');
 
               try {
-                await toggleFavoritoFirestore(pelicula, user.uid);
+                await toggleFavoritoFirestore(pelicula, userId);
                 if (navFavoritos.classList.contains('activo')) {
                   setTimeout(() => {
-                    cargarFavoritosFirestore(user.uid);
+                    cargarFavoritosFirestore(userId);
                   }, 300);
                 }
               } catch (err) {
@@ -144,7 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleFavoritoFirestore(pelicula, userId) {
-      const tituloID = pelicula.titulo.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+      const tituloID = `${pelicula.titulo}-${pelicula.anio}`.toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9\-]/g, '');
+
       const docRef = db.collection('usuarios').doc(userId).collection('favoritos').doc(tituloID);
 
       return docRef.get().then(doc => {
@@ -182,11 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (criterio === 'titulo') {
         peliculas.sort((a, b) => a.titulo.localeCompare(b.titulo));
       } else if (criterio === 'anio') {
-        peliculas.sort((a, b) => b.anio.localeCompare(a.anio));
+        peliculas.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
       }
 
       if (navFavoritos.classList.contains('activo')) {
-        cargarFavoritosFirestore(user.uid);
+        cargarFavoritosFirestore(userId);
       } else {
         filtrar('todos');
       }
@@ -224,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navFavoritos.addEventListener('click', () => {
       navPeliculas.classList.remove('activo');
       navFavoritos.classList.add('activo');
-      cargarFavoritosFirestore(user.uid);
+      cargarFavoritosFirestore(userId);
     });
   }
 
