@@ -175,14 +175,18 @@
   text-decoration: none;
   color: inherit;
 }
+.pelicula h3 {
+  color: white;
+  text-decoration: none;
+  margin: 10px;
+  text-align: center;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
 
-    .pelicula h3 {
-      color: white;
-      text-decoration: none;
-      margin: 10px;
-      text-align: center;
-      font-size: 16px;
-    }
     .banderas {
       position: absolute;
       top: 8px;
