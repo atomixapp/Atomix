@@ -152,6 +152,13 @@
       justify-content: center;
       gap: 20px;
     }
+.titulo-categoria {
+  text-align: center;
+  font-size: 22px;
+  color: white;
+  margin: 20px 0 10px;
+}
+
     .pelicula {
       background: #111;
       border-radius: 10px;
