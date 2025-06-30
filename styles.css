@@ -212,3 +212,16 @@
       width: 100%;
       margin-top: 40px;
     }
+
+.favoritos-boton {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  border: 2px solid #ff4b2b;
+}
+
+.favoritos-boton:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 15px rgba(255, 75, 43, 0.5);
+}
