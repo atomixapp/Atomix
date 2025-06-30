@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
       obtenerFavoritosFirestore(user.uid)
         .then(favoritos => {
           if (actualizarLista) {
+            // Mantener respaldo actualizado
+          if (actualizarLista) peliculasOriginal = [...lista];
             peliculas = lista;
           }
 
@@ -202,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     db.collection('peliculas').get()
       .then(snap => {
         const datos = snap.docs.map(doc => doc.data());
-        peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
+        peliculasOriginal = [...(datos.length > 0 ? datos : respaldoLocal)];
         peliculas = [...peliculasOriginal];
         filtrar('todos');
       })
