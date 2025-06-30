@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Atomix Login</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="firebase.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | CineApp</title>
+  <link rel="stylesheet" href="css/login.css">
+  <script src="https://kit.fontawesome.com/a2c215e1b8.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="modal-auth" style="display:flex; justify-content:center; align-items:center; height:100vh;">
-    <div class="modal-box">
-      <h2 id="modalTitle">Iniciar sesión / Registrarse</h2>
-      <form id="authForm">
-        <input type="email" id="email" placeholder="Correo electrónico" required class="input-modern" />
-        <input type="password" id="password" placeholder="Contraseña (mín 6 caracteres)" required minlength="6" class="input-modern" />
-        <button type="submit" id="btnSubmit" class="btn-modern">Iniciar sesión</button>
-        <p id="toggleAuth" style="cursor:pointer; color:#00aaff; margin-top:10px;">¿No tienes cuenta? Regístrate aquí</p>
-        <p id="forgotPassword" style="cursor:pointer; color:#ffaa00; margin-top:10px;">¿Olvidaste tu contraseña?</p>
-        <p id="errorMsg" style="color:red; margin-top:10px;"></p>
-      </form>
+
+  <div class="contenedor-login">
+    <h1>CineApp</h1>
+    <div class="formulario">
+      <input type="email" id="email" placeholder="Correo electrónico">
+      <input type="password" id="password" placeholder="Contraseña">
+      <button id="login">Iniciar sesión</button>
+      <button id="registro">Registrarse</button>
     </div>
+    <p id="mensajeError"></p>
   </div>
 
-  <script src="auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/login.js"></script>
 </body>
 </html>
