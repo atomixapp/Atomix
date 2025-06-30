@@ -32,20 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const galeria = document.getElementById('galeria');
     const buscador = document.getElementById('buscador');
+    const iconoBuscar = document.getElementById('iconoBuscar');
     const ordenarSelect = document.getElementById('ordenar');
     const navPeliculas = document.getElementById('navPeliculas');
     const navFavoritos = document.getElementById('navFavoritos');
 
+    const botonCuenta = document.getElementById('botonCuenta');
+    const menuUsuario = document.getElementById('menuUsuario');
+    const nombreUsuario = document.getElementById('nombreUsuario');
+    const correoUsuario = document.getElementById('correoUsuario');
+
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
+
+    nombreUsuario.textContent = user.displayName || "Usuario";
+    correoUsuario.textContent = user.email;
 
     function mostrarPeliculas(lista, actualizarLista = true) {
       galeria.innerHTML = '';
 
       obtenerFavoritosFirestore(user.uid)
         .then(favoritos => {
-          if (actualizarLista) {
-            peliculas = lista;
-          }
+          if (actualizarLista) peliculas = lista;
 
           if (lista.length === 0) {
             galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
@@ -55,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
           lista.forEach(p => {
             const tarjeta = document.createElement('div');
             tarjeta.className = 'pelicula';
-
             const tituloID = encodeURIComponent(p.titulo);
             const esFavorito = favoritos.includes(p.titulo);
 
@@ -80,25 +86,18 @@ document.addEventListener('DOMContentLoaded', () => {
               const titulo = e.currentTarget.dataset.titulo;
               const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
 
-              if (!pelicula) {
-                console.warn("Película no encontrada:", titulo);
-                return;
-              }
+              if (!pelicula) return;
 
               e.currentTarget.classList.toggle('activo');
 
               try {
                 await toggleFavoritoFirestore(pelicula, user.uid);
-                console.log("Favorito actualizado:", pelicula.titulo);
-
                 if (navFavoritos.classList.contains('activo')) {
                   setTimeout(() => {
                     cargarFavoritosFirestore(user.uid);
                   }, 300);
                 }
-
               } catch (err) {
-                console.error("Error al actualizar favorito:", err);
                 e.currentTarget.classList.toggle('activo');
               }
             });
@@ -111,17 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const docRef = db.collection('usuarios').doc(userId).collection('favoritos').doc(tituloID);
 
       return docRef.get().then(doc => {
-        if (doc.exists) {
-          return docRef.delete();
-        } else {
-          return docRef.set({
-            titulo: pelicula.titulo,
-            imagen: pelicula.imagen,
-            anio: pelicula.anio,
-            castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
-            latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
-          });
-        }
+        return doc.exists ? docRef.delete() : docRef.set({
+          titulo: pelicula.titulo,
+          imagen: pelicula.imagen,
+          anio: pelicula.anio,
+          castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
+          latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
+        });
       });
     }
 
@@ -166,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarPeliculas(filtradas);
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
       const liActivo = Array.from(document.querySelectorAll('aside li'))
-        .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
+        .find(li => li.textContent.toLowerCase().includes(anio) || (anio === 'todos' && li.textContent.toLowerCase().includes('todas')));
       if (liActivo) liActivo.classList.add('activo');
     }
 
@@ -178,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       })
       .catch(err => {
-        console.warn("Error Firebase:", err.message);
         peliculasOriginal = [...respaldoLocal];
         peliculas = [...peliculasOriginal];
         filtrar('todos');
@@ -196,14 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cargarFavoritosFirestore(user.uid);
     });
 
-    const botonCuenta = document.getElementById('botonCuenta');
-    const menuUsuario = document.getElementById('menuUsuario');
-    const nombreUsuario = document.getElementById('nombreUsuario');
-    const correoUsuario = document.getElementById('correoUsuario');
-
-    nombreUsuario.textContent = user.displayName || "Usuario";
-    correoUsuario.textContent = user.email;
-
+    // --- NUEVO: Toggle menú "Mi cuenta"
     function isMenuVisible() {
       return window.getComputedStyle(menuUsuario).display === 'block';
     }
@@ -213,10 +200,21 @@ document.addEventListener('DOMContentLoaded', () => {
       menuUsuario.style.display = isMenuVisible() ? 'none' : 'block';
     });
 
-    document.addEventListener('click', () => {
-      if (isMenuVisible()) {
+    // --- NUEVO: Click fuera para cerrar menú y lupa
+    document.addEventListener('click', (e) => {
+      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
         menuUsuario.style.display = 'none';
       }
+      if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
+        buscador.style.display = 'none';
+      }
+    });
+
+    // --- NUEVO: Lupa de búsqueda
+    iconoBuscar.addEventListener('click', e => {
+      e.stopPropagation();
+      buscador.style.display = (buscador.style.display === 'none' || buscador.style.display === '') ? 'inline-block' : 'none';
+      if (buscador.style.display === 'inline-block') buscador.focus();
     });
   }
 
