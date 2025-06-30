@@ -11,19 +11,46 @@
 
   <div class="contenedor-login">
     <h1>ATOMIX</h1>
-    <div class="formulario">
-      <input type="email" id="email" placeholder="Correo electrónico">
-      <input type="password" id="password" placeholder="Contraseña">
-      <button id="login">Iniciar sesión</button>
-      <button id="registro">Registrarse</button>
-    </div>
-    <p id="mensajeError"></p>
+    <form id="authForm" class="formulario">
+      <!-- Campo de nombre solo aparece al registrarse (se crea dinámicamente con JS) -->
+      
+      <input type="email" id="email" placeholder="Correo electrónico" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+
+      <button type="submit" id="btnSubmit">Iniciar sesión</button>
+
+      <p>
+        <a href="#" id="toggleAuth">¿No tienes cuenta? Regístrate aquí</a>
+      </p>
+
+      <p>
+        <a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a>
+      </p>
+
+      <p id="errorMsg"></p>
+    </form>
   </div>
 
-  <!-- Firebase y scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/login.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- Configuración de Firebase -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_DOMINIO.firebaseapp.com",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET.appspot.com",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
+
+  <!-- Tu script -->
+  <script src="auth.js"></script>
+
 </body>
 </html>
