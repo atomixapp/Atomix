@@ -5,7 +5,7 @@
 }
 
 body {
-  background-color: #06142e; /* Fondo azul oscuro */
+  background-color: #06142e;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   height: 100vh;
   display: flex;
@@ -50,6 +50,7 @@ body {
 .formulario input:focus {
   border: 1.5px solid #0077ff;
   box-shadow: 0 0 8px rgba(0, 119, 255, 0.7);
+  background-color: #1a2e5a;
 }
 
 .formulario input::placeholder {
@@ -72,9 +73,17 @@ body {
   transform: scale(1.02);
 }
 
+/* Foco TV */
+.formulario button:focus {
+  outline: 3px solid #00aaff;
+  background-color: #005fcc;
+  transform: scale(1.05);
+}
+
 a {
-  color: #a7c7f9; /* Azul suave */
+  color: #a7c7f9;
   text-decoration: none;
+  transition: color 0.3s;
 }
 
 a:hover {
@@ -82,8 +91,14 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Foco en enlaces para TV */
+a:focus {
+  outline: 2px solid #00aaff;
+  background-color: #122244;
+  border-radius: 6px;
+}
 
-#mensajeError {
+#errorMsg {
   margin-top: 15px;
   color: #ff5c5c;
   font-size: 14px;
