@@ -12,22 +12,21 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script src="firebase.js"></script>
-
 </head>
 
 <body>
   <header>
-    <nav class="nav-left">
-      <a href="tv.html">TV</a>
-      <a class="activo" href="#">Películas</a>
-      <a href="#">Series</a>
+    <nav class="nav-left" role="navigation" aria-label="Navegación principal">
+      <a href="tv.html" tabindex="0">TV</a>
+      <a class="activo" href="#" tabindex="0" aria-current="page">Películas</a>
+      <a href="#" tabindex="0">Series</a>
     </nav>
     <div class="nav-right" style="position:relative;">
-      <button id="botonCuenta">Mi cuenta</button>
-      <div id="menuUsuario">
+      <button id="botonCuenta" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-controls="menuUsuario">Mi cuenta</button>
+      <div id="menuUsuario" role="menu" aria-label="Menú usuario" tabindex="-1">
         <p id="nombreUsuario">Usuario</p>
         <p id="correoUsuario">correo@correo.com</p>
-        <button onclick="cerrarSesion()" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
+        <button onclick="cerrarSesion()" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;" tabindex="0">Cerrar sesión</button>
       </div>
     </div>
   </header>
@@ -35,21 +34,22 @@
   <div class="app-container">
     <aside>
       <h2>Categorías</h2>
-      <ul>
-        <li class="activo" onclick="filtrar('todos')">Todas</li>
-        <li onclick="filtrar('2025')">ESTRENOS 2025</li>
-        <li onclick="filtrar('favoritos')">Favoritos</li>
+      <ul role="list" aria-label="Categorías de películas">
+        <li class="activo" tabindex="0" role="button" onclick="filtrar('todos')" onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); filtrar('todos'); }">Todas</li>
+        <li tabindex="0" role="button" onclick="filtrar('2025')" onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); filtrar('2025'); }">ESTRENOS 2025</li>
+        <li tabindex="0" role="button" onclick="filtrar('favoritos')" onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); filtrar('favoritos'); }">Favoritos</li>
       </ul>
     </aside>
 
     <main>
       <div class="galeria-header">
         <div class="buscador">
-          <i class="fa-solid fa-magnifying-glass" id="iconoBuscar"></i>
-          <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
+          <button id="iconoBuscar" aria-label="Buscar películas" tabindex="0" class="fa-solid fa-magnifying-glass"></button>
+          <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…" aria-label="Buscar películas" />
         </div>
         <div class="orden">
-          <select id="ordenar">
+          <label for="ordenar" class="sr-only">Ordenar películas</label>
+          <select id="ordenar" tabindex="0">
             <option value="añadido">Ordenar por añadido</option>
             <option value="titulo">Ordenar alfabéticamente</option>
             <option value="anio">Ordenar por año</option>
@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <div id="galeria" class="galeria"></div>
+      <div id="galeria" class="galeria" role="region" aria-live="polite" aria-label="Galería de películas"></div>
     </main>
   </div>
 
