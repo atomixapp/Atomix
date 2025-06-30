@@ -31,14 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let peliculas = [];
 
     const galeria = document.getElementById('galeria');
-    const buscador = document.getElementById('buscador');
-    const iconoBuscar = document.getElementById('iconoBuscar');
+    const buscador = document.getElementById('buscadorPeliculas');
     const ordenarSelect = document.getElementById('ordenar');
     const navPeliculas = document.getElementById('navPeliculas');
     const navFavoritos = document.getElementById('navFavoritos');
-
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
+    const iconoBuscar = document.getElementById('iconoBuscar');
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
 
@@ -47,12 +46,47 @@ document.addEventListener('DOMContentLoaded', () => {
     nombreUsuario.textContent = user.displayName || "Usuario";
     correoUsuario.textContent = user.email;
 
+    botonCuenta.addEventListener('click', e => {
+      e.stopPropagation();
+      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', e => {
+      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+        menuUsuario.style.display = 'none';
+      }
+      if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
+        buscador.style.display = 'none';
+        buscador.value = '';
+        filtrarBusqueda();
+      }
+    });
+
+    iconoBuscar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      buscador.style.display = (buscador.style.display === 'block') ? 'none' : 'block';
+      if (buscador.style.display === 'block') buscador.focus();
+    });
+
+    buscador.addEventListener('input', filtrarBusqueda);
+
+    function filtrarBusqueda() {
+      const texto = buscador.value.toLowerCase();
+      const tarjetas = document.querySelectorAll(".galeria > div");
+      tarjetas.forEach(tarjeta => {
+        const titulo = tarjeta.textContent.toLowerCase();
+        tarjeta.style.display = titulo.includes(texto) ? "block" : "none";
+      });
+    }
+
     function mostrarPeliculas(lista, actualizarLista = true) {
       galeria.innerHTML = '';
 
       obtenerFavoritosFirestore(user.uid)
         .then(favoritos => {
-          if (actualizarLista) peliculas = lista;
+          if (actualizarLista) {
+            peliculas = lista;
+          }
 
           if (lista.length === 0) {
             galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
@@ -62,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
           lista.forEach(p => {
             const tarjeta = document.createElement('div');
             tarjeta.className = 'pelicula';
+
             const tituloID = encodeURIComponent(p.titulo);
             const esFavorito = favoritos.includes(p.titulo);
 
@@ -98,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   }, 300);
                 }
               } catch (err) {
+                console.error("Error al actualizar favorito:", err);
                 e.currentTarget.classList.toggle('activo');
               }
             });
@@ -110,13 +146,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const docRef = db.collection('usuarios').doc(userId).collection('favoritos').doc(tituloID);
 
       return docRef.get().then(doc => {
-        return doc.exists ? docRef.delete() : docRef.set({
-          titulo: pelicula.titulo,
-          imagen: pelicula.imagen,
-          anio: pelicula.anio,
-          castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
-          latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
-        });
+        if (doc.exists) {
+          return docRef.delete();
+        } else {
+          return docRef.set({
+            titulo: pelicula.titulo,
+            imagen: pelicula.imagen,
+            anio: pelicula.anio,
+            castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
+            latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
+          });
+        }
       });
     }
 
@@ -132,12 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
           mostrarPeliculas(favoritas, false);
         });
     }
-
-    buscador.addEventListener('input', () => {
-      const texto = buscador.value.toLowerCase();
-      const filtradas = peliculas.filter(p => p.titulo.toLowerCase().includes(texto));
-      mostrarPeliculas(filtradas);
-    });
 
     ordenarSelect.addEventListener('change', () => {
       const criterio = ordenarSelect.value;
@@ -161,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarPeliculas(filtradas);
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
       const liActivo = Array.from(document.querySelectorAll('aside li'))
-        .find(li => li.textContent.toLowerCase().includes(anio) || (anio === 'todos' && li.textContent.toLowerCase().includes('todas')));
+        .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
       if (liActivo) liActivo.classList.add('activo');
     }
 
@@ -173,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtrar('todos');
       })
       .catch(err => {
+        console.warn("Error Firebase:", err.message);
         peliculasOriginal = [...respaldoLocal];
         peliculas = [...peliculasOriginal];
         filtrar('todos');
@@ -188,33 +223,6 @@ document.addEventListener('DOMContentLoaded', () => {
       navPeliculas.classList.remove('activo');
       navFavoritos.classList.add('activo');
       cargarFavoritosFirestore(user.uid);
-    });
-
-    // --- NUEVO: Toggle menú "Mi cuenta"
-    function isMenuVisible() {
-      return window.getComputedStyle(menuUsuario).display === 'block';
-    }
-
-    botonCuenta.addEventListener('click', e => {
-      e.stopPropagation();
-      menuUsuario.style.display = isMenuVisible() ? 'none' : 'block';
-    });
-
-    // --- NUEVO: Click fuera para cerrar menú y lupa
-    document.addEventListener('click', (e) => {
-      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-        menuUsuario.style.display = 'none';
-      }
-      if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
-        buscador.style.display = 'none';
-      }
-    });
-
-    // --- NUEVO: Lupa de búsqueda
-    iconoBuscar.addEventListener('click', e => {
-      e.stopPropagation();
-      buscador.style.display = (buscador.style.display === 'none' || buscador.style.display === '') ? 'inline-block' : 'none';
-      if (buscador.style.display === 'inline-block') buscador.focus();
     });
   }
 
