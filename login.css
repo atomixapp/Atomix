@@ -72,6 +72,17 @@ body {
   transform: scale(1.02);
 }
 
+a {
+  color: #a7c7f9; /* Azul suave */
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+
 #mensajeError {
   margin-top: 15px;
   color: #ff5c5c;
