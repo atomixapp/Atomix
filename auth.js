@@ -6,10 +6,20 @@ const errorMsg = document.getElementById('errorMsg');
 
 let isLogin = true;
 
-// Sesión persistente
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+// Inicializar Firebase Auth y Firestore
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Alternar entre login y registro
+// ✅ Establecer persistencia local
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    console.log("Sesión persistente activada.");
+  })
+  .catch((error) => {
+    console.error("Error al establecer persistencia:", error);
+  });
+
+// Actualizar texto del formulario
 function updateForm() {
   btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
   toggleAuth.textContent = isLogin
@@ -51,10 +61,12 @@ authForm.addEventListener('submit', async (e) => {
 forgotPassword.addEventListener('click', (e) => {
   e.preventDefault();
   const email = authForm.email.value.trim();
+
   if (!email) {
     errorMsg.textContent = 'Ingresa tu correo primero.';
     return;
   }
+
   auth.sendPasswordResetEmail(email)
     .then(() => {
       errorMsg.textContent = 'Correo de recuperación enviado.';
