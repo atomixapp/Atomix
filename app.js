@@ -2,14 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // Control de sesión y email verificado
-  auth.onAuthStateChanged(user => {
-    if (!user || !user.emailVerified) {
-      window.location.href = 'index.html';
-    } else {
-      inicializarApp(user);
-    }
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    auth.onAuthStateChanged(user => {
+      if (!user || !user.emailVerified) {
+        window.location.href = 'index.html';
+      } else {
+        inicializarApp(user);
+      }
+    });
+  })
+  .catch(error => {
+    console.error("Error al establecer persistencia:", error);
   });
+
 
   function inicializarApp(user) {
     const userId = user.uid;
