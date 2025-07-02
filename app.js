@@ -1,13 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-  auth.onAuthStateChanged(user => {
-    if (user && user.emailVerified) {
-      iniciarApp(user);
-    } else {
-      window.location.href = 'index.html';
-    }
-  });
-});
-
 function iniciarApp(user) {
   const userId = user.uid;
 
@@ -15,10 +5,10 @@ function iniciarApp(user) {
   document.getElementById('nombreUsuario').textContent = user.displayName || "Usuario";
   document.getElementById('correoUsuario').textContent = user.email;
 
-  // Variables para películas
+  // Variables para películas y favoritos
   let peliculasOriginal = [];
   let peliculas = [];
-  let favoritosList = [];  // <-- Aquí guardamos los favoritos cargados
+  let favoritosList = [];
 
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -48,7 +38,7 @@ function iniciarApp(user) {
 
   galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-  // Evento menú usuario
+  // Eventos menú usuario
   botonCuenta.addEventListener('click', e => {
     e.stopPropagation();
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -78,12 +68,14 @@ function iniciarApp(user) {
   navPeliculas.addEventListener('click', () => {
     navFavoritos.classList.remove('activo');
     navPeliculas.classList.add('activo');
+    ordenarSelect.value = 'añadido'; // reset criterio
     filtrarPeliculas('todos');
   });
 
   navFavoritos.addEventListener('click', () => {
     navPeliculas.classList.remove('activo');
     navFavoritos.classList.add('activo');
+    ordenarSelect.value = 'añadido'; // reset criterio
     cargarFavoritosFirestore(userId);
   });
 
@@ -91,32 +83,32 @@ function iniciarApp(user) {
     const criterio = ordenarSelect.value;
 
     if (navFavoritos.classList.contains('activo')) {
-      // Estamos viendo favoritos: ordenamos esa lista localmente
       ordenarFavoritos(criterio);
     } else {
-      // Películas normales
-      if (criterio === 'añadido') {
-        peliculas = [...peliculasOriginal]; // restaurar orden original
-      } else if (criterio === 'titulo') {
-        peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
-      } else if (criterio === 'anio') {
-        peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-      }
-      filtrarPeliculas('todos');
+      ordenarPeliculas(criterio);
     }
   });
 
-  function ordenarFavoritos(criterio) {
-    let listaOrdenada = [...favoritosList];
-
-    if (criterio === 'titulo') {
-      listaOrdenada.sort((a, b) => a.titulo.localeCompare(b.titulo));
+  function ordenarPeliculas(criterio) {
+    if (criterio === 'añadido') {
+      peliculas = [...peliculasOriginal];
+    } else if (criterio === 'titulo') {
+      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
     } else if (criterio === 'anio') {
-      listaOrdenada.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
     }
-    // 'añadido' mantiene el orden Firestore original
+    filtrarPeliculas('todos');
+  }
 
-    mostrarPeliculas(listaOrdenada);
+  function ordenarFavoritos(criterio) {
+    let lista = [...favoritosList];
+    if (criterio === 'titulo') {
+      lista.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterio === 'anio') {
+      lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
+    // Añadido mantiene el orden de Firestore (ya está en favoritosList)
+    mostrarPeliculas(lista);
   }
 
   function filtrarBusqueda() {
@@ -150,13 +142,13 @@ function iniciarApp(user) {
   async function mostrarPeliculas(lista) {
     galeria.innerHTML = '';
 
+    if (lista.length === 0) {
+      galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
+      return;
+    }
+
     try {
       const favoritos = await obtenerFavoritosFirestore(userId);
-
-      if (lista.length === 0) {
-        galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
-        return;
-      }
 
       lista.forEach(p => {
         const tituloID = encodeURIComponent(p.titulo);
@@ -182,6 +174,7 @@ function iniciarApp(user) {
         galeria.appendChild(tarjeta);
       });
 
+      // Asignar evento a cada corazón
       document.querySelectorAll('.corazon').forEach(icon => {
         icon.addEventListener('click', async e => {
           const titulo = e.currentTarget.dataset.titulo;
@@ -236,7 +229,7 @@ function iniciarApp(user) {
     db.collection('usuarios').doc(userId).collection('favoritos').get()
       .then(snap => {
         favoritosList = snap.docs.map(doc => doc.data());
-        ordenarFavoritos(ordenarSelect.value);
+        mostrarPeliculas(favoritosList);
       });
   }
 
