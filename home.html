@@ -35,9 +35,9 @@
     <aside>
       <h2>Categorías</h2>
       <ul>
-        <li onclick="filtrar('favoritos')" id="navFavoritos" class="favoritos-boton">❤️ Favoritos</li>
-        <li class="activo" onclick="filtrar('todos')" id="navPeliculas">Todas</li>
-        <li onclick="filtrar('2025')">ESTRENOS 2025</li>
+        <li id="navFavoritos" class="favoritos-boton">❤️ Favoritos</li>
+        <li id="navPeliculas" class="activo">Todas</li>
+        <li id="navEstrenos2025">ESTRENOS 2025</li>
       </ul>
     </aside>
 
@@ -59,11 +59,19 @@
         </div>
       </div>
 
-      <!-- 🔴 Este DIV es clave para que funcione app.js sin errores -->
       <div id="galeria" class="galeria"></div>
     </main>
   </div>
 
   <script src="app.js"></script>
+
+  <script>
+    // ✅ Manejo de clicks para categorías directamente desde aquí si quieres
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('navPeliculas')?.addEventListener('click', () => filtrarPeliculas('todos'));
+      document.getElementById('navFavoritos')?.addEventListener('click', () => filtrarPeliculas('favoritos'));
+      document.getElementById('navEstrenos2025')?.addEventListener('click', () => filtrarPeliculas('2025'));
+    });
+  </script>
 </body>
 </html>
