@@ -18,6 +18,7 @@ function iniciarApp(user) {
   // Variables para películas
   let peliculasOriginal = [];
   let peliculas = [];
+  let favoritosList = [];  // <-- Aquí guardamos los favoritos cargados
 
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -89,23 +90,34 @@ function iniciarApp(user) {
   ordenarSelect.addEventListener('change', () => {
     const criterio = ordenarSelect.value;
 
-    if (criterio === 'añadido') {
-      peliculas = [...peliculasOriginal]; // restaurar orden original
-    } else if (criterio === 'titulo') {
-      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
-
     if (navFavoritos.classList.contains('activo')) {
-      // Mostrar la lista ordenada localmente para evitar duplicados
-      mostrarPeliculas(peliculas);
+      // Estamos viendo favoritos: ordenamos esa lista localmente
+      ordenarFavoritos(criterio);
     } else {
+      // Películas normales
+      if (criterio === 'añadido') {
+        peliculas = [...peliculasOriginal]; // restaurar orden original
+      } else if (criterio === 'titulo') {
+        peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
+      } else if (criterio === 'anio') {
+        peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+      }
       filtrarPeliculas('todos');
     }
   });
 
-  // Funciones:
+  function ordenarFavoritos(criterio) {
+    let listaOrdenada = [...favoritosList];
+
+    if (criterio === 'titulo') {
+      listaOrdenada.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterio === 'anio') {
+      listaOrdenada.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
+    // 'añadido' mantiene el orden Firestore original
+
+    mostrarPeliculas(listaOrdenada);
+  }
 
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
@@ -121,13 +133,11 @@ function iniciarApp(user) {
     let listaFiltrada = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
     mostrarPeliculas(listaFiltrada);
 
-    // Marcar activo en categorías
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
     const liActivo = Array.from(document.querySelectorAll('aside li'))
       .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
     if (liActivo) liActivo.classList.add('activo');
 
-    // Cambiar título categoría
     if (anio === 'favoritos') {
       tituloCategoria.textContent = 'FAVORITOS';
     } else if (anio === 'todos') {
@@ -225,8 +235,8 @@ function iniciarApp(user) {
   function cargarFavoritosFirestore(userId) {
     db.collection('usuarios').doc(userId).collection('favoritos').get()
       .then(snap => {
-        const favoritas = snap.docs.map(doc => doc.data());
-        mostrarPeliculas(favoritas);
+        favoritosList = snap.docs.map(doc => doc.data());
+        ordenarFavoritos(ordenarSelect.value);
       });
   }
 
