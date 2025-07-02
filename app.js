@@ -201,27 +201,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-function filtrar(anio = 'todos') {
-  const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
-  mostrarPeliculas(filtradas);
+    function filtrar(anio = 'todos') {
+      const filtradas = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
+      mostrarPeliculas(filtradas);
 
-  document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
-  const liActivo = Array.from(document.querySelectorAll('aside li'))
-    .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
-  if (liActivo) liActivo.classList.add('activo');
+      document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
+      const liActivo = Array.from(document.querySelectorAll('aside li'))
+        .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
+      if (liActivo) liActivo.classList.add('activo');
 
-  // ACTUALIZA EL TÍTULO DE LA CATEGORÍA
-  const tituloCategoria = document.getElementById('tituloCategoria');
-  if (tituloCategoria) {
-    if (anio === 'favoritos') {
-      tituloCategoria.textContent = 'FAVORITOS';
-    } else if (anio === 'todos') {
-      tituloCategoria.textContent = 'TODAS';
-    } else {
-      tituloCategoria.textContent = anio.toUpperCase();
+      const tituloCategoria = document.getElementById('tituloCategoria');
+      if (tituloCategoria) {
+        if (anio === 'favoritos') {
+          tituloCategoria.textContent = 'FAVORITOS';
+        } else if (anio === 'todos') {
+          tituloCategoria.textContent = 'TODAS';
+        } else {
+          tituloCategoria.textContent = anio.toUpperCase();
+        }
+      }
     }
-  }
-}
 
     db.collection('peliculas').get()
       .then(snap => {
