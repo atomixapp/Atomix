@@ -2,20 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(() => {
-    auth.onAuthStateChanged(user => {
-      if (!user || !user.emailVerified) {
+auth.onAuthStateChanged(user => {
+  if (user && user.emailVerified) {
+    inicializarApp(user);
+  } else {
+    // Esperamos un poco para asegurarnos de que Firebase termine de cargar la sesión
+    setTimeout(() => {
+      if (!firebase.auth().currentUser) {
         window.location.href = 'index.html';
-      } else {
-        inicializarApp(user);
       }
-    });
-  })
-  .catch(error => {
-    console.error("Error al establecer persistencia:", error);
-  });
-
+    }, 1000); // Espera de 1 segundo (puedes ajustar a 1500ms si sigue fallando)
+  }
+});
 
   function inicializarApp(user) {
     const userId = user.uid;
