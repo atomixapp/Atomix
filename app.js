@@ -1,14 +1,14 @@
 function iniciarApp(user) {
   const userId = user.uid;
 
-  // Mostrar datos usuario
+  // Mostrar datos del usuario
   document.getElementById('nombreUsuario').textContent = user.displayName || "Usuario";
   document.getElementById('correoUsuario').textContent = user.email;
 
-  // Variables para películas
+  // Variables globales
   let peliculasOriginal = [];
   let peliculas = [];
-  let criterioActual = 'añadido'; // 🔁 nuevo control
+  let criterioActual = 'añadido'; // Por defecto
 
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -38,6 +38,7 @@ function iniciarApp(user) {
 
   galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
+  // Menú usuario
   botonCuenta.addEventListener('click', e => {
     e.stopPropagation();
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -60,36 +61,6 @@ function iniciarApp(user) {
     if (buscador.style.display === 'block') buscador.focus();
   });
 
-ordenarSelect.addEventListener('click', e => {
-  e.stopPropagation();
-});
-
-ordenarSelect.addEventListener('change', () => {
-  const criterio = ordenarSelect.value;
-  if (criterio === criterioActual) return;
-  criterioActual = criterio;
-
-  ordenarPeliculas();
-});
-
-function ordenarPeliculas() {
-  let copia = [...peliculasOriginal];
-
-  if (criterioActual === 'titulo') {
-    copia.sort((a, b) => a.titulo.localeCompare(b.titulo));
-  } else if (criterioActual === 'anio') {
-    copia.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-  }
-
-  peliculas = copia;
-
-  if (navFavoritos.classList.contains('activo')) {
-    cargarFavoritosFirestore(userId);
-  } else {
-    filtrarPeliculas('todos');
-  }
-}
-
   buscador.addEventListener('input', () => {
     filtrarBusqueda();
   });
@@ -106,6 +77,34 @@ function ordenarPeliculas() {
     cargarFavoritosFirestore(userId);
   });
 
+  ordenarSelect.addEventListener('click', e => {
+    e.stopPropagation();
+  });
+
+  ordenarSelect.addEventListener('change', () => {
+    const criterio = ordenarSelect.value;
+    if (criterio === criterioActual) return;
+    criterioActual = criterio;
+
+    ordenarPeliculas();
+
+    if (navFavoritos.classList.contains('activo')) {
+      cargarFavoritosFirestore(userId);
+    } else {
+      filtrarPeliculas('todos');
+    }
+  });
+
+  function ordenarPeliculas() {
+    if (criterioActual === 'añadido') {
+      peliculas = [...peliculasOriginal];
+    } else if (criterioActual === 'titulo') {
+      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterioActual === 'anio') {
+      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
+  }
+
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
     const tarjetas = document.querySelectorAll(".galeria > div");
@@ -117,7 +116,7 @@ function ordenarPeliculas() {
   }
 
   function filtrarPeliculas(anio = 'todos') {
-    let listaFiltrada = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
+    const listaFiltrada = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
     mostrarPeliculas(listaFiltrada);
 
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
@@ -125,13 +124,9 @@ function ordenarPeliculas() {
       .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
     if (liActivo) liActivo.classList.add('activo');
 
-    if (anio === 'favoritos') {
-      tituloCategoria.textContent = 'FAVORITOS';
-    } else if (anio === 'todos') {
-      tituloCategoria.textContent = 'TODAS';
-    } else {
-      tituloCategoria.textContent = anio.toUpperCase();
-    }
+    tituloCategoria.textContent = anio === 'favoritos' ? 'FAVORITOS'
+      : anio === 'todos' ? 'TODAS'
+      : anio.toUpperCase();
   }
 
   async function mostrarPeliculas(lista) {
@@ -227,19 +222,21 @@ function ordenarPeliculas() {
       });
   }
 
+  // Cargar películas desde Firestore
   db.collection('peliculas').get()
     .then(snap => {
       const datos = snap.docs.map(doc => doc.data());
       peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
-      peliculas = [...peliculasOriginal];
+      ordenarPeliculas();
       filtrarPeliculas('todos');
     })
     .catch(() => {
       peliculasOriginal = respaldoLocal;
-      peliculas = [...peliculasOriginal];
+      ordenarPeliculas();
       filtrarPeliculas('todos');
     });
 
+  // Cierre de sesión
   window.cerrarSesion = function () {
     auth.signOut().then(() => {
       window.location.href = "index.html";
