@@ -54,7 +54,7 @@ forgotPassword.addEventListener('click', (e) => {
 });
 
 auth.onAuthStateChanged((user) => {
-  if (user) {
+  if (user && window.location.pathname.includes('index.html')) {
     window.location.href = 'home.html';
   }
 });
