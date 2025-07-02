@@ -1,5 +1,5 @@
-const auth = firebase.auth();
-const db = firebase.firestore();
+const auth = window.auth;
+const db = window.db;
 
 document.addEventListener('DOMContentLoaded', () => {
   auth.onAuthStateChanged(user => {
