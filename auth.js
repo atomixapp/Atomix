@@ -64,11 +64,11 @@ forgotPassword.addEventListener('click', (e) => {
     });
 });
 
-auth.onAuthStateChanged((user) => {
-  if (user && window.location.pathname.includes('index.html')) {
-    if (user.emailVerified) {
-      window.location.href = 'home.html';
-    }
+auth.onAuthStateChanged(user => {
+  if (!user || !user.emailVerified) {
+    window.location.href = 'index.html';
+  } else {
+    inicializarApp(user);
   }
 });
 
