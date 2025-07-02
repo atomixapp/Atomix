@@ -1,6 +1,3 @@
-const auth = window.auth;
-const db = window.db;
-
 document.addEventListener('DOMContentLoaded', () => {
   auth.onAuthStateChanged(user => {
     if (user && user.emailVerified) {
