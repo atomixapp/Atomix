@@ -1,5 +1,3 @@
-const auth = window.auth;
-
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('authForm');
   const toggleAuth = document.getElementById('toggleAuth');
