@@ -6,12 +6,10 @@ const errorMsg = document.getElementById('errorMsg');
 
 let isLogin = true;
 
-// ✅ Establecer persistencia local para que no cierre la sesión al cerrar la pestaña
-firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .catch((error) => {
-    console.error("Error al establecer persistencia:", error);
-  });
+// Sesión persistente
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
+// Alternar entre login y registro
 function updateForm() {
   btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
   toggleAuth.textContent = isLogin
@@ -27,16 +25,23 @@ toggleAuth.addEventListener('click', (e) => {
 
 authForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const email = authForm.email.value;
+  const email = authForm.email.value.trim();
   const password = authForm.password.value;
 
   try {
     if (isLogin) {
-      await auth.signInWithEmailAndPassword(email, password);
+      const result = await auth.signInWithEmailAndPassword(email, password);
+      if (!result.user.emailVerified) {
+        errorMsg.textContent = "Verifica tu correo antes de continuar.";
+        await auth.signOut();
+        return;
+      }
       window.location.href = 'home.html';
     } else {
-      await auth.createUserWithEmailAndPassword(email, password);
-      window.location.href = 'home.html';
+      const result = await auth.createUserWithEmailAndPassword(email, password);
+      await result.user.sendEmailVerification();
+      errorMsg.textContent = "Cuenta creada. Revisa tu correo para verificar.";
+      await auth.signOut();
     }
   } catch (error) {
     errorMsg.textContent = error.message;
@@ -45,9 +50,9 @@ authForm.addEventListener('submit', async (e) => {
 
 forgotPassword.addEventListener('click', (e) => {
   e.preventDefault();
-  const email = authForm.email.value;
+  const email = authForm.email.value.trim();
   if (!email) {
-    errorMsg.textContent = 'Por favor ingresa tu correo para recuperar la contraseña.';
+    errorMsg.textContent = 'Ingresa tu correo primero.';
     return;
   }
   auth.sendPasswordResetEmail(email)
