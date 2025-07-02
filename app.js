@@ -2,18 +2,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-auth.onAuthStateChanged(user => {
-  if (user && user.emailVerified) {
-    inicializarApp(user);
-  } else {
-    // Esperamos un poco para asegurarnos de que Firebase termine de cargar la sesión
-    setTimeout(() => {
-      if (!firebase.auth().currentUser) {
-        window.location.href = 'index.html';
-      }
-    }, 1000); // Espera de 1 segundo (puedes ajustar a 1500ms si sigue fallando)
+  // Esperar a que Firebase cargue completamente el estado de la sesión
+  function esperarUsuario() {
+    return new Promise(resolve => {
+      const unsuscribe = auth.onAuthStateChanged(user => {
+        unsuscribe();
+        resolve(user);
+      });
+    });
   }
-});
+
+  esperarUsuario().then(user => {
+    if (user && user.emailVerified) {
+      inicializarApp(user);
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
 
   function inicializarApp(user) {
     const userId = user.uid;
@@ -47,11 +52,6 @@ auth.onAuthStateChanged(user => {
     const iconoBuscar = document.getElementById('iconoBuscar');
     const nombreUsuario = document.getElementById('nombreUsuario');
     const correoUsuario = document.getElementById('correoUsuario');
-
-    if (!galeria || !buscador || !ordenarSelect) {
-      console.error('Error: Elementos clave del DOM no encontrados.');
-      return;
-    }
 
     galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
     nombreUsuario.textContent = user.displayName || "Usuario";
@@ -255,7 +255,7 @@ auth.onAuthStateChanged(user => {
   }
 
   window.cerrarSesion = function () {
-    firebase.auth().signOut()
+    auth.signOut()
       .then(() => {
         window.location.href = "index.html";
       });
