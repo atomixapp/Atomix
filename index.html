@@ -2,52 +2,31 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <title>ATOMIX | Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login | ATOMIX</title>
   <link rel="stylesheet" href="login.css">
   <script src="https://kit.fontawesome.com/a2c215e1b8.js" crossorigin="anonymous"></script>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 </head>
 <body>
+  <div class="contenedor-login">
+    <h1>ATOMIX</h1>
+    <form id="authForm" class="formulario">
+      <input type="email" id="email" placeholder="Correo electrónico" required tabindex="0">
+      <input type="password" id="password" placeholder="Contraseña" required tabindex="0">
+      <button type="submit" id="btnSubmit" tabindex="0">Iniciar sesión</button>
+      <p><a href="#" id="toggleAuth">¿No tienes cuenta? Regístrate aquí</a></p>
+      <p><a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a></p>
+      <p id="errorMsg" style="color:red;"></p>
+    </form>
+  </div>
 
-<div class="contenedor-login">
-  <h1>ATOMIX</h1>
-  <form id="authForm" class="formulario">
-    <input type="email" id="email" placeholder="Correo electrónico" required tabindex="0">
-    <input type="password" id="password" placeholder="Contraseña" required tabindex="0">
-
-    <button type="submit" id="btnSubmit" tabindex="0">Iniciar sesión</button>
-
-    <p><a href="#" id="toggleAuth" tabindex="0">¿No tienes cuenta? Regístrate aquí</a></p>
-    <p><a href="#" id="forgotPassword" tabindex="0">¿Olvidaste tu contraseña?</a></p>
-
-    <p id="errorMsg"></p>
-  </form>
-</div>
-
-<script src="firebase.js"></script>
-<script src="auth.js"></script>
-
-<!-- Script para asegurar foco automático en TV -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const primerElemento = document.querySelector('[tabindex]');
-    if (primerElemento) primerElemento.focus();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    const focoActual = document.activeElement;
-    if (!focoActual || focoActual === document.body) {
-      const primerElemento = document.querySelector('[tabindex]');
-      if (primerElemento) primerElemento.focus();
-    }
-  });
-</script>
-
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
 </body>
 </html>
