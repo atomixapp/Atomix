@@ -64,25 +64,35 @@ function iniciarApp(user) {
     e.stopPropagation(); // ✅ evita conflicto de duplicación
   });
 
-  ordenarSelect.addEventListener('change', () => {
-    const criterio = ordenarSelect.value;
-    if (criterio === criterioActual) return; // evitar recarga innecesaria
-    criterioActual = criterio;
+ordenarSelect.addEventListener('click', e => {
+  e.stopPropagation(); // evita que el click dispare el document.click
+});
 
-    if (criterio === 'añadido') {
-      peliculas = [...peliculasOriginal];
-    } else if (criterio === 'titulo') {
-      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
+ordenarSelect.addEventListener('change', () => {
+  const criterio = ordenarSelect.value;
+  if (criterio === criterioActual) return;
+  criterioActual = criterio;
 
-    if (navFavoritos.classList.contains('activo')) {
-      cargarFavoritosFirestore(userId);
-    } else {
-      filtrarPeliculas('todos');
-    }
-  });
+  ordenarPeliculas();
+});
+
+function ordenarPeliculas() {
+  let copia = [...peliculasOriginal]; // nunca trabajamos directo sobre el original
+
+  if (criterioActual === 'titulo') {
+    copia.sort((a, b) => a.titulo.localeCompare(b.titulo));
+  } else if (criterioActual === 'anio') {
+    copia.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+  }
+
+  peliculas = copia;
+
+  if (navFavoritos.classList.contains('activo')) {
+    cargarFavoritosFirestore(userId);
+  } else {
+    filtrarPeliculas('todos');
+  }
+}
 
   buscador.addEventListener('input', () => {
     filtrarBusqueda();
