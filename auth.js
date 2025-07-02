@@ -6,6 +6,12 @@ const errorMsg = document.getElementById('errorMsg');
 
 let isLogin = true;
 
+// ✅ Establecer persistencia local para que no cierre la sesión al cerrar la pestaña
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .catch((error) => {
+    console.error("Error al establecer persistencia:", error);
+  });
+
 function updateForm() {
   btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
   toggleAuth.textContent = isLogin
@@ -26,22 +32,11 @@ authForm.addEventListener('submit', async (e) => {
 
   try {
     if (isLogin) {
-      const result = await auth.signInWithEmailAndPassword(email, password);
-
-      if (!result.user.emailVerified) {
-        await auth.signOut();
-        errorMsg.textContent = 'Verifica tu correo electrónico antes de ingresar.';
-        return;
-      }
-
+      await auth.signInWithEmailAndPassword(email, password);
       window.location.href = 'home.html';
     } else {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      await userCredential.user.sendEmailVerification();
-      errorMsg.textContent = 'Cuenta creada. Revisa tu correo para verificar tu cuenta.';
-      authForm.reset();
-      isLogin = true;
-      updateForm();
+      await auth.createUserWithEmailAndPassword(email, password);
+      window.location.href = 'home.html';
     }
   } catch (error) {
     errorMsg.textContent = error.message;
@@ -62,14 +57,6 @@ forgotPassword.addEventListener('click', (e) => {
     .catch((error) => {
       errorMsg.textContent = error.message;
     });
-});
-
-auth.onAuthStateChanged(user => {
-  if (!user || !user.emailVerified) {
-    window.location.href = 'index.html';
-  } else {
-    inicializarApp(user);
-  }
 });
 
 updateForm();
