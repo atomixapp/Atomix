@@ -1,14 +1,18 @@
+document.addEventListener('DOMContentLoaded', () => {
+  auth.onAuthStateChanged(user => {
+    if (user && user.emailVerified) {
+      iniciarApp(user);
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+});
+
 function iniciarApp(user) {
   const userId = user.uid;
 
-  // Mostrar datos usuario
   document.getElementById('nombreUsuario').textContent = user.displayName || "Usuario";
   document.getElementById('correoUsuario').textContent = user.email;
-
-  // Variables para películas y favoritos
-  let peliculasOriginal = [];
-  let peliculas = [];
-  let favoritosList = [];
 
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -19,6 +23,9 @@ function iniciarApp(user) {
   const menuUsuario = document.getElementById('menuUsuario');
   const iconoBuscar = document.getElementById('iconoBuscar');
   const tituloCategoria = document.getElementById('tituloCategoria');
+
+  let peliculasOriginal = [];
+  let criterioOrden = 'añadido';
 
   const respaldoLocal = [
     {
@@ -38,7 +45,6 @@ function iniciarApp(user) {
 
   galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-  // Eventos menú usuario
   botonCuenta.addEventListener('click', e => {
     e.stopPropagation();
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -61,55 +67,24 @@ function iniciarApp(user) {
     if (buscador.style.display === 'block') buscador.focus();
   });
 
-  buscador.addEventListener('input', () => {
-    filtrarBusqueda();
+  buscador.addEventListener('input', filtrarBusqueda);
+
+  ordenarSelect.addEventListener('change', () => {
+    criterioOrden = ordenarSelect.value;
+    filtrarPeliculas('todos');
   });
 
   navPeliculas.addEventListener('click', () => {
     navFavoritos.classList.remove('activo');
     navPeliculas.classList.add('activo');
-    ordenarSelect.value = 'añadido'; // reset criterio
     filtrarPeliculas('todos');
   });
 
   navFavoritos.addEventListener('click', () => {
     navPeliculas.classList.remove('activo');
     navFavoritos.classList.add('activo');
-    ordenarSelect.value = 'añadido'; // reset criterio
     cargarFavoritosFirestore(userId);
   });
-
-  ordenarSelect.addEventListener('change', () => {
-    const criterio = ordenarSelect.value;
-
-    if (navFavoritos.classList.contains('activo')) {
-      ordenarFavoritos(criterio);
-    } else {
-      ordenarPeliculas(criterio);
-    }
-  });
-
-  function ordenarPeliculas(criterio) {
-    if (criterio === 'añadido') {
-      peliculas = [...peliculasOriginal];
-    } else if (criterio === 'titulo') {
-      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
-    filtrarPeliculas('todos');
-  }
-
-  function ordenarFavoritos(criterio) {
-    let lista = [...favoritosList];
-    if (criterio === 'titulo') {
-      lista.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
-    // Añadido mantiene el orden de Firestore (ya está en favoritosList)
-    mostrarPeliculas(lista);
-  }
 
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
@@ -121,8 +96,24 @@ function iniciarApp(user) {
     });
   }
 
+  function ordenarLista(lista) {
+    let resultado = [...lista];
+
+    if (criterioOrden === 'titulo') {
+      resultado.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterioOrden === 'anio') {
+      resultado.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
+
+    return resultado;
+  }
+
   function filtrarPeliculas(anio = 'todos') {
-    let listaFiltrada = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
+    let listaFiltrada = anio === 'todos'
+      ? peliculasOriginal
+      : peliculasOriginal.filter(p => p.anio === anio);
+
+    listaFiltrada = ordenarLista(listaFiltrada);
     mostrarPeliculas(listaFiltrada);
 
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
@@ -130,25 +121,22 @@ function iniciarApp(user) {
       .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
     if (liActivo) liActivo.classList.add('activo');
 
-    if (anio === 'favoritos') {
-      tituloCategoria.textContent = 'FAVORITOS';
-    } else if (anio === 'todos') {
-      tituloCategoria.textContent = 'TODAS';
-    } else {
-      tituloCategoria.textContent = anio.toUpperCase();
-    }
+    tituloCategoria.textContent =
+      anio === 'favoritos' ? 'FAVORITOS' :
+      anio === 'todos' ? 'TODAS' :
+      anio.toUpperCase();
   }
 
   async function mostrarPeliculas(lista) {
     galeria.innerHTML = '';
 
-    if (lista.length === 0) {
-      galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
-      return;
-    }
-
     try {
       const favoritos = await obtenerFavoritosFirestore(userId);
+
+      if (lista.length === 0) {
+        galeria.innerHTML = '<p class="vacio">No hay películas para mostrar.</p>';
+        return;
+      }
 
       lista.forEach(p => {
         const tituloID = encodeURIComponent(p.titulo);
@@ -174,7 +162,6 @@ function iniciarApp(user) {
         galeria.appendChild(tarjeta);
       });
 
-      // Asignar evento a cada corazón
       document.querySelectorAll('.corazon').forEach(icon => {
         icon.addEventListener('click', async e => {
           const titulo = e.currentTarget.dataset.titulo;
@@ -228,26 +215,23 @@ function iniciarApp(user) {
   function cargarFavoritosFirestore(userId) {
     db.collection('usuarios').doc(userId).collection('favoritos').get()
       .then(snap => {
-        favoritosList = snap.docs.map(doc => doc.data());
-        mostrarPeliculas(favoritosList);
+        let favoritas = snap.docs.map(doc => doc.data());
+        favoritas = ordenarLista(favoritas);
+        mostrarPeliculas(favoritas);
       });
   }
 
-  // Cargar películas Firestore o fallback local
   db.collection('peliculas').get()
     .then(snap => {
       const datos = snap.docs.map(doc => doc.data());
       peliculasOriginal = datos.length > 0 ? datos : respaldoLocal;
-      peliculas = [...peliculasOriginal];
       filtrarPeliculas('todos');
     })
     .catch(() => {
       peliculasOriginal = respaldoLocal;
-      peliculas = [...peliculasOriginal];
       filtrarPeliculas('todos');
     });
 
-  // Función global para cerrar sesión
   window.cerrarSesion = function () {
     auth.signOut().then(() => {
       window.location.href = "index.html";
