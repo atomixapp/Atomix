@@ -28,5 +28,15 @@
   </div>
 
   <script src="auth.js"></script>
+
+<script>
+  firebase.auth().onAuthStateChanged(user => {
+    if (user && user.emailVerified) {
+      window.location.href = 'home.html';
+    }
+  });
+</script>
+
+  
 </body>
 </html>
