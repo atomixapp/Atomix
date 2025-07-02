@@ -60,12 +60,8 @@ function iniciarApp(user) {
     if (buscador.style.display === 'block') buscador.focus();
   });
 
-  ordenarSelect.addEventListener('click', e => {
-    e.stopPropagation(); // ✅ evita conflicto de duplicación
-  });
-
 ordenarSelect.addEventListener('click', e => {
-  e.stopPropagation(); // evita que el click dispare el document.click
+  e.stopPropagation();
 });
 
 ordenarSelect.addEventListener('change', () => {
@@ -77,7 +73,7 @@ ordenarSelect.addEventListener('change', () => {
 });
 
 function ordenarPeliculas() {
-  let copia = [...peliculasOriginal]; // nunca trabajamos directo sobre el original
+  let copia = [...peliculasOriginal];
 
   if (criterioActual === 'titulo') {
     copia.sort((a, b) => a.titulo.localeCompare(b.titulo));
