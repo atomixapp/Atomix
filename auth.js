@@ -26,11 +26,22 @@ authForm.addEventListener('submit', async (e) => {
 
   try {
     if (isLogin) {
-      await auth.signInWithEmailAndPassword(email, password);
+      const result = await auth.signInWithEmailAndPassword(email, password);
+
+      if (!result.user.emailVerified) {
+        await auth.signOut();
+        errorMsg.textContent = 'Verifica tu correo electrónico antes de ingresar.';
+        return;
+      }
+
       window.location.href = 'home.html';
     } else {
-      await auth.createUserWithEmailAndPassword(email, password);
-      window.location.href = 'home.html';
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      await userCredential.user.sendEmailVerification();
+      errorMsg.textContent = 'Cuenta creada. Revisa tu correo para verificar tu cuenta.';
+      authForm.reset();
+      isLogin = true;
+      updateForm();
     }
   } catch (error) {
     errorMsg.textContent = error.message;
@@ -55,7 +66,9 @@ forgotPassword.addEventListener('click', (e) => {
 
 auth.onAuthStateChanged((user) => {
   if (user && window.location.pathname.includes('index.html')) {
-    window.location.href = 'home.html';
+    if (user.emailVerified) {
+      window.location.href = 'home.html';
+    }
   }
 });
 
