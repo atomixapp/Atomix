@@ -9,18 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isLogin = true;
 
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
-      auth.onAuthStateChanged(user => {
-        if (user && user.emailVerified) {
-          window.location.href = 'home.html';
-        }
-      });
-    });
+  // ✅ Verificar si el usuario ya estaba logueado
+  auth.onAuthStateChanged(user => {
+    if (user && user.emailVerified) {
+      window.location.href = 'home.html';
+    }
+  });
+
+  // ✅ Establecer persistencia LOCAL (esto solo se hace antes del login, no aquí)
+  // ⚠️ Quita el .then con onAuthStateChanged aquí, ya que eso es lo que estaba rompiendo la redirección
 
   function updateForm() {
     btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
-    toggleAuth.textContent = isLogin ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión';
+    toggleAuth.textContent = isLogin
+      ? '¿No tienes cuenta? Regístrate aquí'
+      : '¿Ya tienes cuenta? Inicia sesión';
   }
 
   toggleAuth.addEventListener('click', (e) => {
@@ -36,12 +39,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       if (isLogin) {
+        // ✅ Aquí es donde debes establecer persistencia
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const result = await auth.signInWithEmailAndPassword(email, password);
+
         if (!result.user.emailVerified) {
           errorMsg.textContent = "Verifica tu correo antes de continuar.";
           await auth.signOut();
           return;
         }
+
         window.location.href = 'home.html';
       } else {
         const result = await auth.createUserWithEmailAndPassword(email, password);
