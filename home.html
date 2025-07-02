@@ -2,68 +2,44 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Atomix IPTV Movies</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <title>ATOMIX | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="login.css">
+  <script src="https://kit.fontawesome.com/a2c215e1b8.js" crossorigin="anonymous"></script>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  <script src="firebase.js"></script>
 
+  <!-- Configuración de Firebase -->
+  <script src="firebase.js"></script>
 </head>
 
 <body>
-  <header>
-    <nav class="nav-left">
-      <a href="tv.html">TV</a>
-      <a class="activo" href="#">Películas</a>
-      <a href="#">Series</a>
-    </nav>
-    <div class="nav-right" style="position:relative;">
-      <button id="botonCuenta">Mi cuenta</button>
-      <div id="menuUsuario">
-        <p id="nombreUsuario">Usuario</p>
-        <p id="correoUsuario">correo@correo.com</p>
-        <button onclick="cerrarSesion()" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="app-container">
-    <aside>
-      <h2>Categorías</h2>
-<ul>
-  <li onclick="filtrar('favoritos')" id="navFavoritos" class="favoritos-boton">❤️ Favoritos</li>
-  <li class="activo" onclick="filtrar('todos')" id="navPeliculas">Todas</li>
-  <li onclick="filtrar('2025')">ESTRENOS 2025</li>
-</ul>
-    </aside>
-
-<main>
-  <div class="galeria-header">
-    <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
-
-    <div class="buscador">
-      <i class="fa-solid fa-magnifying-glass" id="iconoBuscar"></i>
-      <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
-    </div>
-
-    <div class="orden">
-      <select id="ordenar">
-        <option value="añadido">Ordenar por añadido</option>
-        <option value="titulo">Ordenar alfabéticamente</option>
-        <option value="anio">Ordenar por año</option>
-      </select>
-    </div>
+  <div class="contenedor-login">
+    <h1>ATOMIX</h1>
+    <form id="authForm" class="formulario">
+      <input type="email" id="email" placeholder="Correo electrónico" required tabindex="0">
+      <input type="password" id="password" placeholder="Contraseña" required tabindex="0">
+      <button type="submit" id="btnSubmit" tabindex="0">Iniciar sesión</button>
+      <p><a href="#" id="toggleAuth">¿No tienes cuenta? Regístrate aquí</a></p>
+      <p><a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a></p>
+      <p id="errorMsg" style="color:red;"></p>
+    </form>
   </div>
 
-  <div id="galeria" class="galeria"></div>
-</main>
+  <!-- ✅ Redirección automática si ya está logueado -->
+  <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (user && user.emailVerified) {
+        window.location.href = "home.html"; // Redirige a la sección principal de películas
+      }
+    });
+  </script>
 
-  </div>
-  <script src="app.js"></script>
+  <!-- Script de autenticación -->
+  <script src="auth.js"></script>
 </body>
 </html>
