@@ -86,23 +86,24 @@ function iniciarApp(user) {
     cargarFavoritosFirestore(userId);
   });
 
-ordenarSelect.addEventListener('change', () => {
-  const criterio = ordenarSelect.value;
+  ordenarSelect.addEventListener('change', () => {
+    const criterio = ordenarSelect.value;
 
-  if (criterio === 'añadido') {
-    peliculas = [...peliculasOriginal]; // restaurar orden original
-  } else if (criterio === 'titulo') {
-    peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
-  } else if (criterio === 'anio') {
-    peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-  }
+    if (criterio === 'añadido') {
+      peliculas = [...peliculasOriginal]; // restaurar orden original
+    } else if (criterio === 'titulo') {
+      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterio === 'anio') {
+      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
 
-  if (navFavoritos.classList.contains('activo')) {
-    cargarFavoritosFirestore(userId);
-  } else {
-    filtrarPeliculas('todos');
-  }
-});
+    if (navFavoritos.classList.contains('activo')) {
+      // Mostrar la lista ordenada localmente para evitar duplicados
+      mostrarPeliculas(peliculas);
+    } else {
+      filtrarPeliculas('todos');
+    }
+  });
 
   // Funciones:
 
