@@ -1,13 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-  auth.onAuthStateChanged(user => {
-    if (user && user.emailVerified) {
-      iniciarApp(user);
-    } else {
-      window.location.href = 'index.html';
-    }
-  });
-});
-
 function iniciarApp(user) {
   const userId = user.uid;
 
@@ -18,6 +8,7 @@ function iniciarApp(user) {
   // Variables para películas
   let peliculasOriginal = [];
   let peliculas = [];
+  let criterioActual = 'añadido'; // 🔁 nuevo control
 
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -47,7 +38,6 @@ function iniciarApp(user) {
 
   galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
-  // Evento menú usuario
   botonCuenta.addEventListener('click', e => {
     e.stopPropagation();
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -70,6 +60,30 @@ function iniciarApp(user) {
     if (buscador.style.display === 'block') buscador.focus();
   });
 
+  ordenarSelect.addEventListener('click', e => {
+    e.stopPropagation(); // ✅ evita conflicto de duplicación
+  });
+
+  ordenarSelect.addEventListener('change', () => {
+    const criterio = ordenarSelect.value;
+    if (criterio === criterioActual) return; // evitar recarga innecesaria
+    criterioActual = criterio;
+
+    if (criterio === 'añadido') {
+      peliculas = [...peliculasOriginal];
+    } else if (criterio === 'titulo') {
+      peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterio === 'anio') {
+      peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
+
+    if (navFavoritos.classList.contains('activo')) {
+      cargarFavoritosFirestore(userId);
+    } else {
+      filtrarPeliculas('todos');
+    }
+  });
+
   buscador.addEventListener('input', () => {
     filtrarBusqueda();
   });
@@ -86,26 +100,6 @@ function iniciarApp(user) {
     cargarFavoritosFirestore(userId);
   });
 
-ordenarSelect.addEventListener('change', () => {
-  const criterio = ordenarSelect.value;
-
-  if (criterio === 'añadido') {
-    peliculas = [...peliculasOriginal]; // restaurar orden original
-  } else if (criterio === 'titulo') {
-    peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
-  } else if (criterio === 'anio') {
-    peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-  }
-
-  if (navFavoritos.classList.contains('activo')) {
-    cargarFavoritosFirestore(userId);
-  } else {
-    filtrarPeliculas('todos');
-  }
-});
-
-  // Funciones:
-
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
     const tarjetas = document.querySelectorAll(".galeria > div");
@@ -120,13 +114,11 @@ ordenarSelect.addEventListener('change', () => {
     let listaFiltrada = anio === 'todos' ? peliculas : peliculas.filter(p => p.anio === anio);
     mostrarPeliculas(listaFiltrada);
 
-    // Marcar activo en categorías
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
     const liActivo = Array.from(document.querySelectorAll('aside li'))
       .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
     if (liActivo) liActivo.classList.add('activo');
 
-    // Cambiar título categoría
     if (anio === 'favoritos') {
       tituloCategoria.textContent = 'FAVORITOS';
     } else if (anio === 'todos') {
@@ -229,7 +221,6 @@ ordenarSelect.addEventListener('change', () => {
       });
   }
 
-  // Cargar películas Firestore o fallback local
   db.collection('peliculas').get()
     .then(snap => {
       const datos = snap.docs.map(doc => doc.data());
@@ -243,7 +234,6 @@ ordenarSelect.addEventListener('change', () => {
       filtrarPeliculas('todos');
     });
 
-  // Función global para cerrar sesión
   window.cerrarSesion = function () {
     auth.signOut().then(() => {
       window.location.href = "index.html";
