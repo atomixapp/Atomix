@@ -86,22 +86,23 @@ function iniciarApp(user) {
     cargarFavoritosFirestore(userId);
   });
 
-  ordenarSelect.addEventListener('change', () => {
-    const criterio = ordenarSelect.value;
-    if (criterio === 'añadido') {
-      peliculas = [...peliculasOriginal];
-    } else if (criterio === 'titulo') {
-      peliculas.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      peliculas.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
+ordenarSelect.addEventListener('change', () => {
+  const criterio = ordenarSelect.value;
 
-    if (navFavoritos.classList.contains('activo')) {
-      cargarFavoritosFirestore(userId);
-    } else {
-      filtrarPeliculas('todos');
-    }
-  });
+  if (criterio === 'añadido') {
+    peliculas = [...peliculasOriginal]; // restaurar orden original
+  } else if (criterio === 'titulo') {
+    peliculas = [...peliculasOriginal].sort((a, b) => a.titulo.localeCompare(b.titulo));
+  } else if (criterio === 'anio') {
+    peliculas = [...peliculasOriginal].sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+  }
+
+  if (navFavoritos.classList.contains('activo')) {
+    cargarFavoritosFirestore(userId);
+  } else {
+    filtrarPeliculas('todos');
+  }
+});
 
   // Funciones:
 
