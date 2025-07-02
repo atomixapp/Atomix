@@ -12,21 +12,21 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="firebase.js"></script>
 </head>
 <body>
   <div class="contenedor-login">
     <h1>ATOMIX</h1>
     <form id="authForm" class="formulario">
-      <input type="email" id="email" placeholder="Correo electrónico" required tabindex="0">
-      <input type="password" id="password" placeholder="Contraseña" required tabindex="0">
-      <button type="submit" id="btnSubmit" tabindex="0">Iniciar sesión</button>
+      <input type="email" id="email" placeholder="Correo electrónico" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+      <button type="submit" id="btnSubmit">Iniciar sesión</button>
       <p><a href="#" id="toggleAuth">¿No tienes cuenta? Regístrate aquí</a></p>
       <p><a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a></p>
       <p id="errorMsg" style="color:red;"></p>
     </form>
   </div>
 
-  <script src="firebase.js"></script>
   <script src="auth.js"></script>
 </body>
 </html>
