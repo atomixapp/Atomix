@@ -1,11 +1,10 @@
-// auth.js (versión compat)
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_DOMINIO.firebaseapp.com",
-  projectId: "TU_ID",
-  storageBucket: "TU_ID.appspot.com",
-  messagingSenderId: "ID_MENSAJES",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyCmMqUkiT_8zTdJYIfhs2VneW9p_33vow4",
+  authDomain: "atomix-54e1a.firebaseapp.com",
+  projectId: "atomix-54e1a",
+  storageBucket: "atomix-54e1a.appspot.com",
+  messagingSenderId: "888904747002",
+  appId: "1:888904747002:web:4dcc9501a3ff9dfd2e4643"
 };
 
 firebase.initializeApp(firebaseConfig);
