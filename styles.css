@@ -197,6 +197,7 @@ main {
 }
 
 .pelicula {
+  outline: none;
   background: #111;
   border-radius: 10px;
   overflow: hidden;
@@ -204,7 +205,7 @@ main {
   display: flex;
   flex-direction: column;
   position: relative;
-  transition: transform 0.3s;
+  transition: transform 0.2s, box-shadow 0.3s;
 }
 
 .pelicula:hover {
@@ -230,9 +231,12 @@ main {
 }
 
 .pelicula:focus {
-  outline: 3px solid #00aaff;
-  box-shadow: 0 0 10px #00aaff;
-  transform: scale(1.08);
+  outline: none;
+  box-shadow: 0 0 10px 3px #00aaff;
+  transform: scale(1.05);
+  border-radius: 8px;
+  z-index: 10;
+  position: relative;
 }
 
 .banderas {
