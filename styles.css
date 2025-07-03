@@ -159,6 +159,20 @@ main {
   justify-content: center;
   gap: 20px;
 }
+
+/* Reseteo global de enlaces en galería */
+.galeria a,
+.galeria a:visited,
+.galeria a:hover,
+.galeria a:active,
+.galeria a:focus {
+  color: white;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
 .pelicula {
   background: #111;
   border-radius: 10px;
@@ -189,7 +203,15 @@ main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: white;
+  text-decoration: none;
 }
+
+.pelicula h3 a {
+  color: white;
+  text-decoration: none;
+}
+
 .pelicula:focus {
   outline: 3px solid #ffcc00;
 }
