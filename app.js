@@ -1,4 +1,5 @@
-// Código JS corregido con foco funcional y sin interferencias
+// Versión corregida de tu script principal para la app Android TV/TV Box
+// Corrige el problema del foco inicial en las tarjetas y mantiene funcionalidad de filtros, orden y buscador
 
 document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       li.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.keyCode === 13) {
           li.click();
+          setTimeout(() => enfocarPrimeraTarjetaSiEsNecesario(), 100);
         }
       });
     });
@@ -111,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    const items = document.querySelectorAll('aside ul li');
-    items.forEach(item => {
-      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) && !item.classList.contains('favoritos-boton')) {
+    document.querySelectorAll('aside ul li').forEach(item => {
+      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
+          !item.classList.contains('favoritos-boton')) {
         item.classList.add('activo');
       }
     });
@@ -137,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lista = ordenar(lista);
     mostrarPeliculas(lista);
+    enfocarPrimeraTarjetaSiEsNecesario();
   }
 
   function ordenar(lista) {
@@ -196,13 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
       };
     });
+  }
 
-    const active = document.activeElement;
-    const evitar = ['INPUT', 'SELECT', 'BUTTON'];
+  function enfocarPrimeraTarjetaSiEsNecesario() {
+    const activo = document.activeElement;
+    const elementosIgnorados = [ordenarSelect, buscador, botonCuenta];
+    const enElementoIgnorado = elementosIgnorados.includes(activo) || menuUsuario.contains(activo);
+
+    if (enElementoIgnorado) return;
+
     const primera = galeria.querySelector('.pelicula');
-    if (primera && !evitar.includes(active.tagName)) {
-      primera.focus({ preventScroll: true });
-    }
+    if (primera) primera.focus({ preventScroll: true });
   }
 
   async function agregarFavorito(titulo) {
@@ -238,12 +245,12 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
+  // Navegación con flechas + sonido
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
-
   document.addEventListener('keydown', (e) => {
     const focado = document.activeElement;
 
-    if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
+    if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
       sonidoFoco.currentTime = 0;
       sonidoFoco.play().catch(() => {});
     }
