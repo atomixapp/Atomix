@@ -184,14 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       galeria.appendChild(tarjeta);
-
-    setTimeout(() => {
-      const primera = galeria.querySelector('.pelicula');
-      if (primera) {
-        primera.focus({ preventScroll: true });
-      }
-    }, 100); // pequeño delay para asegurar que está en el DOM
-      
     });
 
     document.querySelectorAll('.corazon').forEach(corazon => {
@@ -262,6 +254,28 @@ document.addEventListener('DOMContentLoaded', () => {
       sonidoFoco.play().catch(() => {});
     }
 
+  let focoInicialAsignado = false;
+
+  document.addEventListener('keydown', (e) => {
+    const focado = document.activeElement;
+
+    // Reproducir sonido al mover foco
+    if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+      sonidoFoco.currentTime = 0;
+      sonidoFoco.play().catch(() => {});
+    }
+
+    // Si el foco actual NO está en una tarjeta, y se presiona flecha, damos foco inicial
+    if (!focoInicialAsignado && !document.activeElement.classList.contains('pelicula')) {
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) {
+        primera.focus({ preventScroll: true });
+        focoInicialAsignado = true;
+        return; // No procesar más este evento ahora
+      }
+    }
+
+    // Navegación entre tarjetas
     if (focado.classList.contains('pelicula')) {
       const peliculas = Array.from(document.querySelectorAll('.pelicula'));
       const index = peliculas.indexOf(focado);
@@ -282,4 +296,3 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-});
