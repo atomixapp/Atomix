@@ -170,15 +170,35 @@ main {
 .orden select {
   background: #222;
   color: white;
-  padding: 8px;
-  border-radius: 5px;
+  padding: 8px 12px;
+  border-radius: 6px;
   border: 1px solid #555;
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border 0.3s;
 }
 
-.orden select:focus {
+.orden select:focus-visible {
   border: 2px solid #00aaff;
+  box-shadow: 0 0 6px rgba(0,170,255,0.4);
+}
+
+.orden {
+  position: relative;
+}
+
+.orden::after {
+  content: "▼";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  pointer-events: none;
+  font-size: 12px;
 }
 
 .galeria {
