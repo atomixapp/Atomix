@@ -1,3 +1,5 @@
+// Código JS corregido con foco funcional y sin interferencias
+
 document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -71,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    document.getElementById('navPeliculas')?.focus();
-
     botonCuenta.setAttribute('tabindex', '0');
     buscador.setAttribute('tabindex', '0');
 
@@ -104,13 +104,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.filtrar = (categoria) => {
     currentFilter = categoria;
+
     document.querySelectorAll('aside ul li').forEach(li => {
       if (!li.classList.contains('favoritos-boton')) {
         li.classList.remove('activo');
       }
     });
 
-    document.querySelectorAll('aside ul li').forEach(item => {
+    const items = document.querySelectorAll('aside ul li');
+    items.forEach(item => {
       if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) && !item.classList.contains('favoritos-boton')) {
         item.classList.add('activo');
       }
@@ -177,11 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
       galeria.appendChild(tarjeta);
     });
 
-    const tarjetaFoco = galeria.querySelector('.pelicula');
-    if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
-      tarjetaFoco.focus({ preventScroll: true });
-    }
-
     document.querySelectorAll('.corazon').forEach(corazon => {
       corazon.onclick = async () => {
         const titulo = corazon.getAttribute('data-titulo');
@@ -196,10 +193,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         favoritos = await cargarFavoritos();
-
         if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
       };
     });
+
+    const active = document.activeElement;
+    const evitar = ['INPUT', 'SELECT', 'BUTTON'];
+    const primera = galeria.querySelector('.pelicula');
+    if (primera && !evitar.includes(active.tagName)) {
+      primera.focus({ preventScroll: true });
+    }
   }
 
   async function agregarFavorito(titulo) {
@@ -236,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
-  let focoInicialAsignado = false;
 
   document.addEventListener('keydown', (e) => {
     const focado = document.activeElement;
@@ -244,15 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
       sonidoFoco.currentTime = 0;
       sonidoFoco.play().catch(() => {});
-    }
-
-    if (!focoInicialAsignado && !document.activeElement.classList.contains('pelicula')) {
-      const primera = galeria.querySelector('.pelicula');
-      if (primera) {
-        primera.focus({ preventScroll: true });
-        focoInicialAsignado = true;
-        return;
-      }
     }
 
     if (focado.classList.contains('pelicula')) {
