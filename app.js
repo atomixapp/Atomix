@@ -156,6 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return lista;
   }
 
+// [...] todo tu código intacto
+
   function mostrarPeliculas(lista) {
     galeria.innerHTML = '';
 
@@ -204,6 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
       };
     });
+
+    // ✅ Foco automático en la primera tarjeta al renderizar
+    const primera = galeria.querySelector('.pelicula');
+    if (primera) primera.focus();
   }
 
   async function agregarFavorito(titulo) {
