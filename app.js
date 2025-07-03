@@ -32,12 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     botonCuenta.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (menuUsuario.style.display === 'block') {
-        menuUsuario.style.display = 'none';
-      } else {
-        menuUsuario.style.display = 'block';
-        buscador.style.display = 'none'; // cerrar buscador si abierto
-      }
+      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+      buscador.style.display = 'none';
     });
 
     iconoBuscar.addEventListener('click', (e) => {
@@ -45,15 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (buscador.style.display === 'block') {
         buscador.style.display = 'none';
         buscador.value = '';
-        filtrarPeliculas(currentFilter); // reset filtros de búsqueda
+        filtrarPeliculas(currentFilter);
       } else {
         buscador.style.display = 'block';
         buscador.focus();
-        menuUsuario.style.display = 'none'; // cerrar menú usuario si abierto
+        menuUsuario.style.display = 'none';
       }
     });
 
-    // Cerrar menú o buscador si clic fuera
     document.addEventListener('click', (e) => {
       if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
         menuUsuario.style.display = 'none';
@@ -66,6 +61,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     buscador.addEventListener('input', filtrarBusqueda);
+
+    // Soporte mando a distancia
+    document.querySelectorAll('aside ul li').forEach(li => {
+      li.setAttribute('tabindex', '0');
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+          li.click();
+        }
+      });
+    });
+
+    document.getElementById('navPeliculas')?.focus();
+
+    botonCuenta.setAttribute('tabindex', '0');
+    buscador.setAttribute('tabindex', '0');
 
     peliculasOriginal = await cargarPeliculas();
     favoritos = await cargarFavoritos();
@@ -96,29 +106,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-window.filtrar = (categoria) => {
-  currentFilter = categoria;
+  window.filtrar = (categoria) => {
+    currentFilter = categoria;
 
-  // Quitar clase "activo" de todos los elementos excepto el de Favoritos
-  document.querySelectorAll('aside ul li').forEach(li => {
-    if (!li.classList.contains('favoritos-boton')) {
-      li.classList.remove('activo');
-    }
-  });
+    document.querySelectorAll('aside ul li').forEach(li => {
+      if (!li.classList.contains('favoritos-boton')) {
+        li.classList.remove('activo');
+      }
+    });
 
-  // Agregar clase "activo" al elemento seleccionado, si no es Favoritos
-  const items = document.querySelectorAll('aside ul li');
-  items.forEach(item => {
-    if (
-      item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
-      !item.classList.contains('favoritos-boton')
-    ) {
-      item.classList.add('activo');
-    }
-  });
+    const items = document.querySelectorAll('aside ul li');
+    items.forEach(item => {
+      if (
+        item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
+        !item.classList.contains('favoritos-boton')
+      ) {
+        item.classList.add('activo');
+      }
+    });
 
-  filtrarPeliculas(categoria);
-};
+    filtrarPeliculas(categoria);
+  };
 
   function filtrarPeliculas(categoria) {
     let lista = [];
@@ -145,11 +153,11 @@ window.filtrar = (categoria) => {
     } else if (criterio === 'anio') {
       return lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
     }
-    return lista; // por defecto por añadido (orden original)
+    return lista;
   }
 
   function mostrarPeliculas(lista) {
-    galeria.innerHTML = ''; // Limpiar galería
+    galeria.innerHTML = '';
 
     if (lista.length === 0) {
       galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
@@ -158,18 +166,18 @@ window.filtrar = (categoria) => {
 
     lista.forEach(p => {
       const esFavorito = favoritos.includes(p.titulo);
-      const tarjeta = document.createElement('div');
+      const tarjeta = document.createElement('a');
       tarjeta.classList.add('pelicula');
+      tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
+      tarjeta.setAttribute('tabindex', '0');
 
       tarjeta.innerHTML = `
-        <a href="detalles.html?titulo=${encodeURIComponent(p.titulo)}">
-          <img src="${p.imagen}" alt="${p.titulo}">
-          <div class="banderas">
-            ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
-            ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
-          </div>
-          <h3>${p.titulo}</h3>
-        </a>
+        <img src="${p.imagen}" alt="${p.titulo}">
+        <div class="banderas">
+          ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
+          ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
+        </div>
+        <h3>${p.titulo}</h3>
         <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
           <i class="fa-solid fa-heart"></i>
         </div>
@@ -178,7 +186,6 @@ window.filtrar = (categoria) => {
       galeria.appendChild(tarjeta);
     });
 
-    // Manejar clicks en corazones
     document.querySelectorAll('.corazon').forEach(corazon => {
       corazon.onclick = async () => {
         const titulo = corazon.getAttribute('data-titulo');
