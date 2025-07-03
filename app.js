@@ -189,17 +189,25 @@ function mostrarPeliculas(lista) {
   });
 
 setTimeout(() => {
-  const primera = galeria.querySelector('.pelicula');
-  if (primera) {
+  const tarjetas = galeria.querySelectorAll('.pelicula');
+  if (tarjetas.length > 0) {
+    const primera = tarjetas[0];
+
+    // Paso 1: quitar tabindex a todas temporalmente
+    tarjetas.forEach(t => t.setAttribute('tabindex', '-1'));
+
+    // Paso 2: enfocar sin animación
     primera.classList.add('sin-animacion');
     primera.focus({ preventScroll: true });
 
-    // Remover la clase tras permitir que se estabilice el renderizado
+    // Paso 3: remover foco (blur) y restaurar tabindex
     setTimeout(() => {
+      primera.blur(); // 🔥 fuerza a perder el foco y evitar el zoom/sombra visual
+      tarjetas.forEach(t => t.setAttribute('tabindex', '0'));
       primera.classList.remove('sin-animacion');
     }, 100);
   }
-}, 100);
+}, 150);
   
   // Corazones
   document.querySelectorAll('.corazon').forEach(corazon => {
