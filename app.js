@@ -1,6 +1,3 @@
-// Versión corregida de tu script principal para la app Android TV/TV Box
-// Corrige el problema del foco inicial en las tarjetas y mantiene funcionalidad de filtros, orden y buscador
-
 document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -70,10 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
       li.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.keyCode === 13) {
           li.click();
-          setTimeout(() => enfocarPrimeraTarjetaSiEsNecesario(), 100);
         }
       });
     });
+
+    document.getElementById('navPeliculas')?.focus();
 
     botonCuenta.setAttribute('tabindex', '0');
     buscador.setAttribute('tabindex', '0');
@@ -87,7 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
   async function cargarPeliculas() {
     try {
       const snap = await db.collection('peliculas').get();
-      return snap.empty ? [] : snap.docs.map(doc => doc.data());
+      if (!snap.empty) {
+        return snap.docs.map(doc => doc.data());
+      }
+      return [];
     } catch (error) {
       console.error('Error cargando películas:', error);
       return [];
@@ -113,9 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    document.querySelectorAll('aside ul li').forEach(item => {
-      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
-          !item.classList.contains('favoritos-boton')) {
+    const items = document.querySelectorAll('aside ul li');
+    items.forEach(item => {
+      if (
+        item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
+        !item.classList.contains('favoritos-boton')
+      ) {
         item.classList.add('activo');
       }
     });
@@ -139,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lista = ordenar(lista);
     mostrarPeliculas(lista);
-    enfocarPrimeraTarjetaSiEsNecesario();
   }
 
   function ordenar(lista) {
@@ -166,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tarjeta.classList.add('pelicula');
       tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
       tarjeta.setAttribute('tabindex', '0');
-
       tarjeta.innerHTML = `
         <img src="${p.imagen}" alt="${p.titulo}">
         <div class="banderas">
@@ -196,20 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         favoritos = await cargarFavoritos();
+
         if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
       };
     });
-  }
 
-  function enfocarPrimeraTarjetaSiEsNecesario() {
-    const activo = document.activeElement;
-    const elementosIgnorados = [ordenarSelect, buscador, botonCuenta];
-    const enElementoIgnorado = elementosIgnorados.includes(activo) || menuUsuario.contains(activo);
-
-    if (enElementoIgnorado) return;
-
-    const primera = galeria.querySelector('.pelicula');
-    if (primera) primera.focus({ preventScroll: true });
+    const tarjetaFoco = galeria.querySelector('.pelicula');
+    if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
+      setTimeout(() => {
+        tarjetaFoco.focus({ preventScroll: true });
+      }, 50);
+    }
   }
 
   async function agregarFavorito(titulo) {
@@ -235,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
     const tarjetas = galeria.querySelectorAll('.pelicula');
+
     tarjetas.forEach(tarjeta => {
       const titulo = tarjeta.querySelector('h3').textContent.toLowerCase();
       tarjeta.style.display = titulo.includes(texto) ? 'block' : 'none';
@@ -245,12 +245,15 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
-  // Navegación con flechas + sonido
+  // -----------------------------
+  // Navegación con flechas + foco limpio
+  // -----------------------------
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
+
   document.addEventListener('keydown', (e) => {
     const focado = document.activeElement;
 
-    if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+    if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
       sonidoFoco.currentTime = 0;
       sonidoFoco.play().catch(() => {});
     }
@@ -260,18 +263,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const index = peliculas.indexOf(focado);
       const columnas = Math.floor(galeria.offsetWidth / focado.offsetWidth);
 
-      if (e.key === 'ArrowRight') {
-        const siguiente = peliculas[index + 1];
-        if (siguiente) siguiente.focus();
-      } else if (e.key === 'ArrowLeft') {
-        const anterior = peliculas[index - 1];
-        if (anterior) anterior.focus();
+      if (e.key === 'ArrowRight' && index + 1 < peliculas.length) {
+        peliculas[index + 1].focus();
+      } else if (e.key === 'ArrowLeft' && index - 1 >= 0) {
+        peliculas[index - 1].focus();
       } else if (e.key === 'ArrowDown') {
-        const abajo = peliculas[index + columnas];
-        if (abajo) abajo.focus();
+        if (index + columnas < peliculas.length) {
+          peliculas[index + columnas].focus();
+        } else {
+          ordenarSelect.focus();
+        }
       } else if (e.key === 'ArrowUp') {
-        const arriba = peliculas[index - columnas];
-        if (arriba) arriba.focus();
+        if (index - columnas >= 0) {
+          peliculas[index - columnas].focus();
+        } else {
+          document.querySelector('aside ul li.activo')?.focus();
+        }
       }
     }
   });
