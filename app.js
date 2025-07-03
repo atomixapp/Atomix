@@ -158,59 +158,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // [...] todo tu código intacto
 
-  function mostrarPeliculas(lista) {
-    galeria.innerHTML = '';
+function mostrarPeliculas(lista) {
+  galeria.innerHTML = '';
 
-    if (lista.length === 0) {
-      galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-      return;
-    }
-
-    lista.forEach(p => {
-      const esFavorito = favoritos.includes(p.titulo);
-      const tarjeta = document.createElement('a');
-      tarjeta.classList.add('pelicula');
-      tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
-      tarjeta.setAttribute('tabindex', '0');
-
-      tarjeta.innerHTML = `
-        <img src="${p.imagen}" alt="${p.titulo}">
-        <div class="banderas">
-          ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
-          ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
-        </div>
-        <h3>${p.titulo}</h3>
-        <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-      `;
-
-      galeria.appendChild(tarjeta);
-    });
-
-    document.querySelectorAll('.corazon').forEach(corazon => {
-      corazon.onclick = async () => {
-        const titulo = corazon.getAttribute('data-titulo');
-        const esAhoraFavorito = !corazon.classList.contains('activo');
-
-        if (esAhoraFavorito) {
-          await agregarFavorito(titulo);
-          corazon.classList.add('activo');
-        } else {
-          await eliminarFavorito(titulo);
-          corazon.classList.remove('activo');
-        }
-
-        favoritos = await cargarFavoritos();
-
-        if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
-      };
-    });
-
-    // ✅ Foco automático en la primera tarjeta al renderizar
-    const primera = galeria.querySelector('.pelicula');
-    if (primera) primera.focus();
+  if (lista.length === 0) {
+    galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
+    return;
   }
+
+  lista.forEach(p => {
+    const esFavorito = favoritos.includes(p.titulo);
+    const tarjeta = document.createElement('a');
+    tarjeta.classList.add('pelicula');
+    tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
+    tarjeta.setAttribute('tabindex', '0');
+
+    tarjeta.innerHTML = `
+      <img src="${p.imagen}" alt="${p.titulo}">
+      <div class="banderas">
+        ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
+        ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
+      </div>
+      <h3>${p.titulo}</h3>
+      <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+        <i class="fa-solid fa-heart"></i>
+      </div>
+    `;
+
+    galeria.appendChild(tarjeta);
+  });
+
+  // ✅ Evitar conflictos visuales forzando el foco tras breve retardo
+  setTimeout(() => {
+    const primera = galeria.querySelector('.pelicula');
+    if (primera) primera.focus({ preventScroll: true });
+  }, 50); // Tiempo mínimo para evitar "pegado"
+  
+  // Corazones
+  document.querySelectorAll('.corazon').forEach(corazon => {
+    corazon.onclick = async () => {
+      const titulo = corazon.getAttribute('data-titulo');
+      const esAhoraFavorito = !corazon.classList.contains('activo');
+
+      if (esAhoraFavorito) {
+        await agregarFavorito(titulo);
+        corazon.classList.add('activo');
+      } else {
+        await eliminarFavorito(titulo);
+        corazon.classList.remove('activo');
+      }
+
+      favoritos = await cargarFavoritos();
+
+      if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
+    };
+  });
+}
 
   async function agregarFavorito(titulo) {
     try {
