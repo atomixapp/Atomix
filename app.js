@@ -5,11 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let peliculasOriginal = [];
   let favoritos = [];
   let userId = null;
+  let currentFilter = 'todos';
 
   const galeria = document.getElementById('galeria');
   const tituloCategoria = document.getElementById('tituloCategoria');
   const ordenarSelect = document.getElementById('ordenar');
   const buscador = document.getElementById('buscadorPeliculas');
+  const iconoBuscar = document.getElementById('iconoBuscar');
+  const botonCuenta = document.getElementById('botonCuenta');
+  const menuUsuario = document.getElementById('menuUsuario');
 
   auth.onAuthStateChanged(async (user) => {
     if (user && user.emailVerified) {
@@ -25,9 +29,44 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('correoUsuario').textContent = firebase.auth().currentUser.email;
 
     ordenarSelect.addEventListener('change', () => filtrarPeliculas(currentFilter));
+
+    botonCuenta.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (menuUsuario.style.display === 'block') {
+        menuUsuario.style.display = 'none';
+      } else {
+        menuUsuario.style.display = 'block';
+        buscador.style.display = 'none'; // cerrar buscador si abierto
+      }
+    });
+
+    iconoBuscar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (buscador.style.display === 'block') {
+        buscador.style.display = 'none';
+        buscador.value = '';
+        filtrarPeliculas(currentFilter); // reset filtros de búsqueda
+      } else {
+        buscador.style.display = 'block';
+        buscador.focus();
+        menuUsuario.style.display = 'none'; // cerrar menú usuario si abierto
+      }
+    });
+
+    // Cerrar menú o buscador si clic fuera
+    document.addEventListener('click', (e) => {
+      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+        menuUsuario.style.display = 'none';
+      }
+      if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
+        buscador.style.display = 'none';
+        buscador.value = '';
+        filtrarPeliculas(currentFilter);
+      }
+    });
+
     buscador.addEventListener('input', filtrarBusqueda);
 
-    // Cargar películas y favoritos de una vez
     peliculasOriginal = await cargarPeliculas();
     favoritos = await cargarFavoritos();
 
@@ -40,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!snap.empty) {
         return snap.docs.map(doc => doc.data());
       }
-      // Si no hay, puedes retornar un array vacío o respaldo local
       return [];
     } catch (error) {
       console.error('Error cargando películas:', error);
@@ -57,8 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return [];
     }
   }
-
-  let currentFilter = 'todos';
 
   window.filtrar = (categoria) => {
     currentFilter = categoria;
@@ -90,11 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (criterio === 'anio') {
       return lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
     }
-    return lista; // por defecto por añadido, que es el orden original
+    return lista; // por defecto por añadido (orden original)
   }
 
   function mostrarPeliculas(lista) {
-    galeria.innerHTML = ''; // LIMPIAR siempre antes de mostrar
+    galeria.innerHTML = ''; // Limpiar galería
 
     if (lista.length === 0) {
       galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
@@ -123,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
       galeria.appendChild(tarjeta);
     });
 
-    // Asignar eventos a los corazones para favoritos
+    // Manejar clicks en corazones
     document.querySelectorAll('.corazon').forEach(corazon => {
       corazon.onclick = async () => {
         const titulo = corazon.getAttribute('data-titulo');
@@ -136,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
           await eliminarFavorito(titulo);
           corazon.classList.remove('activo');
         }
+
         favoritos = await cargarFavoritos();
 
-        // Si estamos en favoritos, refrescar la lista para eliminar los que ya no están
         if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
       };
     });
@@ -173,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tarjeta.style.display = titulo.includes(texto) ? 'block' : 'none';
     });
   }
-  
+
   window.cerrarSesion = () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
