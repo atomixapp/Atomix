@@ -96,10 +96,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.filtrar = (categoria) => {
-    currentFilter = categoria;
-    filtrarPeliculas(categoria);
-  };
+window.filtrar = (categoria) => {
+  currentFilter = categoria;
+
+  // Quitar clase "activo" de todos los elementos excepto el de Favoritos
+  document.querySelectorAll('aside ul li').forEach(li => {
+    if (!li.classList.contains('favoritos-boton')) {
+      li.classList.remove('activo');
+    }
+  });
+
+  // Agregar clase "activo" al elemento seleccionado, si no es Favoritos
+  const items = document.querySelectorAll('aside ul li');
+  items.forEach(item => {
+    if (
+      item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
+      !item.classList.contains('favoritos-boton')
+    ) {
+      item.classList.add('activo');
+    }
+  });
+
+  filtrarPeliculas(categoria);
+};
 
   function filtrarPeliculas(categoria) {
     let lista = [];
