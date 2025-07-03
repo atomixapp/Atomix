@@ -125,6 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     filtrarPeliculas(categoria);
+
+    // Solo enfocar primera película tras cambiar de categoría
+    setTimeout(() => {
+      const primeraPelicula = galeria.querySelector('.pelicula');
+      if (primeraPelicula) {
+        primeraPelicula.focus();
+      }
+    }, 50);
   };
 
   function filtrarPeliculas(categoria) {
@@ -143,14 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lista = ordenar(lista);
     mostrarPeliculas(lista);
-
-    // 👉 Enfocar primer elemento de la galería si existe
-    setTimeout(() => {
-      const primeraPelicula = galeria.querySelector('.pelicula');
-      if (primeraPelicula) {
-        primeraPelicula.focus();
-      }
-    }, 50);
   }
 
   function ordenar(lista) {
