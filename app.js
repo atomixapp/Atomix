@@ -60,6 +60,8 @@ function cargarFavoritos() {
 
 // Mostrar películas según categoría, búsqueda u orden
 function mostrarPeliculas() {
+  if (!todasPeliculas.length) return;
+
   let filtradas = todasPeliculas;
 
   if (categoriaActual === 'favoritos') {
@@ -68,7 +70,7 @@ function mostrarPeliculas() {
     filtradas = todasPeliculas.filter(p => p.categoria === categoriaActual || p.anio == categoriaActual);
   }
 
-  const textoBuscar = buscadorInput.value.toLowerCase();
+  const textoBuscar = buscadorInput.value.trim().toLowerCase();
   if (textoBuscar) {
     filtradas = filtradas.filter(p => p.titulo.toLowerCase().includes(textoBuscar));
   }
@@ -91,7 +93,7 @@ function mostrarPeliculas() {
 function renderizarPeliculas(lista) {
   galeria.innerHTML = '';
 
-  if (lista.length === 0) {
+  if (!lista || lista.length === 0) {
     galeria.innerHTML = `<div class="vacio">No hay resultados.</div>`;
     return;
   }
@@ -124,10 +126,15 @@ function toggleFavorito(e, id) {
   ref.set({ favoritos: nuevas }, { merge: true });
 }
 
-// Buscar
+// Buscar (abrir/cerrar input)
 iconoBuscar.addEventListener('click', () => {
-  buscadorInput.style.display = buscadorInput.style.display === 'block' ? 'none' : 'block';
-  buscadorInput.focus();
+  const visible = buscadorInput.style.display === 'block';
+  buscadorInput.style.display = visible ? 'none' : 'block';
+  if (!visible) buscadorInput.focus();
+  if (visible) {
+    buscadorInput.value = '';
+    mostrarPeliculas(); // Restablecer resultados
+  }
 });
 
 buscadorInput.addEventListener('input', mostrarPeliculas);
