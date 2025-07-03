@@ -1,234 +1,149 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+// Referencias DOM
+const galeria = document.getElementById('galeria');
+const buscadorInput = document.getElementById('buscadorPeliculas');
+const iconoBuscar = document.getElementById('iconoBuscar');
+const selectOrden = document.getElementById('ordenar');
+const tituloCategoria = document.getElementById('tituloCategoria');
+const botonCuenta = document.getElementById('botonCuenta');
+const menuUsuario = document.getElementById('menuUsuario');
 
-  let peliculasOriginal = [];
-  let favoritos = [];
-  let userId = null;
-  let currentFilter = 'todos';
+// Estado
+let todasPeliculas = [];
+let favoritas = [];
+let categoriaActual = 'todos';
+let usuarioActual = null;
 
-  const galeria = document.getElementById('galeria');
-  const tituloCategoria = document.getElementById('tituloCategoria');
-  const ordenarSelect = document.getElementById('ordenar');
-  const buscador = document.getElementById('buscadorPeliculas');
-  const iconoBuscar = document.getElementById('iconoBuscar');
-  const botonCuenta = document.getElementById('botonCuenta');
-  const menuUsuario = document.getElementById('menuUsuario');
-
-  auth.onAuthStateChanged(async (user) => {
-    if (user && user.emailVerified) {
-      userId = user.uid;
-      iniciarApp();
-    } else {
-      window.location.href = 'index.html';
-    }
-  });
-
-  async function iniciarApp() {
-    document.getElementById('nombreUsuario').textContent = firebase.auth().currentUser.displayName || 'Usuario';
-    document.getElementById('correoUsuario').textContent = firebase.auth().currentUser.email;
-
-    ordenarSelect.addEventListener('change', () => filtrarPeliculas(currentFilter));
-
-    botonCuenta.addEventListener('click', (e) => {
-      e.stopPropagation();
-      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-      buscador.style.display = 'none';
-    });
-
-    iconoBuscar.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (buscador.style.display === 'block') {
-        buscador.style.display = 'none';
-        buscador.value = '';
-        filtrarPeliculas(currentFilter);
-      } else {
-        buscador.style.display = 'block';
-        buscador.focus();
-        menuUsuario.style.display = 'none';
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-        menuUsuario.style.display = 'none';
-      }
-      if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
-        buscador.style.display = 'none';
-        buscador.value = '';
-        filtrarPeliculas(currentFilter);
-      }
-    });
-
-    buscador.addEventListener('input', filtrarBusqueda);
-
-    document.querySelectorAll('aside ul li').forEach(li => {
-      li.setAttribute('tabindex', '0');
-      li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') li.click();
-      });
-    });
-
-    document.getElementById('navPeliculas')?.focus();
-    botonCuenta.setAttribute('tabindex', '0');
-    buscador.setAttribute('tabindex', '0');
-    ordenarSelect.setAttribute('tabindex', '0');
-
-    peliculasOriginal = await cargarPeliculas();
-    favoritos = await cargarFavoritos();
-
-    filtrarPeliculas('todos');
-  }
-
-  async function cargarPeliculas() {
-    try {
-      const snap = await db.collection('peliculas').get();
-      return snap.empty ? [] : snap.docs.map(doc => doc.data());
-    } catch (error) {
-      console.error('Error cargando películas:', error);
-      return [];
-    }
-  }
-
-  async function cargarFavoritos() {
-    try {
-      const snap = await db.collection('usuarios').doc(userId).collection('favoritos').get();
-      return snap.docs.map(doc => doc.data().titulo);
-    } catch (error) {
-      console.error('Error cargando favoritos:', error);
-      return [];
-    }
-  }
-
-  window.filtrar = (categoria) => {
-    currentFilter = categoria;
-
-    document.querySelectorAll('aside ul li').forEach(li => {
-      if (!li.classList.contains('favoritos-boton')) li.classList.remove('activo');
-    });
-
-    document.querySelectorAll('aside ul li').forEach(item => {
-      if (
-        item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
-        !item.classList.contains('favoritos-boton')
-      ) {
-        item.classList.add('activo');
-      }
-    });
-
-    filtrarPeliculas(categoria);
-  };
-
-  function filtrarPeliculas(categoria) {
-    let lista = [];
-
-    if (categoria === 'favoritos') {
-      lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
-      tituloCategoria.textContent = 'FAVORITOS';
-    } else if (categoria === 'todos') {
-      lista = [...peliculasOriginal];
-      tituloCategoria.textContent = 'TODAS';
-    } else {
-      lista = peliculasOriginal.filter(p => p.anio === categoria);
-      tituloCategoria.textContent = categoria.toUpperCase();
-    }
-
-    lista = ordenar(lista);
-    mostrarPeliculas(lista);
-  }
-
-  function ordenar(lista) {
-    const criterio = ordenarSelect.value;
-    if (criterio === 'titulo') {
-      return lista.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      return lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
-    return lista;
-  }
-
-  function mostrarPeliculas(lista) {
-    galeria.innerHTML = '';
-
-    if (lista.length === 0) {
-      galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-      return;
-    }
-
-    lista.forEach(p => {
-      const esFavorito = favoritos.includes(p.titulo);
-      const tarjeta = document.createElement('a');
-      tarjeta.classList.add('pelicula');
-      tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
-      tarjeta.setAttribute('tabindex', '0');
-
-      tarjeta.innerHTML = `
-        <img src="${p.imagen}" alt="${p.titulo}">
-        <div class="banderas">
-          ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
-          ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
-        </div>
-        <h3>${p.titulo}</h3>
-        <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-      `;
-
-      galeria.appendChild(tarjeta);
-    });
-
-    const primera = galeria.querySelector('.pelicula');
-    if (primera) primera.focus();
-  }
-
-  function filtrarBusqueda() {
-    const texto = buscador.value.toLowerCase();
-    galeria.querySelectorAll('.pelicula').forEach(tarjeta => {
-      const titulo = tarjeta.querySelector('h3').textContent.toLowerCase();
-      tarjeta.style.display = titulo.includes(texto) ? 'block' : 'none';
-    });
-  }
-
-  window.cerrarSesion = () => {
-    firebase.auth().signOut().then(() => window.location.href = 'index.html');
-  };
-
-  const sonidoFoco = new Audio('assets/sounds/click.mp3');
-
-  document.addEventListener('keydown', (e) => {
-    const foco = document.activeElement;
-    const cards = Array.from(document.querySelectorAll('.pelicula'));
-    const index = cards.indexOf(foco);
-    const columnas = Math.floor(galeria.offsetWidth / (cards[0]?.offsetWidth || 1));
-
-    if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-      sonidoFoco.currentTime = 0;
-      sonidoFoco.play().catch(() => {});
-    }
-
-    if (
-      foco.classList.contains('pelicula') &&
-      !['SELECT', 'INPUT', 'BUTTON'].includes(foco.tagName)
-    ) {
-      if (e.key === 'ArrowRight' && cards[index + 1]) {
-        cards[index + 1].focus();
-      }
-      else if (e.key === 'ArrowLeft') {
-        if (index % columnas === 0) {
-          document.querySelector('aside li.activo')?.focus();
-        } else if (cards[index - 1]) {
-          cards[index - 1].focus();
-        }
-      }
-      else if (e.key === 'ArrowDown' && cards[index + columnas]) {
-        cards[index + columnas].focus();
-      }
-      else if (e.key === 'ArrowUp' && cards[index - columnas]) {
-        cards[index - columnas].focus();
-      }
-    } else if (foco.tagName === 'LI' && e.key === 'ArrowRight') {
-      const primera = galeria.querySelector('.pelicula');
-      if (primera) primera.focus();
-    }
-  });
+// Mostrar/Ocultar menú de cuenta
+botonCuenta.addEventListener('click', () => {
+  menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
 });
+
+// Cerrar sesión
+function cerrarSesion() {
+  firebase.auth().signOut().then(() => {
+    location.href = 'index.html';
+  });
+}
+
+// Obtener usuario
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    usuarioActual = user;
+    document.getElementById('nombreUsuario').textContent = user.displayName || 'Usuario';
+    document.getElementById('correoUsuario').textContent = user.email;
+    cargarPeliculas();
+    cargarFavoritos();
+  } else {
+    location.href = 'index.html';
+  }
+});
+
+// Cargar películas desde Firestore
+function cargarPeliculas() {
+  firebase.firestore().collection('peliculas')
+    .orderBy('añadido', 'desc')
+    .onSnapshot(snapshot => {
+      todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      mostrarPeliculas();
+    });
+}
+
+// Cargar favoritos del usuario
+function cargarFavoritos() {
+  firebase.firestore().collection('usuarios')
+    .doc(usuarioActual.uid)
+    .onSnapshot(doc => {
+      favoritas = doc.data()?.favoritos || [];
+      mostrarPeliculas();
+    });
+}
+
+// Mostrar películas según categoría, búsqueda u orden
+function mostrarPeliculas() {
+  let filtradas = todasPeliculas;
+
+  if (categoriaActual === 'favoritos') {
+    filtradas = todasPeliculas.filter(p => favoritas.includes(p.id));
+  } else if (categoriaActual !== 'todos') {
+    filtradas = todasPeliculas.filter(p => p.categoria === categoriaActual || p.anio == categoriaActual);
+  }
+
+  const textoBuscar = buscadorInput.value.toLowerCase();
+  if (textoBuscar) {
+    filtradas = filtradas.filter(p => p.titulo.toLowerCase().includes(textoBuscar));
+  }
+
+  switch (selectOrden.value) {
+    case 'titulo':
+      filtradas.sort((a, b) => a.titulo.localeCompare(b.titulo));
+      break;
+    case 'anio':
+      filtradas.sort((a, b) => b.anio - a.anio);
+      break;
+    default:
+      filtradas.sort((a, b) => b.añadido?.toDate() - a.añadido?.toDate());
+  }
+
+  renderizarPeliculas(filtradas);
+}
+
+// Renderizar películas
+function renderizarPeliculas(lista) {
+  galeria.innerHTML = '';
+
+  if (lista.length === 0) {
+    galeria.innerHTML = `<div class="vacio">No hay resultados.</div>`;
+    return;
+  }
+
+  lista.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'pelicula';
+    div.tabIndex = 0;
+
+    div.innerHTML = `
+      <div class="banderas">
+        ${p.bandera1 ? `<img src="${p.bandera1}" alt="Idioma">` : ''}
+        ${p.bandera2 ? `<img src="${p.bandera2}" alt="Idioma">` : ''}
+      </div>
+      <i class="fa-solid fa-heart corazon ${favoritas.includes(p.id) ? 'activo' : ''}" onclick="toggleFavorito(event, '${p.id}')"></i>
+      <img src="${p.portada}" alt="${p.titulo}">
+      <h3>${p.titulo}</h3>
+    `;
+
+    galeria.appendChild(div);
+  });
+}
+
+// Alternar favorito
+function toggleFavorito(e, id) {
+  e.stopPropagation();
+  const ref = firebase.firestore().collection('usuarios').doc(usuarioActual.uid);
+  const esFavorito = favoritas.includes(id);
+  const nuevas = esFavorito ? favoritas.filter(f => f !== id) : [...favoritas, id];
+  ref.set({ favoritos: nuevas }, { merge: true });
+}
+
+// Buscar
+iconoBuscar.addEventListener('click', () => {
+  buscadorInput.style.display = buscadorInput.style.display === 'block' ? 'none' : 'block';
+  buscadorInput.focus();
+});
+
+buscadorInput.addEventListener('input', mostrarPeliculas);
+
+// Ordenar
+selectOrden.addEventListener('change', mostrarPeliculas);
+
+// Filtrar por categoría
+function filtrar(cat) {
+  categoriaActual = cat;
+  document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
+  const activo = document.querySelector(`aside li[onclick*="${cat}"]`);
+  if (activo) activo.classList.add('activo');
+
+  tituloCategoria.textContent = cat === 'todos' ? 'TODAS' :
+                                cat === 'favoritos' ? 'FAVORITOS' :
+                                cat.toUpperCase();
+  mostrarPeliculas();
+}
