@@ -128,23 +128,31 @@ document.addEventListener('DOMContentLoaded', () => {
     filtrarPeliculas(categoria);
   };
 
-  function filtrarPeliculas(categoria) {
-    let lista = [];
+function filtrarPeliculas(categoria) {
+  let lista = [];
 
-    if (categoria === 'favoritos') {
-      lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
-      tituloCategoria.textContent = 'FAVORITOS';
-    } else if (categoria === 'todos') {
-      lista = [...peliculasOriginal];
-      tituloCategoria.textContent = 'TODAS';
-    } else {
-      lista = peliculasOriginal.filter(p => p.anio === categoria);
-      tituloCategoria.textContent = categoria.toUpperCase();
-    }
-
-    lista = ordenar(lista);
-    mostrarPeliculas(lista);
+  if (categoria === 'favoritos') {
+    lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
+    tituloCategoria.textContent = 'FAVORITOS';
+  } else if (categoria === 'todos') {
+    lista = [...peliculasOriginal];
+    tituloCategoria.textContent = 'TODAS';
+  } else {
+    lista = peliculasOriginal.filter(p => p.anio === categoria);
+    tituloCategoria.textContent = categoria.toUpperCase();
   }
+
+  lista = ordenar(lista);
+  mostrarPeliculas(lista);
+
+  // 👉 Enfocar primer elemento de la galería si hay alguno
+  setTimeout(() => {
+    const primeraPelicula = galeria.querySelector('.pelicula');
+    if (primeraPelicula) {
+      primeraPelicula.focus();
+    }
+  }, 50);
+}
 
   function ordenar(lista) {
     const criterio = ordenarSelect.value;
