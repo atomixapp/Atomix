@@ -45,6 +45,8 @@ function iniciarApp(user) {
 
   galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
 
+  // ---- EVENTOS ----
+
   botonCuenta.addEventListener('click', e => {
     e.stopPropagation();
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -71,6 +73,7 @@ function iniciarApp(user) {
 
   ordenarSelect.addEventListener('change', () => {
     criterioOrden = ordenarSelect.value;
+    // Refiltrar para mantener la vista actual
     filtrarPeliculas(tituloCategoria.textContent.toLowerCase() === 'todas' ? 'todos' : tituloCategoria.textContent.toLowerCase());
   });
 
@@ -85,6 +88,8 @@ function iniciarApp(user) {
     navFavoritos.classList.add('activo');
     cargarFavoritosFirestore(userId);
   });
+
+  // ---- FUNCIONES ----
 
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
@@ -116,6 +121,7 @@ function iniciarApp(user) {
     listaFiltrada = ordenarLista(listaFiltrada);
     mostrarPeliculas(listaFiltrada);
 
+    // Actualizar activo en el menú lateral
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
     const liActivo = Array.from(document.querySelectorAll('aside li'))
       .find(li => li.textContent.toLowerCase().includes(anio) || (anio === 'todos' && li.textContent.toLowerCase().includes('todas')));
@@ -128,7 +134,8 @@ function iniciarApp(user) {
   }
 
   async function mostrarPeliculas(lista) {
-    galeria.innerHTML = ''; // <----- Aseguramos limpiar galería antes de mostrar
+    // ¡LIMPIAMOS LA GALERÍA ANTES DE PINTAR!
+    galeria.innerHTML = '';
 
     try {
       const favoritos = await obtenerFavoritosFirestore(userId);
@@ -138,7 +145,13 @@ function iniciarApp(user) {
         return;
       }
 
+      // Evitar duplicados en peliculasOriginal (por si acaso)
+      const vistos = new Set();
+
       lista.forEach(p => {
+        if (vistos.has(p.titulo)) return;
+        vistos.add(p.titulo);
+
         const tituloID = encodeURIComponent(p.titulo);
         const esFavorito = favoritos.includes(p.titulo);
 
@@ -162,6 +175,12 @@ function iniciarApp(user) {
         galeria.appendChild(tarjeta);
       });
 
+      // Eliminar todos listeners antes para evitar acumulación
+      document.querySelectorAll('.corazon').forEach(icon => {
+        icon.replaceWith(icon.cloneNode(true));
+      });
+
+      // Volver a agregar eventos
       document.querySelectorAll('.corazon').forEach(icon => {
         icon.addEventListener('click', async e => {
           const titulo = e.currentTarget.dataset.titulo;
@@ -180,6 +199,7 @@ function iniciarApp(user) {
           }
         });
       });
+
     } catch (err) {
       console.error("Error al obtener favoritos:", err);
     }
@@ -221,7 +241,7 @@ function iniciarApp(user) {
       });
   }
 
-  // SOLO CARGAMOS PELICULAS UNA VEZ
+  // Sólo se carga UNA VEZ el listado de películas
   db.collection('peliculas').get()
     .then(snap => {
       peliculasOriginal = snap.docs.map(doc => doc.data());
