@@ -239,4 +239,39 @@ document.addEventListener('DOMContentLoaded', () => {
   window.cerrarSesion = () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
+
+  // -----------------------------
+  // Soporte navegación con flechas + sonido
+  // -----------------------------
+  const sonidoFoco = new Audio('assets/sounds/click.mp3');
+
+  document.addEventListener('keydown', (e) => {
+    const focado = document.activeElement;
+
+    // Reproducir sonido al mover foco
+    if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+      sonidoFoco.currentTime = 0;
+      sonidoFoco.play().catch(() => {});
+    }
+
+    if (focado.classList.contains('pelicula')) {
+      const peliculas = Array.from(document.querySelectorAll('.pelicula'));
+      const index = peliculas.indexOf(focado);
+      const columnas = Math.floor(galeria.offsetWidth / focado.offsetWidth);
+
+      if (e.key === 'ArrowRight') {
+        const siguiente = peliculas[index + 1];
+        if (siguiente) siguiente.focus();
+      } else if (e.key === 'ArrowLeft') {
+        const anterior = peliculas[index - 1];
+        if (anterior) anterior.focus();
+      } else if (e.key === 'ArrowDown') {
+        const abajo = peliculas[index + columnas];
+        if (abajo) abajo.focus();
+      } else if (e.key === 'ArrowUp') {
+        const arriba = peliculas[index - columnas];
+        if (arriba) arriba.focus();
+      }
+    }
+  });
 });
