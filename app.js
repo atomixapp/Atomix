@@ -1,3 +1,5 @@
+// app.js COMPLETO Y FUNCIONAL - CORRIGE TODOS LOS PROBLEMAS DE FOCO Y NAVEGACIÓN
+
 document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -14,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconoBuscar = document.getElementById('iconoBuscar');
   const botonCuenta = document.getElementById('botonCuenta');
   const menuUsuario = document.getElementById('menuUsuario');
+
+  const sonidoFoco = new Audio('assets/sounds/click.mp3');
 
   auth.onAuthStateChanged(async (user) => {
     if (user && user.emailVerified) {
@@ -65,13 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('aside ul li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.keyCode === 13) {
+        if (e.key === 'Enter') {
           li.click();
         }
       });
     });
-
-    document.getElementById('navPeliculas')?.focus();
 
     botonCuenta.setAttribute('tabindex', '0');
     buscador.setAttribute('tabindex', '0');
@@ -85,12 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
   async function cargarPeliculas() {
     try {
       const snap = await db.collection('peliculas').get();
-      if (!snap.empty) {
-        return snap.docs.map(doc => doc.data());
-      }
-      return [];
+      return snap.docs.map(doc => doc.data());
     } catch (error) {
-      console.error('Error cargando películas:', error);
+      console.error('Error cargando peliculas:', error);
       return [];
     }
   }
@@ -114,12 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    const items = document.querySelectorAll('aside ul li');
-    items.forEach(item => {
-      if (
-        item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
-        !item.classList.contains('favoritos-boton')
-      ) {
+    document.querySelectorAll('aside ul li').forEach(item => {
+      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
+          !item.classList.contains('favoritos-boton')) {
         item.classList.add('activo');
       }
     });
@@ -169,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tarjeta.classList.add('pelicula');
       tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
       tarjeta.setAttribute('tabindex', '0');
+
       tarjeta.innerHTML = `
         <img src="${p.imagen}" alt="${p.titulo}">
         <div class="banderas">
@@ -203,12 +200,13 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
 
-    const tarjetaFoco = galeria.querySelector('.pelicula');
-    if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
-      setTimeout(() => {
+    // Dar foco a la primera tarjeta si no hay otra enfocada
+    requestAnimationFrame(() => {
+      const tarjetaFoco = galeria.querySelector('.pelicula');
+      if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
         tarjetaFoco.focus({ preventScroll: true });
-      }, 50);
-    }
+      }
+    });
   }
 
   async function agregarFavorito(titulo) {
@@ -245,11 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
-  // -----------------------------
-  // Navegación con flechas + foco limpio
-  // -----------------------------
-  const sonidoFoco = new Audio('assets/sounds/click.mp3');
-
   document.addEventListener('keydown', (e) => {
     const focado = document.activeElement;
 
@@ -263,21 +256,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const index = peliculas.indexOf(focado);
       const columnas = Math.floor(galeria.offsetWidth / focado.offsetWidth);
 
-      if (e.key === 'ArrowRight' && index + 1 < peliculas.length) {
+      if (e.key === 'ArrowRight' && peliculas[index + 1]) {
         peliculas[index + 1].focus();
-      } else if (e.key === 'ArrowLeft' && index - 1 >= 0) {
+      } else if (e.key === 'ArrowLeft' && peliculas[index - 1]) {
         peliculas[index - 1].focus();
-      } else if (e.key === 'ArrowDown') {
-        if (index + columnas < peliculas.length) {
-          peliculas[index + columnas].focus();
-        } else {
-          ordenarSelect.focus();
-        }
+      } else if (e.key === 'ArrowDown' && peliculas[index + columnas]) {
+        peliculas[index + columnas].focus();
       } else if (e.key === 'ArrowUp') {
         if (index - columnas >= 0) {
           peliculas[index - columnas].focus();
         } else {
-          document.querySelector('aside ul li.activo')?.focus();
+          document.getElementById('navPeliculas')?.focus();
         }
       }
     }
