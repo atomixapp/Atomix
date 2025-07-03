@@ -1,5 +1,3 @@
-// ✅ app.js REPARADO CON NAVEGACIÓN COMO EN TV
-
 document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -52,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (e) => {
-      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) menuUsuario.style.display = 'none';
+      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+        menuUsuario.style.display = 'none';
+      }
       if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
         buscador.style.display = 'none';
         buscador.value = '';
@@ -75,58 +75,109 @@ document.addEventListener('DOMContentLoaded', () => {
 
     peliculasOriginal = await cargarPeliculas();
     favoritos = await cargarFavoritos();
+
     filtrarPeliculas('todos');
   }
 
   async function cargarPeliculas() {
-    const snap = await db.collection('peliculas').get();
-    return snap.empty ? [] : snap.docs.map(doc => doc.data());
+    try {
+      const snap = await db.collection('peliculas').get();
+      return snap.empty ? [] : snap.docs.map(doc => doc.data());
+    } catch (error) {
+      console.error('Error cargando películas:', error);
+      return [];
+    }
   }
 
   async function cargarFavoritos() {
-    const snap = await db.collection('usuarios').doc(userId).collection('favoritos').get();
-    return snap.docs.map(doc => doc.data().titulo);
+    try {
+      const snap = await db.collection('usuarios').doc(userId).collection('favoritos').get();
+      return snap.docs.map(doc => doc.data().titulo);
+    } catch (error) {
+      console.error('Error cargando favoritos:', error);
+      return [];
+    }
   }
 
   window.filtrar = (categoria) => {
     currentFilter = categoria;
+
     document.querySelectorAll('aside ul li').forEach(li => {
       if (!li.classList.contains('favoritos-boton')) li.classList.remove('activo');
     });
+
     document.querySelectorAll('aside ul li').forEach(item => {
-      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) && !item.classList.contains('favoritos-boton')) {
+      if (
+        item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
+        !item.classList.contains('favoritos-boton')
+      ) {
         item.classList.add('activo');
       }
     });
+
     filtrarPeliculas(categoria);
   };
 
   function filtrarPeliculas(categoria) {
-    let lista = categoria === 'favoritos' ? peliculasOriginal.filter(p => favoritos.includes(p.titulo)) : categoria === 'todos' ? [...peliculasOriginal] : peliculasOriginal.filter(p => p.anio === categoria);
-    tituloCategoria.textContent = categoria === 'favoritos' ? 'FAVORITOS' : categoria === 'todos' ? 'TODAS' : categoria.toUpperCase();
-    mostrarPeliculas(ordenar(lista));
+    let lista = [];
+
+    if (categoria === 'favoritos') {
+      lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
+      tituloCategoria.textContent = 'FAVORITOS';
+    } else if (categoria === 'todos') {
+      lista = [...peliculasOriginal];
+      tituloCategoria.textContent = 'TODAS';
+    } else {
+      lista = peliculasOriginal.filter(p => p.anio === categoria);
+      tituloCategoria.textContent = categoria.toUpperCase();
+    }
+
+    lista = ordenar(lista);
+    mostrarPeliculas(lista);
   }
 
   function ordenar(lista) {
     const criterio = ordenarSelect.value;
-    return criterio === 'titulo' ? lista.sort((a, b) => a.titulo.localeCompare(b.titulo)) : criterio === 'anio' ? lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio)) : lista;
+    if (criterio === 'titulo') {
+      return lista.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    } else if (criterio === 'anio') {
+      return lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
+    }
+    // criterio 'añadido' o cualquiera
+    return lista;
   }
 
   function mostrarPeliculas(lista) {
     galeria.innerHTML = '';
+
     if (lista.length === 0) {
       galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
       return;
     }
+
     lista.forEach(p => {
+      const esFavorito = favoritos.includes(p.titulo);
       const tarjeta = document.createElement('a');
-      tarjeta.className = 'pelicula';
-      tarjeta.href = `detalles.html?titulo=${encodeURIComponent(p.titulo)}`;
+      tarjeta.classList.add('pelicula');
+      tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
       tarjeta.setAttribute('tabindex', '0');
-      tarjeta.innerHTML = `<img src="${p.imagen}" alt="${p.titulo}"><div class="banderas">${p.castellano ? '<img src="https://flagcdn.com/w20/es.png">' : ''}${p.latino ? '<img src="https://flagcdn.com/w20/mx.png">' : ''}</div><h3>${p.titulo}</h3><div class="corazon" data-titulo="${p.titulo}"><i class="fa-solid fa-heart"></i></div>`;
+
+      tarjeta.innerHTML = `
+        <img src="${p.imagen}" alt="${p.titulo}">
+        <div class="banderas">
+          ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
+          ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
+        </div>
+        <h3>${p.titulo}</h3>
+        <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+      `;
+
       galeria.appendChild(tarjeta);
     });
 
+    // Enfocar automáticamente la primera tarjeta y marcar con borde azul el foco
     const primera = galeria.querySelector('.pelicula');
     if (primera) primera.focus();
   }
@@ -139,27 +190,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.cerrarSesion = () => firebase.auth().signOut().then(() => window.location.href = 'index.html');
+  window.cerrarSesion = () => {
+    firebase.auth().signOut().then(() => window.location.href = 'index.html');
+  };
 
-  // Navegación con flechas
+  // Sonido al mover foco
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
+
+  // Navegación con flechas con foco y borde azul (igual que en TV)
   document.addEventListener('keydown', (e) => {
     const foco = document.activeElement;
     const cards = Array.from(document.querySelectorAll('.pelicula'));
     const index = cards.indexOf(foco);
-    const cols = Math.floor(galeria.offsetWidth / (cards[0]?.offsetWidth || 1));
-    if (["ArrowRight","ArrowLeft","ArrowUp","ArrowDown"].includes(e.key)) {
+    const columnas = Math.floor(galeria.offsetWidth / (cards[0]?.offsetWidth || 1));
+
+    if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
       sonidoFoco.currentTime = 0;
-      sonidoFoco.play().catch(()=>{});
+      sonidoFoco.play().catch(() => {});
     }
+
     if (foco.classList.contains('pelicula')) {
-      if (e.key === 'ArrowRight' && cards[index + 1]) cards[index + 1].focus();
-      if (e.key === 'ArrowLeft') {
-        if (index % cols === 0) document.querySelector('aside li.activo')?.focus();
-        else if (cards[index - 1]) cards[index - 1].focus();
+      if (e.key === 'ArrowRight' && cards[index + 1]) {
+        cards[index + 1].focus();
       }
-      if (e.key === 'ArrowDown' && cards[index + cols]) cards[index + cols].focus();
-      if (e.key === 'ArrowUp' && cards[index - cols]) cards[index - cols].focus();
+      else if (e.key === 'ArrowLeft') {
+        // Salir a aside si está en la primera columna
+        if (index % columnas === 0) {
+          document.querySelector('aside li.activo')?.focus();
+        } else if (cards[index - 1]) {
+          cards[index - 1].focus();
+        }
+      }
+      else if (e.key === 'ArrowDown' && cards[index + columnas]) {
+        cards[index + columnas].focus();
+      }
+      else if (e.key === 'ArrowUp' && cards[index - columnas]) {
+        cards[index - columnas].focus();
+      }
+    } else if (document.activeElement.tagName === 'LI' && e.key === 'ArrowRight') {
+      // Desde aside, al pulsar flecha derecha, ir a galería
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) primera.focus();
     }
   });
+
+  // Añadir borde azul y sombra a la card con foco (usar CSS en styles.css)
 });
