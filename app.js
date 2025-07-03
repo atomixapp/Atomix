@@ -201,13 +201,13 @@ setTimeout(() => {
     primera.focus({ preventScroll: true });
 
     // Paso 3: remover foco (blur) y restaurar tabindex
+    // Agregar esto al final de mostrarPeliculas()
     setTimeout(() => {
-      primera.blur(); // 🔥 fuerza a perder el foco y evitar el zoom/sombra visual
-      tarjetas.forEach(t => t.setAttribute('tabindex', '0'));
-      primera.classList.remove('sin-animacion');
-    }, 100);
-  }
-}, 150);
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) {
+        primera.focus({ preventScroll: true });
+      }
+    }, 100); // pequeño delay para asegurar que está en el DOM
   
   // Corazones
   document.querySelectorAll('.corazon').forEach(corazon => {
