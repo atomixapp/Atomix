@@ -156,79 +156,63 @@ document.addEventListener('DOMContentLoaded', () => {
     return lista;
   }
 
-// [...] todo tu código intacto
+  function mostrarPeliculas(lista) {
+    galeria.innerHTML = '';
 
-function mostrarPeliculas(lista) {
-  galeria.innerHTML = '';
+    if (lista.length === 0) {
+      galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
+      return;
+    }
 
-  if (lista.length === 0) {
-    galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-    return;
-  }
+    lista.forEach(p => {
+      const esFavorito = favoritos.includes(p.titulo);
+      const tarjeta = document.createElement('a');
+      tarjeta.classList.add('pelicula');
+      tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
+      tarjeta.setAttribute('tabindex', '0');
 
-  lista.forEach(p => {
-    const esFavorito = favoritos.includes(p.titulo);
-    const tarjeta = document.createElement('a');
-    tarjeta.classList.add('pelicula');
-    tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
-    tarjeta.setAttribute('tabindex', '0');
+      tarjeta.innerHTML = `
+        <img src="${p.imagen}" alt="${p.titulo}">
+        <div class="banderas">
+          ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
+          ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
+        </div>
+        <h3>${p.titulo}</h3>
+        <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+      `;
 
-    tarjeta.innerHTML = `
-      <img src="${p.imagen}" alt="${p.titulo}">
-      <div class="banderas">
-        ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
-        ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
-      </div>
-      <h3>${p.titulo}</h3>
-      <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-        <i class="fa-solid fa-heart"></i>
-      </div>
-    `;
+      galeria.appendChild(tarjeta);
 
-    galeria.appendChild(tarjeta);
-  });
-
-setTimeout(() => {
-  const tarjetas = galeria.querySelectorAll('.pelicula');
-  if (tarjetas.length > 0) {
-    const primera = tarjetas[0];
-
-    // Paso 1: quitar tabindex a todas temporalmente
-    tarjetas.forEach(t => t.setAttribute('tabindex', '-1'));
-
-    // Paso 2: enfocar sin animación
-    primera.classList.add('sin-animacion');
-    primera.focus({ preventScroll: true });
-
-    // Paso 3: remover foco (blur) y restaurar tabindex
-    // Agregar esto al final de mostrarPeliculas()
     setTimeout(() => {
       const primera = galeria.querySelector('.pelicula');
       if (primera) {
         primera.focus({ preventScroll: true });
       }
     }, 100); // pequeño delay para asegurar que está en el DOM
-  
-  // Corazones
-  document.querySelectorAll('.corazon').forEach(corazon => {
-    corazon.onclick = async () => {
-      const titulo = corazon.getAttribute('data-titulo');
-      const esAhoraFavorito = !corazon.classList.contains('activo');
+      
+    });
 
-      if (esAhoraFavorito) {
-        await agregarFavorito(titulo);
-        corazon.classList.add('activo');
-      } else {
-        await eliminarFavorito(titulo);
-        corazon.classList.remove('activo');
-      }
+    document.querySelectorAll('.corazon').forEach(corazon => {
+      corazon.onclick = async () => {
+        const titulo = corazon.getAttribute('data-titulo');
+        const esAhoraFavorito = !corazon.classList.contains('activo');
 
-      favoritos = await cargarFavoritos();
+        if (esAhoraFavorito) {
+          await agregarFavorito(titulo);
+          corazon.classList.add('activo');
+        } else {
+          await eliminarFavorito(titulo);
+          corazon.classList.remove('activo');
+        }
 
-      if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
-    };
-  });
-}
+        favoritos = await cargarFavoritos();
+
+        if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
+      };
+    });
+  }
 
   async function agregarFavorito(titulo) {
     try {
