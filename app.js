@@ -85,10 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function cargarPeliculas() {
     try {
       const snap = await db.collection('peliculas').get();
-      if (!snap.empty) {
-        return snap.docs.map(doc => doc.data());
-      }
-      return [];
+      return snap.empty ? [] : snap.docs.map(doc => doc.data());
     } catch (error) {
       console.error('Error cargando películas:', error);
       return [];
@@ -107,19 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.filtrar = (categoria) => {
     currentFilter = categoria;
-
     document.querySelectorAll('aside ul li').forEach(li => {
       if (!li.classList.contains('favoritos-boton')) {
         li.classList.remove('activo');
       }
     });
 
-    const items = document.querySelectorAll('aside ul li');
-    items.forEach(item => {
-      if (
-        item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
-        !item.classList.contains('favoritos-boton')
-      ) {
+    document.querySelectorAll('aside ul li').forEach(item => {
+      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) && !item.classList.contains('favoritos-boton')) {
         item.classList.add('activo');
       }
     });
@@ -183,12 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       galeria.appendChild(tarjeta);
-
-const tarjetaFoco = galeria.querySelector('.pelicula');
-if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
-  tarjetaFoco.focus({ preventScroll: true });
-} 
     });
+
+    const tarjetaFoco = galeria.querySelector('.pelicula');
+    if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
+      tarjetaFoco.focus({ preventScroll: true });
+    }
 
     document.querySelectorAll('.corazon').forEach(corazon => {
       corazon.onclick = async () => {
@@ -233,7 +225,6 @@ if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
   function filtrarBusqueda() {
     const texto = buscador.value.toLowerCase();
     const tarjetas = galeria.querySelectorAll('.pelicula');
-
     tarjetas.forEach(tarjeta => {
       const titulo = tarjeta.querySelector('h3').textContent.toLowerCase();
       tarjeta.style.display = titulo.includes(texto) ? 'block' : 'none';
@@ -244,9 +235,6 @@ if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
-  // -----------------------------
-  // Soporte navegación con flechas + sonido + foco inicial una sola vez
-  // -----------------------------
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
   let focoInicialAsignado = false;
 
@@ -258,7 +246,7 @@ if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
       sonidoFoco.play().catch(() => {});
     }
 
-    if (!focoInicialAsignado && !focado.classList.contains('pelicula')) {
+    if (!focoInicialAsignado && !document.activeElement.classList.contains('pelicula')) {
       const primera = galeria.querySelector('.pelicula');
       if (primera) {
         primera.focus({ preventScroll: true });
