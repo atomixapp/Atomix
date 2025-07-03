@@ -103,6 +103,13 @@
       font-weight: bold;
       box-shadow: 0 0 10px rgba(0,170,255,0.4);
     }
+
+aside li:focus {
+  outline: 2px solid #00aaff;
+  background: #005577;
+  transform: scale(1.08);
+}
+
     main {
       flex: 1;
       padding: 30px 40px;
