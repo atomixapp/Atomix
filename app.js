@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('navPeliculas')?.focus();
     botonCuenta.setAttribute('tabindex', '0');
     buscador.setAttribute('tabindex', '0');
+    ordenarSelect.setAttribute('tabindex', '0');
 
     peliculasOriginal = await cargarPeliculas();
     favoritos = await cargarFavoritos();
@@ -143,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (criterio === 'anio') {
       return lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
     }
-    // criterio 'añadido' o cualquiera
     return lista;
   }
 
@@ -177,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
       galeria.appendChild(tarjeta);
     });
 
-    // Enfocar automáticamente la primera tarjeta y marcar con borde azul el foco
     const primera = galeria.querySelector('.pelicula');
     if (primera) primera.focus();
   }
@@ -194,10 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
-  // Sonido al mover foco
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
 
-  // Navegación con flechas con foco y borde azul (igual que en TV)
   document.addEventListener('keydown', (e) => {
     const foco = document.activeElement;
     const cards = Array.from(document.querySelectorAll('.pelicula'));
@@ -209,12 +206,14 @@ document.addEventListener('DOMContentLoaded', () => {
       sonidoFoco.play().catch(() => {});
     }
 
-    if (foco.classList.contains('pelicula')) {
+    if (
+      foco.classList.contains('pelicula') &&
+      !['SELECT', 'INPUT', 'BUTTON'].includes(foco.tagName)
+    ) {
       if (e.key === 'ArrowRight' && cards[index + 1]) {
         cards[index + 1].focus();
       }
       else if (e.key === 'ArrowLeft') {
-        // Salir a aside si está en la primera columna
         if (index % columnas === 0) {
           document.querySelector('aside li.activo')?.focus();
         } else if (cards[index - 1]) {
@@ -227,12 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (e.key === 'ArrowUp' && cards[index - columnas]) {
         cards[index - columnas].focus();
       }
-    } else if (document.activeElement.tagName === 'LI' && e.key === 'ArrowRight') {
-      // Desde aside, al pulsar flecha derecha, ir a galería
+    } else if (foco.tagName === 'LI' && e.key === 'ArrowRight') {
       const primera = galeria.querySelector('.pelicula');
       if (primera) primera.focus();
     }
   });
-
-  // Añadir borde azul y sombra a la card con foco (usar CSS en styles.css)
 });
