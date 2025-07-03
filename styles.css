@@ -230,8 +230,9 @@ main {
 }
 
 .pelicula:focus {
-  outline: 3px solid #ffcc00;
-  box-shadow: 0 0 12px #ffcc00;
+  outline: 3px solid #00aaff;
+  box-shadow: 0 0 10px #00aaff;
+  transform: scale(1.06);
 }
 
 .banderas {
