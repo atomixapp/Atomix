@@ -264,6 +264,13 @@ main {
   position: relative;
 }
 
+.pelicula.sin-animacion:focus {
+  outline: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+  scale: 1 !important;
+}
+
 .banderas {
   position: absolute;
   top: 8px;
