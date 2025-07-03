@@ -62,10 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buscador.addEventListener('input', filtrarBusqueda);
 
-    document.querySelectorAll('aside ul li').forEach(li => {
+    // Activar navegación con teclas en aside
+    const asideItems = document.querySelectorAll('aside ul li');
+    asideItems.forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.keyCode === 13) {
+        if (e.key === 'Enter') {
           li.click();
         }
       });
@@ -85,10 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function cargarPeliculas() {
     try {
       const snap = await db.collection('peliculas').get();
-      if (!snap.empty) {
-        return snap.docs.map(doc => doc.data());
-      }
-      return [];
+      return snap.empty ? [] : snap.docs.map(doc => doc.data());
     } catch (error) {
       console.error('Error cargando películas:', error);
       return [];
@@ -114,8 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    const items = document.querySelectorAll('aside ul li');
-    items.forEach(item => {
+    document.querySelectorAll('aside ul li').forEach(item => {
       if (
         item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
         !item.classList.contains('favoritos-boton')
@@ -125,14 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     filtrarPeliculas(categoria);
-
-    // Solo enfocar primera película tras cambiar de categoría
-    setTimeout(() => {
-      const primeraPelicula = galeria.querySelector('.pelicula');
-      if (primeraPelicula) {
-        primeraPelicula.focus();
-      }
-    }, 50);
   };
 
   function filtrarPeliculas(categoria) {
@@ -151,6 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lista = ordenar(lista);
     mostrarPeliculas(lista);
+
+    // 👉 Foco al primer elemento de galería
+    setTimeout(() => {
+      const primeraPelicula = galeria.querySelector('.pelicula');
+      if (primeraPelicula) primeraPelicula.focus();
+    }, 50);
   }
 
   function ordenar(lista) {
@@ -213,23 +209,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function agregarFavorito(titulo) {
-    try {
-      const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
-      if (!pelicula) return;
-      const idDoc = titulo.toLowerCase().replace(/\s+/g, '-');
-      await db.collection('usuarios').doc(userId).collection('favoritos').doc(idDoc).set(pelicula);
-    } catch (error) {
-      console.error('Error agregando favorito:', error);
-    }
+    const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
+    if (!pelicula) return;
+    const idDoc = titulo.toLowerCase().replace(/\s+/g, '-');
+    await db.collection('usuarios').doc(userId).collection('favoritos').doc(idDoc).set(pelicula);
   }
 
   async function eliminarFavorito(titulo) {
-    try {
-      const idDoc = titulo.toLowerCase().replace(/\s+/g, '-');
-      await db.collection('usuarios').doc(userId).collection('favoritos').doc(idDoc).delete();
-    } catch (error) {
-      console.error('Error eliminando favorito:', error);
-    }
+    const idDoc = titulo.toLowerCase().replace(/\s+/g, '-');
+    await db.collection('usuarios').doc(userId).collection('favoritos').doc(idDoc).delete();
   }
 
   function filtrarBusqueda() {
@@ -246,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
+  // Navegación con flechas + sonido
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
 
   document.addEventListener('keydown', (e) => {
