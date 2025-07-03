@@ -26,6 +26,7 @@ function iniciarApp(user) {
 
   let peliculasOriginal = [];
   let criterioOrden = 'añadido';
+  let filtroActual = 'todos'; // 👉 Nuevo estado global del filtro
 
   const respaldoLocal = [
     {
@@ -57,7 +58,7 @@ function iniciarApp(user) {
     if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
       buscador.style.display = 'none';
       buscador.value = '';
-      filtrarPeliculas('todos');
+      filtrarPeliculas(filtroActual);
     }
   });
 
@@ -71,7 +72,11 @@ function iniciarApp(user) {
 
   ordenarSelect.addEventListener('change', () => {
     criterioOrden = ordenarSelect.value;
-    filtrarPeliculas('todos');
+    if (filtroActual === 'favoritos') {
+      cargarFavoritosFirestore(userId);
+    } else {
+      filtrarPeliculas(filtroActual);
+    }
   });
 
   navPeliculas.addEventListener('click', () => {
@@ -83,6 +88,7 @@ function iniciarApp(user) {
   navFavoritos.addEventListener('click', () => {
     navPeliculas.classList.remove('activo');
     navFavoritos.classList.add('activo');
+    filtroActual = 'favoritos'; // ✅ Guarda el filtro actual
     cargarFavoritosFirestore(userId);
   });
 
@@ -109,6 +115,8 @@ function iniciarApp(user) {
   }
 
   function filtrarPeliculas(anio = 'todos') {
+    filtroActual = anio; // ✅ Guarda el filtro actual
+
     let listaFiltrada = anio === 'todos'
       ? peliculasOriginal
       : peliculasOriginal.filter(p => p.anio === anio);
