@@ -183,6 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       galeria.appendChild(tarjeta);
+
+const tarjetaFoco = galeria.querySelector('.pelicula');
+if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
+  tarjetaFoco.focus({ preventScroll: true });
+} 
     });
 
     document.querySelectorAll('.corazon').forEach(corazon => {
