@@ -188,11 +188,19 @@ function mostrarPeliculas(lista) {
     galeria.appendChild(tarjeta);
   });
 
-  // ✅ Evitar conflictos visuales forzando el foco tras breve retardo
-  setTimeout(() => {
-    const primera = galeria.querySelector('.pelicula');
-    if (primera) primera.focus({ preventScroll: true });
-  }, 50); // Tiempo mínimo para evitar "pegado"
+setTimeout(() => {
+  const primera = galeria.querySelector('.pelicula');
+  if (primera) {
+    // 👉 Evitamos que el foco cause efectos visuales
+    primera.classList.add('sin-animacion');
+    primera.focus({ preventScroll: true });
+
+    // 👇 Quitamos la clase después de que el estilo no deseado haya sido evitado
+    setTimeout(() => {
+      primera.classList.remove('sin-animacion');
+    }, 100);
+  }
+}, 50);
   
   // Corazones
   document.querySelectorAll('.corazon').forEach(corazon => {
