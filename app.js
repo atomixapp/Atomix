@@ -1,72 +1,147 @@
-// app.js COMPLETO Y FUNCIONAL - CORRIGE TODOS LOS PROBLEMAS DE FOCO Y NAVEGACIÓN
-
 document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  let peliculasOriginal = [];
-  let favoritos = [];
-  let userId = null;
-  let currentFilter = 'todos';
-
-  const galeria = document.getElementById('galeria');
-  const tituloCategoria = document.getElementById('tituloCategoria');
-  const ordenarSelect = document.getElementById('ordenar');
-  const buscador = document.getElementById('buscadorPeliculas');
-  const iconoBuscar = document.getElementById('iconoBuscar');
-  const botonCuenta = document.getElementById('botonCuenta');
-  const menuUsuario = document.getElementById('menuUsuario');
-
-  const sonidoFoco = new Audio('assets/sounds/click.mp3');
-
-  auth.onAuthStateChanged(async (user) => {
-    if (user && user.emailVerified) {
-      userId = user.uid;
-      iniciarApp();
-    } else {
+  auth.onAuthStateChanged(user => {
+    if (!user) {
       window.location.href = 'index.html';
+    } else {
+      inicializarPeliculas(user);
     }
   });
 
-  async function iniciarApp() {
-    document.getElementById('nombreUsuario').textContent = firebase.auth().currentUser.displayName || 'Usuario';
-    document.getElementById('correoUsuario').textContent = firebase.auth().currentUser.email;
+  function inicializarPeliculas(user) {
+    const galeria = document.getElementById('galeria');
+    const buscador = document.getElementById('buscadorPeliculas');
+    const ordenar = document.getElementById('ordenar');
+    const botonCuenta = document.getElementById('botonCuenta');
+    const menuUsuario = document.getElementById('menuUsuario');
+    const tituloCategoria = document.getElementById('tituloCategoria');
 
-    ordenarSelect.addEventListener('change', () => filtrarPeliculas(currentFilter));
+    let todasPeliculas = [];
 
+    // Mostrar/ocultar menú usuario
     botonCuenta.addEventListener('click', (e) => {
       e.stopPropagation();
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-      buscador.style.display = 'none';
-    });
-
-    iconoBuscar.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (buscador.style.display === 'block') {
-        buscador.style.display = 'none';
-        buscador.value = '';
-        filtrarPeliculas(currentFilter);
-      } else {
-        buscador.style.display = 'block';
-        buscador.focus();
-        menuUsuario.style.display = 'none';
-      }
     });
 
     document.addEventListener('click', (e) => {
       if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
         menuUsuario.style.display = 'none';
       }
-      if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
-        buscador.style.display = 'none';
-        buscador.value = '';
-        filtrarPeliculas(currentFilter);
-      }
     });
 
-    buscador.addEventListener('input', filtrarBusqueda);
+    ordenar.addEventListener('change', () => {
+      renderPeliculas(filtrarPeliculas(buscador.value));
+    });
 
-    document.querySelectorAll('aside ul li').forEach(li => {
+    buscador.addEventListener('input', () => {
+      renderPeliculas(filtrarPeliculas(buscador.value));
+    });
+
+    function filtrarPeliculas(texto) {
+      const filtro = texto.toLowerCase();
+      return todasPeliculas
+        .filter(p => p.titulo.toLowerCase().includes(filtro))
+        .sort((a, b) => {
+          const orden = ordenar.value;
+          if (orden === 'titulo') return a.titulo.localeCompare(b.titulo);
+          if (orden === 'anio') return b.anio - a.anio;
+          return b.timestamp?.seconds - a.timestamp?.seconds;
+        });
+    }
+
+    function renderPeliculas(lista) {
+      galeria.innerHTML = '';
+
+      if (lista.length === 0) {
+        galeria.innerHTML = '<p style="color:white;">No hay películas para mostrar.</p>';
+        return;
+      }
+
+      lista.forEach(pelicula => {
+        const card = document.createElement('div');
+        card.className = 'pelicula';
+        card.setAttribute('tabindex', '0');
+        card.innerHTML = `
+          <img src="${pelicula.portada}" alt="${pelicula.titulo}">
+          <h3>${pelicula.titulo}</h3>
+        `;
+
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            alert(`Seleccionada: ${pelicula.titulo}`);
+          }
+
+          if (e.key === 'ArrowLeft') {
+            const prev = card.previousElementSibling;
+            if (prev) prev.focus();
+            else document.querySelector('aside li.activo')?.focus();
+          }
+
+          if (e.key === 'ArrowRight') {
+            const next = card.nextElementSibling;
+            if (next) next.focus();
+          }
+
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            const cards = Array.from(galeria.querySelectorAll('.pelicula'));
+            const index = cards.indexOf(card);
+            const columns = Math.floor(galeria.offsetWidth / card.offsetWidth);
+            const newIndex = e.key === 'ArrowUp' ? index - columns : index + columns;
+            if (cards[newIndex]) cards[newIndex].focus();
+          }
+        });
+
+        galeria.appendChild(card);
+      });
+
+      // Enfocar automáticamente la primera tarjeta
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) primera.focus();
+    }
+
+    window.filtrar = function (categoria) {
+      document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
+      const currentLi = document.querySelector(`#nav${capitalize(categoria)}`);
+      if (currentLi) currentLi.classList.add('activo');
+
+      tituloCategoria.textContent = categoria.toUpperCase();
+
+      if (categoria === 'favoritos') {
+        db.collection('usuarios').doc(user.uid).get().then(doc => {
+          const favIds = doc.data().favoritos || [];
+          const filtradas = todasPeliculas.filter(p => favIds.includes(p.id));
+          renderPeliculas(filtradas);
+        });
+      } else if (categoria === 'todos') {
+        renderPeliculas(todasPeliculas);
+      } else {
+        const filtradas = todasPeliculas.filter(p => p.categoria === categoria);
+        renderPeliculas(filtradas);
+      }
+    };
+
+    window.cerrarSesion = function () {
+      auth.signOut().then(() => {
+        window.location.href = 'index.html';
+      });
+    };
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Cargar todas las películas
+    db.collection('peliculas').get().then(snapshot => {
+      todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderPeliculas(todasPeliculas);
+    });
+
+    // Teclas en el menú lateral
+    document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -74,201 +149,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
-
-    botonCuenta.setAttribute('tabindex', '0');
-    buscador.setAttribute('tabindex', '0');
-
-    peliculasOriginal = await cargarPeliculas();
-    favoritos = await cargarFavoritos();
-
-    filtrarPeliculas('todos');
   }
-
-  async function cargarPeliculas() {
-    try {
-      const snap = await db.collection('peliculas').get();
-      return snap.docs.map(doc => doc.data());
-    } catch (error) {
-      console.error('Error cargando peliculas:', error);
-      return [];
-    }
-  }
-
-  async function cargarFavoritos() {
-    try {
-      const snap = await db.collection('usuarios').doc(userId).collection('favoritos').get();
-      return snap.docs.map(doc => doc.data().titulo);
-    } catch (error) {
-      console.error('Error cargando favoritos:', error);
-      return [];
-    }
-  }
-
-  window.filtrar = (categoria) => {
-    currentFilter = categoria;
-
-    document.querySelectorAll('aside ul li').forEach(li => {
-      if (!li.classList.contains('favoritos-boton')) {
-        li.classList.remove('activo');
-      }
-    });
-
-    document.querySelectorAll('aside ul li').forEach(item => {
-      if (item.textContent.toLowerCase().includes(categoria.toLowerCase()) &&
-          !item.classList.contains('favoritos-boton')) {
-        item.classList.add('activo');
-      }
-    });
-
-    filtrarPeliculas(categoria);
-  };
-
-  function filtrarPeliculas(categoria) {
-    let lista = [];
-
-    if (categoria === 'favoritos') {
-      lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
-      tituloCategoria.textContent = 'FAVORITOS';
-    } else if (categoria === 'todos') {
-      lista = [...peliculasOriginal];
-      tituloCategoria.textContent = 'TODAS';
-    } else {
-      lista = peliculasOriginal.filter(p => p.anio === categoria);
-      tituloCategoria.textContent = categoria.toUpperCase();
-    }
-
-    lista = ordenar(lista);
-    mostrarPeliculas(lista);
-  }
-
-  function ordenar(lista) {
-    const criterio = ordenarSelect.value;
-    if (criterio === 'titulo') {
-      return lista.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    } else if (criterio === 'anio') {
-      return lista.sort((a, b) => parseInt(b.anio) - parseInt(a.anio));
-    }
-    return lista;
-  }
-
-  function mostrarPeliculas(lista) {
-    galeria.innerHTML = '';
-
-    if (lista.length === 0) {
-      galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-      return;
-    }
-
-    lista.forEach(p => {
-      const esFavorito = favoritos.includes(p.titulo);
-      const tarjeta = document.createElement('a');
-      tarjeta.classList.add('pelicula');
-      tarjeta.setAttribute('href', `detalles.html?titulo=${encodeURIComponent(p.titulo)}`);
-      tarjeta.setAttribute('tabindex', '0');
-
-      tarjeta.innerHTML = `
-        <img src="${p.imagen}" alt="${p.titulo}">
-        <div class="banderas">
-          ${p.castellano ? `<img src="https://flagcdn.com/w20/es.png">` : ''}
-          ${p.latino ? `<img src="https://flagcdn.com/w20/mx.png">` : ''}
-        </div>
-        <h3>${p.titulo}</h3>
-        <div class="corazon ${esFavorito ? 'activo' : ''}" data-titulo="${p.titulo}">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-      `;
-
-      galeria.appendChild(tarjeta);
-    });
-
-    document.querySelectorAll('.corazon').forEach(corazon => {
-      corazon.onclick = async () => {
-        const titulo = corazon.getAttribute('data-titulo');
-        const esAhoraFavorito = !corazon.classList.contains('activo');
-
-        if (esAhoraFavorito) {
-          await agregarFavorito(titulo);
-          corazon.classList.add('activo');
-        } else {
-          await eliminarFavorito(titulo);
-          corazon.classList.remove('activo');
-        }
-
-        favoritos = await cargarFavoritos();
-
-        if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
-      };
-    });
-
-    // Dar foco a la primera tarjeta si no hay otra enfocada
-    requestAnimationFrame(() => {
-      const tarjetaFoco = galeria.querySelector('.pelicula');
-      if (tarjetaFoco && !document.activeElement.classList.contains('pelicula')) {
-        tarjetaFoco.focus({ preventScroll: true });
-      }
-    });
-  }
-
-  async function agregarFavorito(titulo) {
-    try {
-      const pelicula = peliculasOriginal.find(p => p.titulo === titulo);
-      if (!pelicula) return;
-      const idDoc = titulo.toLowerCase().replace(/\s+/g, '-');
-      await db.collection('usuarios').doc(userId).collection('favoritos').doc(idDoc).set(pelicula);
-    } catch (error) {
-      console.error('Error agregando favorito:', error);
-    }
-  }
-
-  async function eliminarFavorito(titulo) {
-    try {
-      const idDoc = titulo.toLowerCase().replace(/\s+/g, '-');
-      await db.collection('usuarios').doc(userId).collection('favoritos').doc(idDoc).delete();
-    } catch (error) {
-      console.error('Error eliminando favorito:', error);
-    }
-  }
-
-  function filtrarBusqueda() {
-    const texto = buscador.value.toLowerCase();
-    const tarjetas = galeria.querySelectorAll('.pelicula');
-
-    tarjetas.forEach(tarjeta => {
-      const titulo = tarjeta.querySelector('h3').textContent.toLowerCase();
-      tarjeta.style.display = titulo.includes(texto) ? 'block' : 'none';
-    });
-  }
-
-  window.cerrarSesion = () => {
-    firebase.auth().signOut().then(() => window.location.href = 'index.html');
-  };
-
-  document.addEventListener('keydown', (e) => {
-    const focado = document.activeElement;
-
-    if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
-      sonidoFoco.currentTime = 0;
-      sonidoFoco.play().catch(() => {});
-    }
-
-    if (focado.classList.contains('pelicula')) {
-      const peliculas = Array.from(document.querySelectorAll('.pelicula'));
-      const index = peliculas.indexOf(focado);
-      const columnas = Math.floor(galeria.offsetWidth / focado.offsetWidth);
-
-      if (e.key === 'ArrowRight' && peliculas[index + 1]) {
-        peliculas[index + 1].focus();
-      } else if (e.key === 'ArrowLeft' && peliculas[index - 1]) {
-        peliculas[index - 1].focus();
-      } else if (e.key === 'ArrowDown' && peliculas[index + columnas]) {
-        peliculas[index + columnas].focus();
-      } else if (e.key === 'ArrowUp') {
-        if (index - columnas >= 0) {
-          peliculas[index - columnas].focus();
-        } else {
-          document.getElementById('navPeliculas')?.focus();
-        }
-      }
-    }
-  });
 });
