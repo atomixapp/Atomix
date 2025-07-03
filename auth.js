@@ -1,92 +1,76 @@
-// auth.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+// auth.js (versión compat)
 const firebaseConfig = {
-  apiKey: "AIzaSyCmMqUkiT_8zTdJYIfhs2VneW9p_33vow4",
-  authDomain: "atomix-54e1a.firebaseapp.com",
-  projectId: "atomix-54e1a",
-  storageBucket: "atomix-54e1a.appspot.com",
-  messagingSenderId: "888904747002",
-  appId: "1:888904747002:web:4dcc9501a3ff9dfd2e4643"
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_DOMINIO.firebaseapp.com",
+  projectId: "TU_ID",
+  storageBucket: "TU_ID.appspot.com",
+  messagingSenderId: "ID_MENSAJES",
+  appId: "TU_APP_ID"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
 
-// Detectar usuario logueado
-onAuthStateChanged(auth, async (user) => {
-  const loginContainer = document.getElementById("login-container");
-  const contenidoApp = document.getElementById("contenido-app");
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  if (user) {
-    // Mostrar contenido, ocultar login
-    if (loginContainer) loginContainer.style.display = "none";
-    if (contenidoApp) contenidoApp.style.display = "block";
+// Referencias a elementos
+const form = document.getElementById("authForm");
+const btnSubmit = document.getElementById("btnSubmit");
+const toggleAuth = document.getElementById("toggleAuth");
+const errorMsg = document.getElementById("errorMsg");
+let modoRegistro = false;
 
-    const userRef = doc(db, "usuarios", user.uid);
-    const docSnap = await getDoc(userRef);
+// Alternar entre login y registro
+toggleAuth.addEventListener("click", (e) => {
+  e.preventDefault();
+  modoRegistro = !modoRegistro;
+  btnSubmit.textContent = modoRegistro ? "Registrarse" : "Iniciar sesión";
+  toggleAuth.textContent = modoRegistro
+    ? "¿Ya tienes cuenta? Inicia sesión aquí"
+    : "¿No tienes cuenta? Regístrate aquí";
+  errorMsg.textContent = "";
+});
 
-    if (!docSnap.exists()) {
-      await setDoc(userRef, {
-        email: user.email,
+// Procesar formulario
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  try {
+    if (modoRegistro) {
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      await db.collection("usuarios").doc(userCredential.user.uid).set({
+        email: email,
         tipo: "estándar",
         creado: new Date()
       });
+      alert("Registro exitoso. Ya puedes iniciar sesión.");
+      modoRegistro = false;
+      btnSubmit.textContent = "Iniciar sesión";
+      toggleAuth.textContent = "¿No tienes cuenta? Regístrate aquí";
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+      location.href = "home.html"; // o la página principal de tu app
     }
-  } else {
-    // Mostrar login, ocultar contenido
-    if (loginContainer) loginContainer.style.display = "block";
-    if (contenidoApp) contenidoApp.style.display = "none";
+  } catch (error) {
+    errorMsg.textContent = error.message;
+    console.error(error);
   }
 });
 
-// Función de login
-window.iniciarSesion = () => {
+// Recuperar contraseña
+document.getElementById("forgotPassword").addEventListener("click", async (e) => {
+  e.preventDefault();
   const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      console.log("Sesión iniciada");
-    })
-    .catch((error) => {
-      alert("Error: " + error.message);
-      console.error(error);
-    });
-};
-
-// Función de registro
-window.registrarUsuario = () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-      const userRef = doc(db, "usuarios", user.uid);
-      await setDoc(userRef, {
-        email: user.email,
-        tipo: "estándar",
-        creado: new Date()
-      });
-      console.log("Usuario registrado");
-    })
-    .catch((error) => {
-      alert("Error: " + error.message);
-      console.error(error);
-    });
-};
-
-// Función para cerrar sesión
-window.cerrarSesion = () => {
-  signOut(auth)
-    .then(() => {
-      console.log("Sesión cerrada");
-    })
-    .catch((error) => {
-      alert("Error al cerrar sesión: " + error.message);
-    });
-};
+  if (!email) {
+    alert("Introduce tu correo para recuperar contraseña.");
+    return;
+  }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    alert("Correo de recuperación enviado.");
+  } catch (error) {
+    errorMsg.textContent = error.message;
+  }
+});
