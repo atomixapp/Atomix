@@ -197,13 +197,16 @@ main {
   object-fit: cover;
   display: block;
 }
-.pelicula a {
+.pelicula a,
+.pelicula a:focus,
+.pelicula a:hover {
   text-decoration: none;
   color: inherit;
+  outline: none;
+  border-bottom: none !important;
+  box-shadow: none;
 }
 .pelicula h3 {
-  color: white;
-  text-decoration: none;
   margin: 10px;
   text-align: center;
   font-size: 16px;
@@ -211,15 +214,17 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  text-decoration: none;
+  border-bottom: none;
 }
 
-/* Aquí quitamos cualquier línea azul y mantenemos foco visible */
 .pelicula:focus {
   outline: 3px solid #ffcc00;
   text-decoration: none;
   transform: scale(1.08);
   transition: transform 0.2s ease, outline 0.2s ease;
   z-index: 10;
+  box-shadow: none;
 }
 
 .banderas {
