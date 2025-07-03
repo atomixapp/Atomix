@@ -1,63 +1,78 @@
-// auth.js (corregido sin duplicar firebaseConfig ni inicializar Firebase)
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('authForm');
+  const toggleAuth = document.getElementById('toggleAuth');
+  const forgotPassword = document.getElementById('forgotPassword');
+  const btnSubmit = document.getElementById('btnSubmit');
+  const errorMsg = document.getElementById('errorMsg');
 
-// Referencias a elementos
-const form = document.getElementById("authForm");
-const btnSubmit = document.getElementById("btnSubmit");
-const toggleAuth = document.getElementById("toggleAuth");
-const errorMsg = document.getElementById("errorMsg");
-let modoRegistro = false;
+  let isLogin = true;
 
-// Alternar entre login y registro
-toggleAuth.addEventListener("click", (e) => {
-  e.preventDefault();
-  modoRegistro = !modoRegistro;
-  btnSubmit.textContent = modoRegistro ? "Registrarse" : "Iniciar sesión";
-  toggleAuth.textContent = modoRegistro
-    ? "¿Ya tienes cuenta? Inicia sesión aquí"
-    : "¿No tienes cuenta? Regístrate aquí";
-  errorMsg.textContent = "";
-});
-
-// Procesar formulario
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  try {
-    if (modoRegistro) {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      await db.collection("usuarios").doc(userCredential.user.uid).set({
-        email: email,
-        tipo: "estándar",
-        creado: new Date()
-      });
-      alert("Registro exitoso. Ya puedes iniciar sesión.");
-      modoRegistro = false;
-      btnSubmit.textContent = "Iniciar sesión";
-      toggleAuth.textContent = "¿No tienes cuenta? Regístrate aquí";
-    } else {
-      await auth.signInWithEmailAndPassword(email, password);
-      location.href = "home.html"; // o tu página principal
+  // ✅ Verificar si el usuario ya estaba logueado
+  auth.onAuthStateChanged(user => {
+    if (user && user.emailVerified) {
+      window.location.href = 'home.html';
     }
-  } catch (error) {
-    errorMsg.textContent = error.message;
-    console.error(error);
-  }
-});
+  });
 
-// Recuperar contraseña
-document.getElementById("forgotPassword").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  if (!email) {
-    alert("Introduce tu correo para recuperar contraseña.");
-    return;
+  // ✅ Establecer persistencia LOCAL (esto solo se hace antes del login, no aquí)
+  // ⚠️ Quita el .then con onAuthStateChanged aquí, ya que eso es lo que estaba rompiendo la redirección
+
+  function updateForm() {
+    btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
+    toggleAuth.textContent = isLogin
+      ? '¿No tienes cuenta? Regístrate aquí'
+      : '¿Ya tienes cuenta? Inicia sesión';
   }
-  try {
-    await auth.sendPasswordResetEmail(email);
-    alert("Correo de recuperación enviado.");
-  } catch (error) {
-    errorMsg.textContent = error.message;
-  }
+
+  toggleAuth.addEventListener('click', (e) => {
+    e.preventDefault();
+    isLogin = !isLogin;
+    updateForm();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    const password = form.password.value;
+
+    try {
+      if (isLogin) {
+        // ✅ Aquí es donde debes establecer persistencia
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        const result = await auth.signInWithEmailAndPassword(email, password);
+
+        if (!result.user.emailVerified) {
+          errorMsg.textContent = "Verifica tu correo antes de continuar.";
+          await auth.signOut();
+          return;
+        }
+
+        window.location.href = 'home.html';
+      } else {
+        const result = await auth.createUserWithEmailAndPassword(email, password);
+        await result.user.sendEmailVerification();
+        errorMsg.textContent = "Cuenta creada. Revisa tu correo.";
+        await auth.signOut();
+      }
+    } catch (error) {
+      errorMsg.textContent = error.message;
+    }
+  });
+
+  forgotPassword.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const email = form.email.value.trim();
+    if (!email) {
+      errorMsg.textContent = 'Ingresa tu correo primero.';
+      return;
+    }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      errorMsg.textContent = 'Correo de recuperación enviado.';
+    } catch (err) {
+      errorMsg.textContent = err.message;
+    }
+  });
+
+  updateForm();
 });
