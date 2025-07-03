@@ -1,16 +1,4 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyCmMqUkiT_8zTdJYIfhs2VneW9p_33vow4",
-  authDomain: "atomix-54e1a.firebaseapp.com",
-  projectId: "atomix-54e1a",
-  storageBucket: "atomix-54e1a.appspot.com",
-  messagingSenderId: "888904747002",
-  appId: "1:888904747002:web:4dcc9501a3ff9dfd2e4643"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
+// auth.js (corregido sin duplicar firebaseConfig ni inicializar Firebase)
 
 // Referencias a elementos
 const form = document.getElementById("authForm");
@@ -50,7 +38,7 @@ form.addEventListener("submit", async (e) => {
       toggleAuth.textContent = "¿No tienes cuenta? Regístrate aquí";
     } else {
       await auth.signInWithEmailAndPassword(email, password);
-      location.href = "home.html"; // o la página principal de tu app
+      location.href = "home.html"; // o tu página principal
     }
   } catch (error) {
     errorMsg.textContent = error.message;
