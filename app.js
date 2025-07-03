@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buscador.addEventListener('input', filtrarBusqueda);
 
-    // Soporte mando a distancia
     document.querySelectorAll('aside ul li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
@@ -241,41 +240,28 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // -----------------------------
-  // Soporte navegación con flechas + sonido
+  // Soporte navegación con flechas + sonido + foco inicial una sola vez
   // -----------------------------
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
-
-  document.addEventListener('keydown', (e) => {
-    const focado = document.activeElement;
-
-    // Reproducir sonido al mover foco
-    if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
-      sonidoFoco.currentTime = 0;
-      sonidoFoco.play().catch(() => {});
-    }
-
   let focoInicialAsignado = false;
 
   document.addEventListener('keydown', (e) => {
     const focado = document.activeElement;
 
-    // Reproducir sonido al mover foco
-    if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+    if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
       sonidoFoco.currentTime = 0;
       sonidoFoco.play().catch(() => {});
     }
 
-    // Si el foco actual NO está en una tarjeta, y se presiona flecha, damos foco inicial
-    if (!focoInicialAsignado && !document.activeElement.classList.contains('pelicula')) {
+    if (!focoInicialAsignado && !focado.classList.contains('pelicula')) {
       const primera = galeria.querySelector('.pelicula');
       if (primera) {
         primera.focus({ preventScroll: true });
         focoInicialAsignado = true;
-        return; // No procesar más este evento ahora
+        return;
       }
     }
 
-    // Navegación entre tarjetas
     if (focado.classList.contains('pelicula')) {
       const peliculas = Array.from(document.querySelectorAll('.pelicula'));
       const index = peliculas.indexOf(focado);
@@ -296,3 +282,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+});
