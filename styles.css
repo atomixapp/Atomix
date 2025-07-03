@@ -110,6 +110,11 @@ aside li:focus {
   transform: scale(1.08);
 }
 
+aside ul li:focus {
+  outline: 2px solid #ffcc00;
+  background: #333;
+}
+
 #botonCuenta:focus,
 #buscadorPeliculas:focus {
   outline: 2px solid #00aaff;
@@ -216,10 +221,10 @@ aside li:focus {
 }
 
 .pelicula:focus {
-  outline: 3px solid #00aaff;
-  transform: scale(1.05);
-  z-index: 2;
-  position: relative;
+  outline: 3px solid #ffcc00;
+  transform: scale(1.08);
+  transition: transform 0.2s ease, outline 0.2s ease;
+  z-index: 10;
 }
 
     .banderas {
