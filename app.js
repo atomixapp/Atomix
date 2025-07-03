@@ -191,16 +191,15 @@ function mostrarPeliculas(lista) {
 setTimeout(() => {
   const primera = galeria.querySelector('.pelicula');
   if (primera) {
-    // 👉 Evitamos que el foco cause efectos visuales
     primera.classList.add('sin-animacion');
     primera.focus({ preventScroll: true });
 
-    // 👇 Quitamos la clase después de que el estilo no deseado haya sido evitado
+    // Remover la clase tras permitir que se estabilice el renderizado
     setTimeout(() => {
       primera.classList.remove('sin-animacion');
     }, 100);
   }
-}, 50);
+}, 100);
   
   // Corazones
   document.querySelectorAll('.corazon').forEach(corazon => {
