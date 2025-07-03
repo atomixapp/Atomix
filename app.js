@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buscador.addEventListener('input', filtrarBusqueda);
 
-    // Soporte mando a distancia
     document.querySelectorAll('aside ul li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
@@ -128,31 +127,31 @@ document.addEventListener('DOMContentLoaded', () => {
     filtrarPeliculas(categoria);
   };
 
-function filtrarPeliculas(categoria) {
-  let lista = [];
+  function filtrarPeliculas(categoria) {
+    let lista = [];
 
-  if (categoria === 'favoritos') {
-    lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
-    tituloCategoria.textContent = 'FAVORITOS';
-  } else if (categoria === 'todos') {
-    lista = [...peliculasOriginal];
-    tituloCategoria.textContent = 'TODAS';
-  } else {
-    lista = peliculasOriginal.filter(p => p.anio === categoria);
-    tituloCategoria.textContent = categoria.toUpperCase();
-  }
-
-  lista = ordenar(lista);
-  mostrarPeliculas(lista);
-
-  // 👉 Enfocar primer elemento de la galería si hay alguno
-  setTimeout(() => {
-    const primeraPelicula = galeria.querySelector('.pelicula');
-    if (primeraPelicula) {
-      primeraPelicula.focus();
+    if (categoria === 'favoritos') {
+      lista = peliculasOriginal.filter(p => favoritos.includes(p.titulo));
+      tituloCategoria.textContent = 'FAVORITOS';
+    } else if (categoria === 'todos') {
+      lista = [...peliculasOriginal];
+      tituloCategoria.textContent = 'TODAS';
+    } else {
+      lista = peliculasOriginal.filter(p => p.anio === categoria);
+      tituloCategoria.textContent = categoria.toUpperCase();
     }
-  }, 50);
-}
+
+    lista = ordenar(lista);
+    mostrarPeliculas(lista);
+
+    // 👉 Enfocar primer elemento de la galería si existe
+    setTimeout(() => {
+      const primeraPelicula = galeria.querySelector('.pelicula');
+      if (primeraPelicula) {
+        primeraPelicula.focus();
+      }
+    }, 50);
+  }
 
   function ordenar(lista) {
     const criterio = ordenarSelect.value;
@@ -208,7 +207,6 @@ function filtrarPeliculas(categoria) {
         }
 
         favoritos = await cargarFavoritos();
-
         if (currentFilter === 'favoritos') filtrarPeliculas('favoritos');
       };
     });
@@ -248,15 +246,11 @@ function filtrarPeliculas(categoria) {
     firebase.auth().signOut().then(() => window.location.href = 'index.html');
   };
 
-  // -----------------------------
-  // Soporte navegación con flechas + sonido
-  // -----------------------------
   const sonidoFoco = new Audio('assets/sounds/click.mp3');
 
   document.addEventListener('keydown', (e) => {
     const focado = document.activeElement;
 
-    // Reproducir sonido al mover foco
     if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
       sonidoFoco.currentTime = 0;
       sonidoFoco.play().catch(() => {});
