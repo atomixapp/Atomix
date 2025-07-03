@@ -25,23 +25,13 @@ function iniciarApp(user) {
   const tituloCategoria = document.getElementById('tituloCategoria');
 
   let peliculasOriginal = [];
+  let peliculasFiltradas = [];
   let criterioOrden = 'añadido';
-  let filtroActual = 'todos'; // 👉 Nuevo estado global del filtro
+  let filtroActual = 'todos';
 
   const respaldoLocal = [
-    {
-      titulo: 'Spiderman: De regreso a casa',
-      imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg',
-      anio: '2025',
-      latino: true,
-      castellano: true
-    },
-    {
-      titulo: 'La leyenda de Ochi',
-      imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg',
-      anio: '2025',
-      castellano: true
-    }
+    { titulo: 'Spiderman: De regreso a casa', imagen: 'https://image.tmdb.org/t/p/original/81qIJbnS2L0rUAAB55G8CZODpS5.jpg', anio: '2025', latino: true, castellano: true },
+    { titulo: 'La leyenda de Ochi', imagen: 'https://image.tmdb.org/t/p/original/h1Iq6WfE4RWc9klGvN8sdi5aR6V.jpg', anio: '2025', castellano: true }
   ];
 
   galeria.innerHTML = '<p class="cargando">Cargando contenido...</p>';
@@ -52,9 +42,7 @@ function iniciarApp(user) {
   });
 
   document.addEventListener('click', e => {
-    if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-      menuUsuario.style.display = 'none';
-    }
+    if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) menuUsuario.style.display = 'none';
     if (!buscador.contains(e.target) && !iconoBuscar.contains(e.target)) {
       buscador.style.display = 'none';
       buscador.value = '';
@@ -75,7 +63,8 @@ function iniciarApp(user) {
     if (filtroActual === 'favoritos') {
       cargarFavoritosFirestore(userId);
     } else {
-      filtrarPeliculas(filtroActual);
+      peliculasFiltradas = ordenarLista(peliculasFiltradas);
+      mostrarPeliculas(peliculasFiltradas);
     }
   });
 
@@ -88,7 +77,6 @@ function iniciarApp(user) {
   navFavoritos.addEventListener('click', () => {
     navPeliculas.classList.remove('activo');
     navFavoritos.classList.add('activo');
-    filtroActual = 'favoritos'; // ✅ Guarda el filtro actual
     cargarFavoritosFirestore(userId);
   });
 
@@ -115,24 +103,20 @@ function iniciarApp(user) {
   }
 
   function filtrarPeliculas(anio = 'todos') {
-    filtroActual = anio; // ✅ Guarda el filtro actual
+    filtroActual = anio;
 
-    let listaFiltrada = anio === 'todos'
-      ? peliculasOriginal
+    peliculasFiltradas = anio === 'todos'
+      ? [...peliculasOriginal]
       : peliculasOriginal.filter(p => p.anio === anio);
 
-    listaFiltrada = ordenarLista(listaFiltrada);
-    mostrarPeliculas(listaFiltrada);
+    peliculasFiltradas = ordenarLista(peliculasFiltradas);
+    mostrarPeliculas(peliculasFiltradas);
 
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
-    const liActivo = Array.from(document.querySelectorAll('aside li'))
-      .find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
+    const liActivo = Array.from(document.querySelectorAll('aside li')).find(li => li.textContent.includes(anio) || (anio === 'todos' && li.textContent.includes('Todas')));
     if (liActivo) liActivo.classList.add('activo');
 
-    tituloCategoria.textContent =
-      anio === 'favoritos' ? 'FAVORITOS' :
-      anio === 'todos' ? 'TODAS' :
-      anio.toUpperCase();
+    tituloCategoria.textContent = anio === 'favoritos' ? 'FAVORITOS' : anio === 'todos' ? 'TODAS' : anio.toUpperCase();
   }
 
   async function mostrarPeliculas(lista) {
@@ -179,9 +163,7 @@ function iniciarApp(user) {
           e.currentTarget.classList.toggle('activo');
           try {
             await toggleFavoritoFirestore(pelicula, userId);
-            if (navFavoritos.classList.contains('activo')) {
-              cargarFavoritosFirestore(userId);
-            }
+            if (filtroActual === 'favoritos') cargarFavoritosFirestore(userId);
           } catch (err) {
             console.error("Error al actualizar favorito:", err);
             e.currentTarget.classList.toggle('activo');
@@ -194,25 +176,16 @@ function iniciarApp(user) {
   }
 
   function toggleFavoritoFirestore(pelicula, userId) {
-    const tituloID = `${pelicula.titulo}-${pelicula.anio}`.toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '');
-
+    const tituloID = `${pelicula.titulo}-${pelicula.anio}`.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
     const docRef = db.collection('usuarios').doc(userId).collection('favoritos').doc(tituloID);
 
-    return docRef.get().then(doc => {
-      if (doc.exists) {
-        return docRef.delete();
-      } else {
-        return docRef.set({
-          titulo: pelicula.titulo,
-          imagen: pelicula.imagen,
-          anio: pelicula.anio,
-          castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
-          latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
-        });
-      }
-    });
+    return docRef.get().then(doc => doc.exists ? docRef.delete() : docRef.set({
+      titulo: pelicula.titulo,
+      imagen: pelicula.imagen,
+      anio: pelicula.anio,
+      castellano: typeof pelicula.castellano === 'boolean' ? pelicula.castellano : true,
+      latino: typeof pelicula.latino === 'boolean' ? pelicula.latino : false
+    }));
   }
 
   function obtenerFavoritosFirestore(userId) {
