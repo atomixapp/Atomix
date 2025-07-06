@@ -132,19 +132,22 @@ main {
   color: #ccc;
 }
 
+/* GALERIA */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 160px));
   gap: 0.7rem;
   overflow-y: auto;
   padding: 0 0.4rem;
+  justify-content: center;
   align-content: start;
-  justify-items: center;  /* NUEVO: centra las tarjetas dentro de cada celda */
+  justify-items: center;
 }
+
 .imagen-contenedor {
   position: relative;
   width: 100%;
-  aspect-ratio: 2/3;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
 }
 
@@ -164,14 +167,8 @@ main {
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   outline: none;
-  height: auto;
-}
-
-.pelicula img {
   width: 100%;
-  aspect-ratio: 2/3;
-  object-fit: cover;
-  display: block;
+  max-width: 160px;
 }
 
 .pelicula h3 {
@@ -217,6 +214,10 @@ aside::-webkit-scrollbar-thumb {
 /* RESPONSIVE UHD */
 @media (min-width: 1920px) {
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+  }
+
+  .pelicula {
+    max-width: 180px;
   }
 }
