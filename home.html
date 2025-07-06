@@ -12,6 +12,7 @@
   <script src="firebase.js"></script>
 </head>
 <body>
+
 <header>
   <nav class="nav-left">
     <a href="tv.html">TV</a>
@@ -32,25 +33,28 @@
   <aside>
     <h2>Categorías</h2>
     <ul>
-      <li onclick="filtrar('favoritos')" id="navFavoritos" tabindex="0">❤️ Favoritos</li>
+      <li onclick="filtrar('favoritos')" id="navFavoritos" class="favoritos-boton" tabindex="0">❤️ Favoritos</li>
       <li class="activo" onclick="filtrar('todos')" id="navPeliculas" tabindex="0">Todas</li>
       <li onclick="filtrar('2025')" tabindex="0">ESTRENOS 2025</li>
     </ul>
   </aside>
 
   <main>
+    <!-- ✅ Nueva galeria-header organizada -->
     <div class="galeria-header">
+      <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
       <i class="fa-solid fa-magnifying-glass" id="iconoBuscar"></i>
       <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
-      <div class="titulo-galeria" id="tituloCategoria">TODAS</div>
       <select id="ordenar">
-        <option value="añadido">Ordenar por añadido</option>
-        <option value="titulo">Ordenar alfabéticamente</option>
-        <option value="anio">Ordenar por año</option>
+        <option value="añadido">Añadido</option>
+        <option value="titulo">A-Z</option>
+        <option value="anio">Año</option>
       </select>
     </div>
 
+    <!-- Galería de películas -->
     <div id="galeria" class="galeria"></div>
+
   </main>
 </div>
 
