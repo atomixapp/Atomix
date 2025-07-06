@@ -66,11 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
 
-        // HTML de la card
         card.innerHTML = `
           <div class="imagen-contenedor">
             <div class="banderas">
-              ${pelicula.banderas?.map(b => `<img src="${b}" alt="Bandera">`).join('') || ''}
+              ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera">`).join('')}
             </div>
             <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
           </div>
