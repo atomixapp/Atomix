@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const auth = window.auth;
+  const db = window.db;
+
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = 'index.html';
@@ -95,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
         galeria.appendChild(card);
       });
 
-      // Enfocar automáticamente la primera tarjeta
       const primera = galeria.querySelector('.pelicula');
       if (primera) primera.focus();
     }
@@ -131,13 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Cargar todas las películas
     db.collection('peliculas').get().then(snapshot => {
       todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderPeliculas(todasPeliculas);
     });
 
-    // Teclas en el menú lateral
     document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
