@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const auth = window.auth;
+  const auth = window.auth; // 👈 necesario para evitar la ❌ roja de GitHub web
   const form = document.getElementById('authForm');
   const toggleAuth = document.getElementById('toggleAuth');
   const forgotPassword = document.getElementById('forgotPassword');
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isLogin = true;
 
-  // ✅ Verificar si el usuario ya estaba logueado
+  // Verificar si el usuario ya estaba logueado
   auth.onAuthStateChanged(user => {
     if (user && user.emailVerified) {
       window.location.href = 'home.html';
