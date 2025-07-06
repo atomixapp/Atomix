@@ -1,3 +1,4 @@
+/* global auth, firebase */
 document.addEventListener('DOMContentLoaded', () => {
   const auth = window.auth; // 👈 necesario para evitar la ❌ roja de GitHub web
   const form = document.getElementById('authForm');
