@@ -8,11 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function inicializarPeliculas(user) {
-    // ... sin volver a definir auth ni db ...
-  }
-});
-
-  function inicializarPeliculas(user) {
     const galeria = document.getElementById('galeria');
     const buscador = document.getElementById('buscadorPeliculas');
     const ordenar = document.getElementById('ordenar');
