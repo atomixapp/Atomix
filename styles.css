@@ -1,12 +1,12 @@
-/* RESET GENERAL */
+/* RESET */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 body {
-  font-family: Arial, sans-serif;
-  background-color: #121212;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #101010;
   color: #fff;
   overflow: hidden;
 }
@@ -20,22 +20,25 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: #1f1f1f;
+  padding: 0.7rem 1.2rem;
+  background: #181818;
+  border-bottom: 1px solid #222;
 }
 header .nav-left a {
-  margin-right: 1.5rem;
-  font-weight: bold;
+  margin-right: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  transition: color 0.3s;
 }
 header .nav-left a.activo {
-  color: #f1c40f;
+  color: #00bfff;
 }
 .nav-right button {
-  background-color: #333;
+  background: #252525;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 #menuUsuario {
@@ -45,43 +48,47 @@ header .nav-left a.activo {
   background-color: #222;
   padding: 1rem;
   display: none;
-  border-radius: 5px;
-  width: 200px;
+  border-radius: 6px;
+  width: 220px;
 }
 
 /* CONTENEDOR PRINCIPAL */
 .app-container {
   display: flex;
-  height: calc(100vh - 72px); /* 72px = header height */
+  height: calc(100vh - 56px);
   overflow: hidden;
 }
 
-/* ASIDE / FILTROS */
+/* ASIDE */
 aside {
-  width: 250px;
-  background-color: #1a1a1a;
+  width: 220px;
+  background: #161616;
   padding: 1rem;
-  overflow-y: auto;
+  border-right: 1px solid #222;
 }
 aside h2 {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.2rem;
+  color: #00bfff;
 }
 aside ul {
   list-style: none;
 }
 aside li {
   margin-bottom: 1rem;
-  padding: 0.5rem;
+  padding: 0.5rem 0.8rem;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 6px;
+  transition: background 0.2s;
 }
 aside li.activo,
 aside li:focus {
-  background-color: #333;
-  outline: none;
+  background: #00bfff;
+  color: #000;
+  font-weight: bold;
 }
 aside li.favoritos-boton {
-  color: #e74c3c;
+  color: #f44336;
 }
 
 /* MAIN */
@@ -97,72 +104,93 @@ main {
 .galeria-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 .titulo-categoria {
-  flex-shrink: 0;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
-.buscador {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background-color: #2c2c2c;
-  padding: 0.3rem 0.7rem;
-  border-radius: 5px;
-}
-.buscador input {
-  background: none;
-  border: none;
-  color: white;
-  width: 100%;
-  outline: none;
-}
-.buscador i {
-  margin-right: 0.5rem;
-}
-.orden select {
+#ordenar {
   padding: 0.4rem;
-  background-color: #2c2c2c;
+  background: #252525;
   color: white;
   border: none;
   border-radius: 5px;
+}
+#buscadorPeliculas {
+  padding: 0.4rem 0.7rem;
+  background: #252525;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  flex: 1;
+}
+.fa-magnifying-glass {
+  font-size: 1rem;
+  cursor: pointer;
+  color: #ccc;
 }
 
-/* GALERIA DE PELICULAS */
+/* GALERIA */
 .galeria {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.7rem;
   overflow-y: auto;
-  padding-right: 0.5rem;
+  padding-right: 0.4rem;
 }
 .pelicula {
-  background-color: #1e1e1e;
+  background: #1c1c1c;
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s, box-shadow 0.2s;
   outline: none;
+  position: relative;
 }
 .pelicula img {
   width: 100%;
-  height: 220px;
+  height: 170px;
   object-fit: cover;
-  display: block;
 }
 .pelicula h3 {
+  font-size: 0.9rem;
   padding: 0.5rem;
-  font-size: 1rem;
   text-align: center;
 }
 
-/* FOCO TARJETAS */
+/* FOCO EN PELICULA */
 .pelicula:focus {
   transform: scale(1.05);
-  box-shadow: 0 0 12px 4px #f1c40f;
-  z-index: 2;
+  box-shadow: 0 0 10px 3px #00bfff;
+  z-index: 5;
+}
+
+/* CORAZON FAVORITO */
+.corazon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.corazon.activo {
+  color: #f44336;
+}
+
+/* BANDERAS */
+.banderas {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 4px;
+}
+.banderas img {
+  width: 18px;
+  height: 12px;
 }
 
 /* SCROLL PERSONALIZADO */
@@ -172,19 +200,16 @@ aside::-webkit-scrollbar {
 }
 .galeria::-webkit-scrollbar-thumb,
 aside::-webkit-scrollbar-thumb {
-  background-color: #555;
+  background: #444;
   border-radius: 4px;
 }
 
-/* RESPONSIVE - para dispositivos más grandes */
+/* RESPONSIVE UHD */
 @media (min-width: 1920px) {
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
   .pelicula img {
-    height: 280px;
-  }
-  .pelicula h3 {
-    font-size: 1.1rem;
+    height: 200px;
   }
 }
