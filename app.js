@@ -69,10 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
-        card.innerHTML = `
-          <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-          <h3>${pelicula.titulo}</h3>
-        `;
+card.innerHTML = `
+  <div class="banderas">
+    ${pelicula.banderas?.map(b => `<img src="${b}" alt="Bandera">`).join('') || ''}
+  </div>
+  <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
+  <h3>${pelicula.titulo}</h3>
+`;
 
         card.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
