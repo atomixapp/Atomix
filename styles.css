@@ -142,25 +142,30 @@ main {
   padding-right: 0.4rem;
 }
 .pelicula {
-  background: #1c1c1c;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #1e1e1e;
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   outline: none;
-  position: relative;
+  height: auto;
 }
+
 .pelicula img {
   width: 100%;
   height: auto;
   aspect-ratio: 2/3;
   object-fit: cover;
   display: block;
-  border-radius: 6px;
 }
+
 .pelicula h3 {
-  font-size: 0.9rem;
   padding: 0.5rem;
+  font-size: 0.9rem;
   text-align: center;
+  flex-grow: 0;
 }
 
 /* FOCO EN PELICULA */
