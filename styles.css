@@ -166,6 +166,9 @@ main {
   font-size: 0.9rem;
   text-align: center;
   flex-grow: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* FOCO EN PELICULA */
