@@ -140,6 +140,7 @@ main {
   gap: 0.7rem;
   overflow-y: auto;
   padding-right: 0.4rem;
+  align-content: start;
 }
 .pelicula {
   display: flex;
@@ -155,7 +156,6 @@ main {
 
 .pelicula img {
   width: 100%;
-  height: auto;
   aspect-ratio: 2/3;
   object-fit: cover;
   display: block;
@@ -216,8 +216,5 @@ aside::-webkit-scrollbar-thumb {
 @media (min-width: 1920px) {
   .galeria {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
-  .pelicula img {
-    height: 200px;
   }
 }
