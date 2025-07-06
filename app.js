@@ -1,9 +1,5 @@
 /* global auth, db, firebase */
 document.addEventListener('DOMContentLoaded', () => {
-  // resto del código
-});
-
-document.addEventListener('DOMContentLoaded', () => {
   const auth = window.auth;
   const db = window.db;
 
@@ -69,14 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
-card.innerHTML = `
-  <div class="banderas">
-    ${pelicula.banderas?.map(b => `<img src="${b}" alt="Bandera">`).join('') || ''}
-  </div>
-  <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-  <h3>${pelicula.titulo}</h3>
-`;
 
+        // HTML de la card
+        card.innerHTML = `
+          <div class="imagen-contenedor">
+            <div class="banderas">
+              ${pelicula.banderas?.map(b => `<img src="${b}" alt="Bandera">`).join('') || ''}
+            </div>
+            <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
+          </div>
+          <h3>${pelicula.titulo}</h3>
+        `;
+
+        // Navegación con teclado
         card.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             alert(`Seleccionada: ${pelicula.titulo}`);
