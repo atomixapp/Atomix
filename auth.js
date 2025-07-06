@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
   const form = document.getElementById('authForm');
   const toggleAuth = document.getElementById('toggleAuth');
   const forgotPassword = document.getElementById('forgotPassword');
