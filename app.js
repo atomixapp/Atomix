@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
         card.innerHTML = `
-          <img src="${pelicula.portada}" alt="${pelicula.titulo}">
+          <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
           <h3>${pelicula.titulo}</h3>
         `;
 
