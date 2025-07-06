@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
   const form = document.getElementById('authForm');
   const toggleAuth = document.getElementById('toggleAuth');
   const forgotPassword = document.getElementById('forgotPassword');
@@ -13,9 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'home.html';
     }
   });
-
-  // ✅ Establecer persistencia LOCAL (esto solo se hace antes del login, no aquí)
-  // ⚠️ Quita el .then con onAuthStateChanged aquí, ya que eso es lo que estaba rompiendo la redirección
 
   function updateForm() {
     btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       if (isLogin) {
-        // ✅ Aquí es donde debes establecer persistencia
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         const result = await auth.signInWithEmailAndPassword(email, password);
 
