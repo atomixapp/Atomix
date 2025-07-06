@@ -1,3 +1,8 @@
+/* global auth, db, firebase */
+document.addEventListener('DOMContentLoaded', () => {
+  // resto del código
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   const auth = window.auth;
   const db = window.db;
