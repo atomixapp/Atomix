@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const auth = firebase.auth();
-  const db = firebase.firestore();
 
   const form = document.getElementById('authForm');
   const toggleAuth = document.getElementById('toggleAuth');
