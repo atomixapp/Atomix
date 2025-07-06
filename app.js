@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
   auth.onAuthStateChanged(user => {
     if (!user) {
       window.location.href = 'index.html';
@@ -7,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
       inicializarPeliculas(user);
     }
   });
+
+  function inicializarPeliculas(user) {
+    // ... sin volver a definir auth ni db ...
+  }
+});
 
   function inicializarPeliculas(user) {
     const galeria = document.getElementById('galeria');
