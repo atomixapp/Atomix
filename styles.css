@@ -152,10 +152,10 @@ main {
 .pelicula img {
   width: 100%;
   height: auto;
-  object-fit: contain;
+  aspect-ratio: 2/3;
+  object-fit: cover;
   display: block;
   border-radius: 6px;
-  background: #000; /* para que no se vea feo en vacío */
 }
 .pelicula h3 {
   font-size: 0.9rem;
