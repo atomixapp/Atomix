@@ -213,8 +213,8 @@ main {
 
 .pelicula:hover .imagen-contenedor img,
 .pelicula:focus .imagen-contenedor img {
-  transform: scale(1.1);
-  object-fit: contain;
+  transform: scale(1.05);  /* Ajuste el zoom para evitar el desbordamiento */
+  object-fit: cover;  /* Asegúrate de que la imagen no se deforme ni salga de los bordes */
 }
 
 /* SCROLLBAR */
