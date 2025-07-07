@@ -181,20 +181,19 @@ main {
   overflow: hidden;
   border-radius: 10px 10px 0 0; /* Esquinas redondeadas en la parte superior */
   width: 100%;
-  height: 200px;  /* Ajuste de la altura para evitar desbordes */
+  height: 250px;  /* Ajuste de la altura para evitar desbordes */
 }
 
 .imagen-contenedor img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.3s ease;  /* Efecto suave */
 }
 
-/* Efecto Hover en la imagen */
 .pelicula:hover .imagen-contenedor img {
   transform: scale(1.1);  /* Zoom en la imagen */
-  object-fit: cover; 
+  object-fit: contain; 
 }
 
 /* FOCO EN PELICULA */
