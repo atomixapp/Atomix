@@ -1,8 +1,10 @@
+/* RESET DE ESTILOS GENERALES */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
 body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #101010;
@@ -24,15 +26,18 @@ header {
   background: #181818;
   border-bottom: 1px solid #222;
 }
+
 header .nav-left a {
   margin-right: 1rem;
   font-weight: 600;
   color: #ccc;
   transition: color 0.3s;
 }
+
 header .nav-left a.activo {
   color: #00bfff;
 }
+
 .nav-right button {
   background: #252525;
   color: white;
@@ -41,6 +46,7 @@ header .nav-left a.activo {
   border-radius: 6px;
   cursor: pointer;
 }
+
 #menuUsuario {
   position: absolute;
   right: 0;
@@ -50,6 +56,7 @@ header .nav-left a.activo {
   display: none;
   border-radius: 6px;
   width: 220px;
+  z-index: 10;
 }
 
 /* CONTENEDOR PRINCIPAL */
@@ -66,14 +73,17 @@ aside {
   padding: 1rem;
   border-right: 1px solid #222;
 }
+
 aside h2 {
   margin-bottom: 1.2rem;
   font-size: 1.2rem;
   color: #00bfff;
 }
+
 aside ul {
   list-style: none;
 }
+
 aside li {
   margin-bottom: 1rem;
   padding: 0.5rem 0.8rem;
@@ -81,12 +91,14 @@ aside li {
   border-radius: 6px;
   transition: background 0.2s;
 }
+
 aside li.activo,
 aside li:focus {
   background: #00bfff;
   color: #000;
   font-weight: bold;
 }
+
 aside li.favoritos-boton {
   color: #f44336;
 }
@@ -107,10 +119,12 @@ main {
   gap: 1rem;
   margin-bottom: 1rem;
 }
+
 .titulo-categoria {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
 #ordenar {
   padding: 0.4rem;
   background: #252525;
@@ -118,6 +132,7 @@ main {
   border: none;
   border-radius: 5px;
 }
+
 #buscadorPeliculas {
   padding: 0.4rem 0.7rem;
   background: #252525;
@@ -126,17 +141,19 @@ main {
   border-radius: 5px;
   flex: 1;
 }
+
 .fa-magnifying-glass {
   font-size: 1rem;
   cursor: pointer;
   color: #ccc;
 }
 
+/* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 160px));
-  gap: 1rem;  /* Más espacio entre las tarjetas */
-  padding: 0 0.4rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+  gap: 1.5rem;  /* Mayor espacio entre las tarjetas */
+  padding: 0.4rem;
   justify-content: center;
   align-content: start;
   justify-items: center;
@@ -156,7 +173,7 @@ main {
   outline: none;
   width: 100%;
   max-width: 180px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .pelicula h3 {
@@ -169,8 +186,14 @@ main {
 
 /* Efecto Hover */
 .pelicula:hover {
-  transform: scale(1.05);  /* Aumento sutil del tamaño */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);  /* Sombra más prominente */
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Efecto Focus */
+.pelicula:focus {
+  transform: scale(1.05);  /* Asegúrate de que esto no interfiera con el hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Efecto más fuerte al hacer foco */
 }
 
 .imagen-contenedor {
@@ -188,35 +211,18 @@ main {
   transition: transform 0.3s ease;
 }
 
-.pelicula:hover .imagen-contenedor img {
-  transform: scale(1.1);  /* Zoom en la imagen */
-  object-fit: contain; 
-}
-
-/* FOCO EN PELICULA */
-.pelicula:focus {
-  transform: scale(1.05);
-}
-
-.banderas {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: flex;
-  gap: 4px;
-  z-index: 10; 
-}
-.banderas img {
-  width: 20px;
-  height: 14px;
+.pelicula:hover .imagen-contenedor img,
+.pelicula:focus .imagen-contenedor img {
+  transform: scale(1.1);
   object-fit: contain;
-  border-radius: 3px;
 }
 
-.galeria::-webkit-scrollbar,
+/* SCROLLBAR */
+.galeria::-webkit-scrollbar {
   width: 8px;
 }
-.galeria::-webkit-scrollbar-thumb,
+
+.galeria::-webkit-scrollbar-thumb {
   background: #444;
   border-radius: 4px;
 }
