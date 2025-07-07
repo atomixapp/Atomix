@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const botonCuenta = document.getElementById('botonCuenta');
     const menuUsuario = document.getElementById('menuUsuario');
     const tituloCategoria = document.getElementById('tituloCategoria');
+    const aside = document.querySelector('aside');
 
     let todasPeliculas = [];
 
@@ -95,13 +96,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (next) next.focus();
           }
 
-          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          if (e.key === 'ArrowUp') {
             e.preventDefault();
-            const cards = Array.from(galeria.querySelectorAll('.pelicula'));
-            const index = cards.indexOf(card);
-            const columns = Math.floor(galeria.offsetWidth / card.offsetWidth);
-            const newIndex = e.key === 'ArrowUp' ? index - columns : index + columns;
-            if (cards[newIndex]) cards[newIndex].focus();
+            const prevSection = aside.querySelector('li.activo');
+            if (prevSection) {
+              prevSection.focus();
+            } else {
+              // Si no hay un elemento activo en el aside, ponemos el foco en el primer filtro
+              aside.querySelector('li')?.focus();
+            }
+          }
+
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextSection = galeria.querySelector('.pelicula');
+            if (nextSection) {
+              nextSection.focus();
+            }
           }
         });
 
@@ -153,6 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
       li.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           li.click();
+        }
+
+        if (e.key === 'ArrowDown') {
+          const firstMovie = galeria.querySelector('.pelicula');
+          if (firstMovie) firstMovie.focus();
         }
       });
     });
