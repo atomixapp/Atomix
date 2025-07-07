@@ -66,15 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
 
-        card.innerHTML = `
-          <div class="imagen-contenedor">
-            <div class="banderas">
-              ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera">`).join('')}
-            </div>
-            <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-          </div>
-          <h3>${pelicula.titulo}</h3>
-        `;
+card.innerHTML = `
+  <div class="imagen-contenedor">
+    <div class="banderas">
+      ${(pelicula.banderas && pelicula.banderas.length > 0)
+        ? pelicula.banderas.map(url => `<img src="${url}" alt="Bandera">`).join('')
+        : ''}
+    </div>
+    <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
+  </div>
+  <h3>${pelicula.titulo}</h3>
+`;
 
         // Navegación con teclado
         card.addEventListener('keydown', (e) => {
