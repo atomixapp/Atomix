@@ -194,9 +194,10 @@ main {
 
 /* Efecto Focus */
 .pelicula:focus {
-  transform: scale(1.1);  /* Aumento sutil del tamaño */
+  transform: scale(1.05);  /* Aumento sutil del tamaño */
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
   border: 2px solid #00bfff;  /* Borde azul brillante */
+  z-index: 10;
 }
 
 .imagen-contenedor {
