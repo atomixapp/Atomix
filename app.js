@@ -38,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPeliculas(filtrarPeliculas(buscador.value));
     });
 
-    // Manejar la entrada del buscador y prevenir problemas de foco
+    // Asegurarnos de que el foco se mantenga en el campo de búsqueda y funcione correctamente
     buscador.addEventListener('focus', (e) => {
-      e.target.select();  // Selecciona todo el texto cuando se hace clic
+      e.target.select();  // Esto seleccionará todo el texto cuando el campo de búsqueda reciba el foco
     });
 
     buscador.addEventListener('input', () => {
@@ -146,12 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tituloCategoria.textContent = categoria.toUpperCase();
 
       if (categoria === 'favoritos') {
-        db.collection('usuarios').doc(user.uid).get().then(doc => {
-          const data = doc.data();
-          const favIds = data && Array.isArray(data.favoritos) ? data.favoritos : [];
-          const filtradas = todasPeliculas.filter(p => favIds.includes(p.id));
-          renderPeliculas(filtradas);
-        });
+        renderPeliculas(todasPeliculas.filter(p => p.favoritos));  // Agrega el filtro para favoritos si es necesario
       } else if (categoria === 'todos') {
         renderPeliculas(todasPeliculas);
       } else {
