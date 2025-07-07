@@ -164,7 +164,7 @@ main {
   align-content: start;
   justify-items: center;
   position: relative;
-  overflow: hidden;
+  overflow: visible;  /* Aseguramos que las tarjetas no se oculten */
 }
 
 .pelicula {
@@ -180,7 +180,7 @@ main {
   width: 100%;
   max-width: 180px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  z-index: 1; /* Se asegura de que las tarjetas sean accesibles */
+  z-index: 1; /* Aseguramos que las tarjetas tengan un z-index correcto */
 }
 
 .pelicula h3 {
@@ -204,7 +204,7 @@ main {
   transform: scale(1.05);  /* Aumento sutil del tamaño */
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
   border: 2px solid #00bfff;  /* Borde azul brillante */
-  z-index: 10; /* Asegura que el foco no se bloquee */
+  z-index: 10; /* Asegura que las tarjetas con foco estén encima de otras */
 }
 
 .imagen-contenedor {
