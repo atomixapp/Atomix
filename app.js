@@ -34,13 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    ordenar.addEventListener('change', () => {
-      renderPeliculas(filtrarPeliculas(buscador.value));
-    });
+buscador.addEventListener('input', () => {
+  renderPeliculas(filtrarPeliculas(buscador.value));
+});
 
-    buscador.addEventListener('input', () => {
-      renderPeliculas(filtrarPeliculas(buscador.value));
-    });
+// Asegurarnos de que el campo de búsqueda reciba el foco automáticamente cuando se hace clic
+buscador.addEventListener('focus', (e) => {
+  e.target.select(); // Esto selecciona todo el texto para que puedas escribir desde el principio
+});
 
     // Aseguramos que el campo de búsqueda mantenga el foco
     buscador.addEventListener('focus', (e) => {
