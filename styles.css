@@ -9,7 +9,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #101010;
   color: #fff;
-  overflow-x: hidden; /* Prevenir el desbordamiento horizontal */
+  overflow-x: hidden; /* Prevenir desbordamientos horizontales */
 }
 
 a {
@@ -17,31 +17,58 @@ a {
   color: inherit;
 }
 
-/* Contenedor principal */
-.app-container {
+/* HEADER */
+header {
   display: flex;
-  flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas más pequeñas */
-  height: 100vh;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1.2rem;
+  background: #181818;
+  border-bottom: 1px solid #222;
+}
+header .nav-left a {
+  margin-right: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  transition: color 0.3s;
+}
+header .nav-left a.activo {
+  color: #00bfff;
+}
+.nav-right button {
+  background: #252525;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#menuUsuario {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #222;
+  padding: 1rem;
+  display: none;
+  border-radius: 6px;
+  width: 220px;
 }
 
 /* ASIDE */
 aside {
-  width: 100%;  /* Ocupa toda la pantalla en móviles */
+  width: 220px;
   background: #161616;
   padding: 1rem;
   border-right: 1px solid #222;
 }
-
 aside h2 {
   margin-bottom: 1.2rem;
   font-size: 1.2rem;
   color: #00bfff;
 }
-
 aside ul {
   list-style: none;
 }
-
 aside li {
   margin-bottom: 1rem;
   padding: 0.5rem 0.8rem;
@@ -49,19 +76,50 @@ aside li {
   border-radius: 6px;
   transition: background 0.2s;
 }
-
 aside li.activo,
 aside li:focus {
   background: #00bfff;
   color: #000;
   font-weight: bold;
 }
+aside li.favoritos-boton {
+  color: #f44336;
+}
 
 /* MAIN */
 main {
   flex: 1;
   padding: 1rem;
-  overflow-y: auto;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+
+/* GALERÍA HEADER */
+.galeria-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.titulo-categoria {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+#ordenar {
+  padding: 0.4rem;
+  background: #252525;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+#buscadorPeliculas {
+  padding: 0.4rem 0.7rem;
+  background: #252525;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  flex: 1;
 }
 
 /* GALERÍA */
@@ -70,6 +128,7 @@ main {
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 1rem;
   justify-content: center;
+  align-content: start;
 }
 
 .pelicula {
@@ -100,73 +159,78 @@ main {
   border-top: 1px solid #333;
 }
 
-/* Cabecera de la galería */
-.galeria-header {
+/* Efecto Hover */
+.pelicula:hover {
+  transform: scale(1.05);  /* Aumento sutil del tamaño */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);  /* Sombra más prominente */
+}
+
+/* FOCO EN PELICULA */
+.pelicula:focus {
+  transform: scale(1.05);
+}
+
+.banderas {
+  position: absolute;
+  top: 8px;
+  left: 8px;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 4px;
+  z-index: 10;
+}
+.banderas img {
+  width: 20px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 3px;
 }
 
-.titulo-categoria {
-  font-size: 1.2rem;
-  font-weight: bold;
+/* ESTILOS DE DESPLAZAMIENTO */
+.galeria::-webkit-scrollbar {
+  width: 8px;
+}
+.galeria::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
 }
 
-#ordenar {
-  padding: 0.4rem;
-  background: #252525;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-#buscadorPeliculas {
-  padding: 0.4rem 0.7rem;
-  background: #252525;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  flex: 1;
-}
-
-/* Responsividad para pantallas más grandes */
-
-/* Para pantallas grandes (por ejemplo, tabletas y PCs) */
+/* RESPONSIVE */
 @media (min-width: 1024px) {
   .app-container {
-    flex-direction: row;  /* Los elementos se disponen en una fila */
+    flex-direction: row;
   }
-
   aside {
-    width: 250px;  /* Ancho del aside */
+    width: 250px;
   }
-
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));  /* Aumentamos el tamaño mínimo de las tarjetas */
-    gap: 2rem;  /* Mayor espacio entre las tarjetas */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 2rem;
   }
-
   .pelicula {
-    max-width: 240px;  /* Aumentamos el tamaño máximo de las tarjetas */
+    max-width: 240px;
   }
-
+  .galeria-header {
+    justify-content: space-between;
+  }
+  .titulo-categoria {
+    font-size: 1.8rem;
+  }
   #buscadorPeliculas {
-    width: 300px;  /* Aumentamos el tamaño del campo de búsqueda */
+    width: 300px;
   }
 }
 
-/* Para pantallas muy grandes (por ejemplo, monitores de 1920px o más) */
 @media (min-width: 1920px) {
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));  /* Aumentamos el tamaño mínimo de las tarjetas */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
   }
-
   .pelicula {
-    max-width: 300px;  /* Aumentamos el tamaño máximo de las tarjetas */
+    max-width: 300px;
   }
-
+  .galeria-header {
+    margin-bottom: 2rem;
+  }
   #buscadorPeliculas {
-    width: 400px;  /* Aumentamos el tamaño del campo de búsqueda */
+    width: 400px;
   }
 }
