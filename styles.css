@@ -1,4 +1,4 @@
-/* Estilos Generales */
+/* RESET DE ESTILOS GENERALES */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,7 +9,7 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #101010;
   color: #fff;
-  overflow-x: hidden; /* Prevenir desbordamientos horizontales */
+  overflow: hidden;
 }
 
 a {
@@ -26,15 +26,18 @@ header {
   background: #181818;
   border-bottom: 1px solid #222;
 }
+
 header .nav-left a {
   margin-right: 1rem;
   font-weight: 600;
   color: #ccc;
   transition: color 0.3s;
 }
+
 header .nav-left a.activo {
   color: #00bfff;
 }
+
 .nav-right button {
   background: #252525;
   color: white;
@@ -43,6 +46,7 @@ header .nav-left a.activo {
   border-radius: 6px;
   cursor: pointer;
 }
+
 #menuUsuario {
   position: absolute;
   right: 0;
@@ -52,6 +56,14 @@ header .nav-left a.activo {
   display: none;
   border-radius: 6px;
   width: 220px;
+  z-index: 10;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.app-container {
+  display: flex;
+  height: calc(100vh - 56px);
+  overflow: hidden;
 }
 
 /* ASIDE */
@@ -61,14 +73,17 @@ aside {
   padding: 1rem;
   border-right: 1px solid #222;
 }
+
 aside h2 {
   margin-bottom: 1.2rem;
   font-size: 1.2rem;
   color: #00bfff;
 }
+
 aside ul {
   list-style: none;
 }
+
 aside li {
   margin-bottom: 1rem;
   padding: 0.5rem 0.8rem;
@@ -76,12 +91,14 @@ aside li {
   border-radius: 6px;
   transition: background 0.2s;
 }
+
 aside li.activo,
 aside li:focus {
   background: #00bfff;
   color: #000;
   font-weight: bold;
 }
+
 aside li.favoritos-boton {
   color: #f44336;
 }
@@ -95,17 +112,19 @@ main {
   flex-direction: column;
 }
 
-/* GALERÍA HEADER */
+/* GALERIA HEADER */
 .galeria-header {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
 }
+
 .titulo-categoria {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
 #ordenar {
   padding: 0.4rem;
   background: #252525;
@@ -113,6 +132,7 @@ main {
   border: none;
   border-radius: 5px;
 }
+
 #buscadorPeliculas {
   padding: 0.4rem 0.7rem;
   background: #252525;
@@ -120,15 +140,30 @@ main {
   border: none;
   border-radius: 5px;
   flex: 1;
+  outline: none;
 }
 
-/* GALERÍA */
+#buscadorPeliculas:focus {
+  border: 2px solid #00bfff;  /* Borde para resaltar cuando está enfocado */
+}
+
+.fa-magnifying-glass {
+  font-size: 1rem;
+  cursor: pointer;
+  color: #ccc;
+}
+
+/* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+  gap: 1.5rem;  /* Mayor espacio entre las tarjetas */
+  padding: 0.4rem;
   justify-content: center;
   align-content: start;
+  justify-items: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .pelicula {
@@ -141,14 +176,10 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
+  width: 100%;
   max-width: 180px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.pelicula img {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
+  z-index: 1;
 }
 
 .pelicula h3 {
@@ -157,80 +188,62 @@ main {
   text-align: center;
   background-color: #2c2c2c;
   border-top: 1px solid #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Efecto Hover */
 .pelicula:hover {
-  transform: scale(1.05);  /* Aumento sutil del tamaño */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);  /* Sombra más prominente */
-}
-
-/* FOCO EN PELICULA */
-.pelicula:focus {
   transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-.banderas {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: flex;
-  gap: 4px;
+/* Efecto Focus */
+.pelicula:focus {
+  transform: scale(1.05);  /* Aumento sutil del tamaño */
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
+  border: 2px solid #00bfff;  /* Borde azul brillante */
   z-index: 10;
 }
-.banderas img {
-  width: 20px;
-  height: 14px;
-  object-fit: contain;
-  border-radius: 3px;
+
+.imagen-contenedor {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 250px;
+  border-radius: 10px 10px 0 0;
 }
 
-/* ESTILOS DE DESPLAZAMIENTO */
+.imagen-contenedor img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pelicula:hover .imagen-contenedor img,
+.pelicula:focus .imagen-contenedor img {
+  transform: scale(1.05);  /* Ajuste el zoom para evitar el desbordamiento */
+  object-fit: cover;  /* Asegúrate de que la imagen no se deforme ni salga de los bordes */
+}
+
+/* SCROLLBAR */
 .galeria::-webkit-scrollbar {
   width: 8px;
 }
+
 .galeria::-webkit-scrollbar-thumb {
   background: #444;
   border-radius: 4px;
 }
 
-/* RESPONSIVE */
-@media (min-width: 1024px) {
-  .app-container {
-    flex-direction: row;
-  }
-  aside {
-    width: 250px;
-  }
-  .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-    gap: 2rem;
-  }
-  .pelicula {
-    max-width: 240px;
-  }
-  .galeria-header {
-    justify-content: space-between;
-  }
-  .titulo-categoria {
-    font-size: 1.8rem;
-  }
-  #buscadorPeliculas {
-    width: 300px;
-  }
-}
-
+/* RESPONSIVE UHD */
 @media (min-width: 1920px) {
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
   }
+
   .pelicula {
-    max-width: 300px;
-  }
-  .galeria-header {
-    margin-bottom: 2rem;
-  }
-  #buscadorPeliculas {
-    width: 400px;
+    max-width: 180px;
   }
 }
