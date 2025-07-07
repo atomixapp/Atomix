@@ -157,8 +157,8 @@ main {
 /* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
-  gap: 1.5rem;  /* Mayor espacio entre las tarjetas */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 180px)); /* Se asegura de que las cards se muestren en fila */
+  gap: 1.5rem;  /* Espacio entre las tarjetas */
   padding: 0.4rem;
   justify-content: center;
   align-content: start;
@@ -180,7 +180,6 @@ main {
   width: 100%;
   max-width: 180px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  visibility: visible; /* Asegura que las tarjetas sean visibles */
 }
 
 .pelicula h3 {
