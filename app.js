@@ -61,12 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
-        card.innerHTML = 
+        card.innerHTML = `
           <div class="imagen-contenedor">
             <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
           </div>
           <h3>${pelicula.titulo}</h3>
-        ;
+        `;
         galeria.appendChild(card);
       });
     }
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Asignación de filtros de categorías
     window.filtrar = function (categoria) {
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
-      const currentLi = document.querySelector(#nav${capitalize(categoria)});
+      const currentLi = document.querySelector(`#nav${capitalize(categoria)}`);
       if (currentLi) currentLi.classList.add('activo');
 
       tituloCategoria.textContent = categoria.toUpperCase();
