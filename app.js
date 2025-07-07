@@ -92,8 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           if (e.key === 'ArrowRight') {
-            const next = card.nextElementSibling;
-            if (next) next.focus();
+            // Entrar a la galería al presionar la flecha derecha
+            e.preventDefault();
+            const firstMovie = galeria.querySelector('.pelicula');
+            if (firstMovie) {
+              firstMovie.focus();
+            }
           }
 
           if (e.key === 'ArrowUp') {
@@ -108,11 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           if (e.key === 'ArrowDown') {
+            // Volver al aside al presionar la flecha abajo
             e.preventDefault();
-            const nextSection = galeria.querySelector('.pelicula');
-            if (nextSection) {
-              nextSection.focus();
-            }
+            aside.querySelector('li.activo')?.focus();
           }
         });
 
@@ -167,6 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (e.key === 'ArrowDown') {
+          const firstMovie = galeria.querySelector('.pelicula');
+          if (firstMovie) firstMovie.focus();
+        }
+
+        if (e.key === 'ArrowRight') {
           const firstMovie = galeria.querySelector('.pelicula');
           if (firstMovie) firstMovie.focus();
         }
