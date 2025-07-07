@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lista.forEach(pelicula => {
         const card = document.createElement('div');
         card.className = 'pelicula';
-        card.setAttribute('tabindex', '0');
+        card.setAttribute('tabindex', '0');  // Asegura que cada tarjeta sea enfocada
         card.innerHTML = `
           <div class="imagen-contenedor">
             <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
@@ -69,6 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         galeria.appendChild(card);
       });
+
+      // Asegura que el foco vaya a la primera tarjeta al cargar
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) primera.focus();
     }
 
     // Cargar las películas desde Firebase Firestore
@@ -149,6 +153,23 @@ document.addEventListener('DOMContentLoaded', () => {
           if (firstMovie) firstMovie.focus(); // Mueve al primer elemento de la galería
         }
       });
+    });
+
+    // Manejando el enfoque entre las tarjetas de la galería
+    galeria.addEventListener('keydown', (e) => {
+      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+      const focusedCard = document.activeElement;
+      const currentIndex = peliculas.indexOf(focusedCard);
+
+      if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
+        peliculas[currentIndex + 1].focus();  // Mueve a la siguiente tarjeta
+      } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        peliculas[currentIndex - 1].focus();  // Mueve a la tarjeta anterior
+      } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
+        peliculas[currentIndex + 4].focus();  // Mueve hacia abajo (4 tarjetas por fila)
+      } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
+        peliculas[currentIndex - 4].focus();  // Mueve hacia arriba (4 tarjetas por fila)
+      }
     });
   }
 });
