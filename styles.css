@@ -64,6 +64,7 @@ header .nav-left a.activo {
   display: flex;
   height: calc(100vh - 56px);
   overflow: hidden;
+  flex-wrap: wrap; /* Permite que el contenido se ajuste en pantallas pequeñas */
 }
 
 /* ASIDE */
@@ -237,13 +238,40 @@ main {
   border-radius: 4px;
 }
 
-/* RESPONSIVE UHD */
+/* RESPONSIVE */
+@media (min-width: 1024px) {
+  .app-container {
+    flex-direction: row;
+  }
+  aside {
+    width: 250px;
+  }
+  .galeria {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 2rem;
+  }
+  .pelicula {
+    max-width: 240px;
+  }
+  .galeria-header {
+    justify-content: space-between;
+  }
+  .titulo-categoria {
+    font-size: 1.8rem;
+  }
+  #buscadorPeliculas {
+    width: 300px;
+  }
+}
+
 @media (min-width: 1920px) {
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
   }
-
   .pelicula {
-    max-width: 180px;
+    max-width: 300px;
+  }
+  #buscadorPeliculas {
+    width: 400px;
   }
 }
