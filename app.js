@@ -1,154 +1,277 @@
-/* global auth, db, firebase */
-document.addEventListener('DOMContentLoaded', () => {
-  const auth = window.auth;
-  const db = window.db;
+/* RESET DE ESTILOS GENERALES */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = 'index.html';
-    } else {
-      inicializarPeliculas(user);
-    }
-  });
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #101010;
+  color: #fff;
+  overflow: hidden;
+}
 
-  function inicializarPeliculas(user) {
-    const galeria = document.getElementById('galeria');
-    const buscador = document.getElementById('buscadorPeliculas');
-    const ordenar = document.getElementById('ordenar');
-    const botonCuenta = document.getElementById('botonCuenta');
-    const menuUsuario = document.getElementById('menuUsuario');
-    const tituloCategoria = document.getElementById('tituloCategoria');
-    const aside = document.querySelector('aside');
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
-    let todasPeliculas = [];  // Aquí almacenamos las películas de Firebase
+/* HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1.2rem;
+  background: #181818;
+  border-bottom: 1px solid #222;
+}
 
-    // Mostrar/ocultar menú usuario
-    botonCuenta.addEventListener('click', (e) => {
-      e.stopPropagation();
-      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-    });
+header .nav-left a {
+  margin-right: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  transition: color 0.3s;
+}
 
-    document.addEventListener('click', (e) => {
-      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-        menuUsuario.style.display = 'none';
-      }
-    });
+header .nav-left a.activo {
+  color: #00bfff;
+}
 
-    ordenar.addEventListener('change', () => {
-      renderPeliculas(filtrarPeliculas(buscador.value));  // Actualiza la búsqueda cuando se cambia el orden
-    });
+.nav-right button {
+  background: #252525;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    // Manejo del evento de entrada para el campo de búsqueda
-    buscador.addEventListener('input', (e) => {
-      renderPeliculas(filtrarPeliculas(e.target.value));  // Actualiza la búsqueda
-    });
+#menuUsuario {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #222;
+  padding: 1rem;
+  display: none;
+  border-radius: 6px;
+  width: 220px;
+  z-index: 10;
+}
 
-    // Filtra las películas según el valor del buscador
-    function filtrarPeliculas(texto) {
-      const filtro = texto.toLowerCase();
-      return todasPeliculas.filter(p => p.titulo.toLowerCase().includes(filtro));
-    }
+/* CONTENEDOR PRINCIPAL */
+.app-container {
+  display: flex;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+  flex-wrap: wrap; /* Permite que el contenido se ajuste en pantallas pequeñas */
+}
 
-    // Función para renderizar las películas filtradas
-    function renderPeliculas(lista) {
-      galeria.innerHTML = '';  // Limpiar la galería antes de renderizar
-      if (lista.length === 0) {
-        galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-        return;
-      }
+/* ASIDE */
+aside {
+  width: 220px;
+  background: #161616;
+  padding: 1rem;
+  border-right: 1px solid #222;
+}
 
-      lista.forEach(pelicula => {
-        const card = document.createElement('div');
-        card.className = 'pelicula';
-        card.setAttribute('tabindex', '0');
-        card.innerHTML = `
-          <div class="imagen-contenedor">
-            <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-          </div>
-          <h3>${pelicula.titulo}</h3>
-        `;
-        galeria.appendChild(card);
-      });
-    }
+aside h2 {
+  margin-bottom: 1.2rem;
+  font-size: 1.2rem;
+  color: #00bfff;
+}
 
-    // Cargar las películas desde Firebase Firestore
-    function cargarPeliculas() {
-      const peliculasRef = db.collection('peliculas');  // Reemplaza 'peliculas' con tu colección en Firestore.
-      
-      peliculasRef.get().then(snapshot => {
-        todasPeliculas = snapshot.docs.map(doc => {
-          return { id: doc.id, ...doc.data() };  // Recuperamos las películas
-        });
+aside ul {
+  list-style: none;
+}
 
-        renderPeliculas(todasPeliculas);  // Muestra todas las películas inicialmente
-      }).catch((error) => {
-        console.error("Error al obtener las películas:", error);
-      });
-    }
+aside li {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
 
-    // Llamamos a cargarPeliculas cuando la página cargue
-    cargarPeliculas();
+aside li.activo,
+aside li:focus {
+  background: #00bfff;
+  color: #000;
+  font-weight: bold;
+}
 
-    // Asignación de filtros de categorías
-    window.filtrar = function (categoria) {
-      document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
-      const currentLi = document.querySelector(`#nav${capitalize(categoria)}`);
-      if (currentLi) currentLi.classList.add('activo');
+aside li.favoritos-boton {
+  color: #f44336;
+}
 
-      tituloCategoria.textContent = categoria.toUpperCase();
+/* MAIN */
+main {
+  flex: 1;
+  padding: 1rem;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
 
-      if (categoria === 'favoritos') {
-        renderPeliculas(todasPeliculas.filter(p => p.favoritos));  // Si tienes filtro de favoritos, lo agregas aquí
-      } else if (categoria === 'todos') {
-        renderPeliculas(todasPeliculas);
-      } else {
-        const filtradas = todasPeliculas.filter(p => p.categoria === categoria);
-        renderPeliculas(filtradas);
-      }
-    };
+/* GALERIA HEADER */
+.galeria-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
 
-    window.cerrarSesion = function () {
-      auth.signOut().then(() => {
-        window.location.href = 'index.html';
-      });
-    };
+.titulo-categoria {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
 
-    // Utilidad para capitalizar las primeras letras de los filtros
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
+#ordenar {
+  padding: 0.4rem;
+  background: #252525;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
 
-    // Manejando el enfoque de las categorías
-    document.querySelectorAll('aside li').forEach(li => {
-      li.setAttribute('tabindex', '0');
-      li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          li.click();
-        }
+#buscadorPeliculas {
+  padding: 0.4rem 0.7rem;
+  background: #252525;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  flex: 1;
+  outline: none;
+}
 
-        if (e.key === 'ArrowDown') {
-          const nextSection = li.nextElementSibling;
-          if (nextSection) {
-            nextSection.focus();
-          } else {
-            galeria.querySelector('.pelicula')?.focus(); // Mueve al primer elemento de la galería
-          }
-        }
+#buscadorPeliculas:focus {
+  border: 2px solid #00bfff;  /* Borde para resaltar cuando está enfocado */
+}
 
-        if (e.key === 'ArrowUp') {
-          const prevSection = li.previousElementSibling;
-          if (prevSection) {
-            prevSection.focus();
-          } else {
-            aside.querySelector('li')?.focus(); // Regresa al primer filtro del aside
-          }
-        }
+.fa-magnifying-glass {
+  font-size: 1rem;
+  cursor: pointer;
+  color: #ccc;
+}
 
-        if (e.key === 'ArrowRight') {
-          const firstMovie = galeria.querySelector('.pelicula');
-          if (firstMovie) firstMovie.focus(); // Mueve al primer elemento de la galería
-        }
-      });
-    });
+/* GALERIA DE PELICULAS */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+  gap: 1.5rem;  /* Mayor espacio entre las tarjetas */
+  padding: 0.4rem;
+  justify-content: center;
+  align-content: start;
+  justify-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pelicula {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+  width: 100%;
+  max-width: 180px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1; /* Asegura que el foco no se bloquee */
+}
+
+.pelicula h3 {
+  padding: 0.7rem;
+  font-size: 0.9rem;
+  text-align: center;
+  background-color: #2c2c2c;
+  border-top: 1px solid #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pelicula:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Efecto Focus */
+.pelicula:focus {
+  transform: scale(1.05);  /* Aumento sutil del tamaño */
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
+  border: 2px solid #00bfff;  /* Borde azul brillante */
+  z-index: 10;
+}
+
+.imagen-contenedor {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 250px;
+  border-radius: 10px 10px 0 0;
+}
+
+.imagen-contenedor img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pelicula:hover .imagen-contenedor img,
+.pelicula:focus .imagen-contenedor img {
+  transform: scale(1.05);  /* Ajuste el zoom para evitar el desbordamiento */
+  object-fit: cover;  /* Asegúrate de que la imagen no se deforme ni salga de los bordes */
+}
+
+/* SCROLLBAR */
+.galeria::-webkit-scrollbar {
+  width: 8px;
+}
+
+.galeria::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+/* RESPONSIVE */
+@media (min-width: 1024px) {
+  .app-container {
+    flex-direction: row;
   }
-});
+  aside {
+    width: 250px;
+  }
+  .galeria {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 2rem;
+  }
+  .pelicula {
+    max-width: 240px;
+  }
+  .galeria-header {
+    justify-content: space-between;
+  }
+  .titulo-categoria {
+    font-size: 1.8rem;
+  }
+  #buscadorPeliculas {
+    width: 300px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .galeria {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+  }
+  .pelicula {
+    max-width: 300px;
+  }
+  #buscadorPeliculas {
+    width: 400px;
+  }
+}
