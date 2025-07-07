@@ -140,11 +140,6 @@ main {
   border: none;
   border-radius: 5px;
   flex: 1;
-  outline: none;
-}
-
-#buscadorPeliculas:focus {
-  border: 2px solid #00bfff;  /* Borde para resaltar cuando está enfocado */
 }
 
 .fa-magnifying-glass {
@@ -179,7 +174,6 @@ main {
   width: 100%;
   max-width: 180px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  z-index: 1;
 }
 
 .pelicula h3 {
@@ -188,11 +182,9 @@ main {
   text-align: center;
   background-color: #2c2c2c;
   border-top: 1px solid #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
+/* Efecto Hover */
 .pelicula:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
@@ -200,10 +192,8 @@ main {
 
 /* Efecto Focus */
 .pelicula:focus {
-  transform: scale(1.05);  /* Aumento sutil del tamaño */
-  box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
-  border: 2px solid #00bfff;  /* Borde azul brillante */
-  z-index: 10;
+  transform: scale(1.05);  /* Asegúrate de que esto no interfiera con el hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Efecto más fuerte al hacer foco */
 }
 
 .imagen-contenedor {
