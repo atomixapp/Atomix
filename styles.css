@@ -140,6 +140,7 @@ main {
   border: none;
   border-radius: 5px;
   flex: 1;
+  outline: none;
 }
 
 .fa-magnifying-glass {
