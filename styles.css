@@ -1,4 +1,4 @@
-/* RESET DE ESTILOS GENERALES */
+/* Estilos Generales */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,55 +17,6 @@ a {
   color: inherit;
 }
 
-/* HEADER */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.7rem 1.2rem;
-  background: #181818;
-  border-bottom: 1px solid #222;
-}
-
-header .nav-left a {
-  margin-right: 1rem;
-  font-weight: 600;
-  color: #ccc;
-  transition: color 0.3s;
-}
-
-header .nav-left a.activo {
-  color: #00bfff;
-}
-
-.nav-right button {
-  background: #252525;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#menuUsuario {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  background-color: #222;
-  padding: 1rem;
-  display: none;
-  border-radius: 6px;
-  width: 220px;
-  z-index: 10;
-}
-
-/* CONTENEDOR PRINCIPAL */
-.app-container {
-  display: flex;
-  height: calc(100vh - 56px);
-  overflow: hidden;
-}
-
 /* ASIDE */
 aside {
   width: 220px;
@@ -80,39 +31,23 @@ aside h2 {
   color: #00bfff;
 }
 
-aside ul {
-  list-style: none;
+/* Main layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  flex-wrap: wrap;
 }
 
-aside li {
-  margin-bottom: 1rem;
-  padding: 0.5rem 0.8rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-aside li.activo,
-aside li:focus {
-  background: #00bfff;
-  color: #000;
-  font-weight: bold;
-}
-
-aside li.favoritos-boton {
-  color: #f44336;
-}
-
-/* MAIN */
 main {
   flex: 1;
   padding: 1rem;
-  overflow: visible;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-/* GALERIA HEADER */
+/* Header */
 .galeria-header {
   display: flex;
   align-items: center;
@@ -121,49 +56,17 @@ main {
 }
 
 .titulo-categoria {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
-#ordenar {
-  padding: 0.4rem;
-  background: #252525;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-#buscadorPeliculas {
-  padding: 0.4rem 0.7rem;
-  background: #252525;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  flex: 1;
-  outline: none;
-}
-
-#buscadorPeliculas:focus {
-  border: 2px solid #00bfff;  /* Borde para resaltar cuando está enfocado */
-}
-
-.fa-magnifying-glass {
-  font-size: 1rem;
-  cursor: pointer;
-  color: #ccc;
-}
-
-/* GALERIA DE PELICULAS */
+/* GALERÍA */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
-  gap: 1.5rem;  /* Mayor espacio entre las tarjetas */
-  padding: 0.4rem;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
   justify-content: center;
   align-content: start;
-  justify-items: center;
-  position: relative;
-  overflow: hidden;
 }
 
 .pelicula {
@@ -176,10 +79,14 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
-  width: 100%;
   max-width: 180px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  z-index: 1;
+}
+
+.pelicula img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
 }
 
 .pelicula h3 {
@@ -188,62 +95,56 @@ main {
   text-align: center;
   background-color: #2c2c2c;
   border-top: 1px solid #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.pelicula:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-}
+/* Media Query para Pantallas Grandes */
+@media (min-width: 1024px) {
+  .app-container {
+    flex-direction: row;  /* Los elementos se disponen en una fila */
+  }
 
-/* Efecto Focus */
-.pelicula:focus {
-  transform: scale(1.05);  /* Aumento sutil del tamaño */
-  box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
-  border: 2px solid #00bfff;  /* Borde azul brillante */
-  z-index: 10;
-}
+  aside {
+    width: 300px;  /* Aumentamos el tamaño del aside en pantallas grandes */
+  }
 
-.imagen-contenedor {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 250px;
-  border-radius: 10px 10px 0 0;
-}
-
-.imagen-contenedor img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.pelicula:hover .imagen-contenedor img,
-.pelicula:focus .imagen-contenedor img {
-  transform: scale(1.05);  /* Ajuste el zoom para evitar el desbordamiento */
-  object-fit: cover;  /* Asegúrate de que la imagen no se deforme ni salga de los bordes */
-}
-
-/* SCROLLBAR */
-.galeria::-webkit-scrollbar {
-  width: 8px;
-}
-
-.galeria::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 4px;
-}
-
-/* RESPONSIVE UHD */
-@media (min-width: 1920px) {
   .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));  /* Aumentamos el tamaño mínimo de las tarjetas en pantallas grandes */
+    gap: 2rem;  /* Mayor espacio entre las tarjetas */
   }
 
   .pelicula {
-    max-width: 180px;
+    max-width: 240px;  /* Aumentamos el tamaño máximo de las tarjetas */
+  }
+
+  .galeria-header {
+    flex-direction: row;
+    justify-content: space-between;  /* Alineamos los elementos de la cabecera en una fila */
+  }
+
+  .titulo-categoria {
+    font-size: 2rem;  /* Aumentamos el tamaño del título */
+  }
+
+  #buscadorPeliculas {
+    width: 300px;  /* Aumentamos el tamaño del campo de búsqueda */
+  }
+}
+
+/* Media Query para Pantallas Muy Grandes (por ejemplo, 1920px o más) */
+@media (min-width: 1920px) {
+  .galeria {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));  /* Aumentamos el tamaño mínimo de las tarjetas en pantallas muy grandes */
+  }
+
+  .pelicula {
+    max-width: 300px;  /* Aumentamos aún más el tamaño máximo de las tarjetas */
+  }
+
+  .galeria-header {
+    margin-bottom: 2rem;
+  }
+
+  #buscadorPeliculas {
+    width: 400px;  /* Aumentamos el tamaño del buscador */
   }
 }
