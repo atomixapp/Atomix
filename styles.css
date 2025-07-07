@@ -210,8 +210,10 @@ main {
   z-index: 10; 
 }
 .banderas img {
-  width: 18px;
-  height: 12px;
+  width: 20px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 3px;
 }
 
 .galeria::-webkit-scrollbar,
