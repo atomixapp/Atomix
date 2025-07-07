@@ -66,17 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
         card.className = 'pelicula';
         card.setAttribute('tabindex', '0');
 
-// Ajustar el renderizado de las banderas y asegurarnos de que se carguen correctamente
-card.innerHTML = `
-  <div class="imagen-contenedor">
-    <!-- Aquí estamos insertando las banderas correctamente -->
-    <div class="banderas" style="display: ${(pelicula.banderas && pelicula.banderas.length > 0) ? 'flex' : 'none'};">
-      ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera" class="bandera">`).join('')}
-    </div>
-    <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-  </div>
-  <h3>${pelicula.titulo}</h3>
-`;
+        // Ajustar el renderizado de las banderas y asegurarnos de que se carguen correctamente
+        card.innerHTML = `
+          <div class="imagen-contenedor">
+            <!-- Aquí estamos insertando las banderas correctamente -->
+            <div class="banderas" style="display: ${(pelicula.banderas && pelicula.banderas.length > 0) ? 'flex' : 'none'};">
+              ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera" class="bandera">`).join('')}
+            </div>
+            <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
+          </div>
+          <h3>${pelicula.titulo}</h3>
+        `;
 
         // Navegación con teclado
         card.addEventListener('keydown', (e) => {
