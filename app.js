@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (e.key === 'ArrowUp') {
             e.preventDefault();
-            // Mover el foco al aside si es que estamos en la galería
+            // Mover el foco al aside si estamos en la galería
             const prevSection = aside.querySelector('li.activo');
             if (prevSection) {
               prevSection.focus();
@@ -173,13 +173,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (e.key === 'ArrowDown') {
-          const firstMovie = galeria.querySelector('.pelicula');
-          if (firstMovie) firstMovie.focus();
+          const nextSection = li.nextElementSibling;
+          if (nextSection) {
+            nextSection.focus();
+          } else {
+            galeria.querySelector('.pelicula')?.focus(); // Mueve al primer elemento de la galería
+          }
+        }
+
+        if (e.key === 'ArrowUp') {
+          const prevSection = li.previousElementSibling;
+          if (prevSection) {
+            prevSection.focus();
+          } else {
+            aside.querySelector('li')?.focus(); // Regresa al primer filtro del aside
+          }
         }
 
         if (e.key === 'ArrowRight') {
           const firstMovie = galeria.querySelector('.pelicula');
-          if (firstMovie) firstMovie.focus();
+          if (firstMovie) firstMovie.focus(); // Mueve al primer elemento de la galería
         }
       });
     });
