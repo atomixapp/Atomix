@@ -68,11 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 card.innerHTML = `
   <div class="imagen-contenedor">
-    <!-- Condición para mostrar las banderas solo si existen -->
-    <div class="banderas" style="display: ${(pelicula.banderas && pelicula.banderas.length > 0) ? 'block' : 'none'};">
-      ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera" style="width: 18px; height: 12px; margin-right: 4px;">`).join('')}
+    <!-- Mostrar las banderas solo si existen -->
+    <div class="banderas" style="display: ${(pelicula.banderas && pelicula.banderas.length > 0) ? 'flex' : 'none'};">
+      ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera">`).join('')}
     </div>
-    <img src="${pelicula.imagen}" alt="${pelicula.titulo}" class="imagen-pelicula">
+    <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
   </div>
   <h3>${pelicula.titulo}</h3>
 `;
