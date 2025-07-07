@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPeliculas(filtrarPeliculas(buscador.value));
     });
 
+    // Aseguramos que el campo de búsqueda mantenga el foco
+    buscador.addEventListener('focus', (e) => {
+      e.target.select();  // Selecciona todo el texto cuando el usuario hace clic
+    });
+
     function filtrarPeliculas(texto) {
       const filtro = texto.toLowerCase();
       return todasPeliculas
