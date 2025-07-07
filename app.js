@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ajustar el renderizado de las banderas y asegurarnos de que se carguen correctamente
         card.innerHTML = `
           <div class="imagen-contenedor">
-            <!-- Aquí estamos insertando las banderas correctamente -->
             <div class="banderas" style="display: ${(pelicula.banderas && pelicula.banderas.length > 0) ? 'flex' : 'none'};">
               ${(pelicula.banderas ?? []).map(url => `<img src="${url}" alt="Bandera" class="bandera">`).join('')}
             </div>
@@ -94,14 +93,18 @@ document.addEventListener('DOMContentLoaded', () => {
           if (e.key === 'ArrowRight') {
             // Entrar a la galería al presionar la flecha derecha
             e.preventDefault();
-            const firstMovie = galeria.querySelector('.pelicula');
-            if (firstMovie) {
-              firstMovie.focus();
+            const nextCard = card.nextElementSibling;
+            if (nextCard) {
+              nextCard.focus();
+            } else {
+              // Si es la última tarjeta, que se mueva al siguiente item del aside
+              aside.querySelector('li')?.focus();
             }
           }
 
           if (e.key === 'ArrowUp') {
             e.preventDefault();
+            // Mover el foco al aside si es que estamos en la galería
             const prevSection = aside.querySelector('li.activo');
             if (prevSection) {
               prevSection.focus();
@@ -112,9 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           if (e.key === 'ArrowDown') {
-            // Volver al aside al presionar la flecha abajo
             e.preventDefault();
-            aside.querySelector('li.activo')?.focus();
+            // Volver a la galería
+            const firstMovie = galeria.querySelector('.pelicula');
+            if (firstMovie) firstMovie.focus();
           }
         });
 
