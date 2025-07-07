@@ -34,18 +34,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-buscador.addEventListener('input', () => {
-  renderPeliculas(filtrarPeliculas(buscador.value));
-});
+    ordenar.addEventListener('change', () => {
+      renderPeliculas(filtrarPeliculas(buscador.value));
+    });
 
-// Asegurarnos de que el campo de búsqueda reciba el foco automáticamente cuando se hace clic
-buscador.addEventListener('focus', (e) => {
-  e.target.select(); // Esto selecciona todo el texto para que puedas escribir desde el principio
-});
-
-    // Aseguramos que el campo de búsqueda mantenga el foco
+    // Manejar la entrada del buscador y prevenir problemas de foco
     buscador.addEventListener('focus', (e) => {
-      e.target.select();  // Selecciona todo el texto cuando el usuario hace clic
+      e.target.select();  // Selecciona todo el texto cuando se hace clic
+    });
+
+    buscador.addEventListener('input', () => {
+      if (buscador.value !== "") {
+        renderPeliculas(filtrarPeliculas(buscador.value));
+      } else {
+        renderPeliculas(todasPeliculas);  // Si está vacío, mostramos todas las películas
+      }
     });
 
     function filtrarPeliculas(texto) {
@@ -144,7 +147,8 @@ buscador.addEventListener('focus', (e) => {
 
       if (categoria === 'favoritos') {
         db.collection('usuarios').doc(user.uid).get().then(doc => {
-          const favIds = doc.data().favoritos || [];
+          const data = doc.data();
+          const favIds = data && Array.isArray(data.favoritos) ? data.favoritos : [];
           const filtradas = todasPeliculas.filter(p => favIds.includes(p.id));
           renderPeliculas(filtradas);
         });
