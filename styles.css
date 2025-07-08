@@ -202,12 +202,13 @@ main {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Efecto Focus */
 .pelicula:focus {
-  transform: scale(1.05);  /* Aumento sutil del tamaño */
-  box-shadow: 0 0 15px rgba(0, 191, 255, 0.8);  /* Sombra brillante para destacar */
-  border: 2px solid #00bfff;  /* Borde azul brillante */
-  z-index: 10; /* Asegura que las tarjetas con foco estén encima de otras */
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.6); /* sombra suave verde-agua */
+  outline: 3px solid #00ffcc;
+  outline-offset: -2px;
+  border: none;
+  z-index: 10;
 }
 
 .imagen-contenedor {
