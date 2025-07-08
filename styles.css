@@ -97,9 +97,10 @@ aside li {
 
 aside li.activo,
 aside li:focus {
-  background: #00bfff;
-  color: #000;
+  background-color: rgba(0, 191, 255, 0.3);
+  color: white;
   font-weight: bold;
+  outline: none;
 }
 
 aside li.favoritos-boton {
@@ -238,6 +239,22 @@ main {
 .galeria::-webkit-scrollbar-thumb {
   background: #444;
   border-radius: 4px;
+}
+
+:focus {
+  outline: 3px solid #00ffcc !important;
+  outline-offset: 2px;
+}
+
+#botonCuenta:focus {
+  outline: 2px solid #00bfff;
+}
+
+/* Selector y buscador con efecto foco en TV */
+#ordenar:focus,
+#buscadorPeliculas:focus {
+  outline: 2px solid #00bfff;
+  border-color: #00bfff;
 }
 
 /* RESPONSIVE */
