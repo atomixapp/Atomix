@@ -180,7 +180,7 @@ main {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
   width: 100%;
-  max-width: 200px; /* Tamaño controlado para TV */
+  max-width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
@@ -266,14 +266,34 @@ main {
   }
 }
 
-@media (min-width: 1920px) {
-  .galeria {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-  }
+@media (min-width: 1366px) {
   .pelicula {
-    max-width: 300px;
+    max-width: 220px;
   }
+
+  .galeria {
+    gap: 2rem;
+  }
+
+  #buscadorPeliculas {
+    width: 320px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .pelicula {
+    max-width: 260px;
+  }
+
   #buscadorPeliculas {
     width: 400px;
+  }
+
+  .titulo-categoria {
+    font-size: 2rem;
+  }
+
+  .galeria {
+    gap: 2.5rem;
   }
 }
