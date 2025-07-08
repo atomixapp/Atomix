@@ -118,44 +118,63 @@ function renderPeliculas(lista) {
     }
 
     // ⌨️ NAVEGACIÓN lateral
-    document.querySelectorAll('aside li').forEach(li => {
-      li.setAttribute('tabindex', '0');
-      li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') li.click();
+document.querySelectorAll('aside li').forEach(li => {
+  li.setAttribute('tabindex', '0');
+  li.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') li.click();
 
-        if (e.key === 'ArrowDown') {
-          li.nextElementSibling?.focus();
-        }
+    if (e.key === 'ArrowDown') {
+      li.nextElementSibling?.focus();
+    }
 
-        if (e.key === 'ArrowUp') {
-          li.previousElementSibling?.focus();
-        }
+    if (e.key === 'ArrowUp') {
+      li.previousElementSibling?.focus();
+    }
 
-        if (e.key === 'ArrowRight') {
-          galeria.querySelector('.pelicula')?.focus();
-        }
-      });
-    });
+    if (e.key === 'ArrowRight') {
+      // Ir a la galería
+      setTimeout(() => {
+        galeria.querySelector('.pelicula')?.focus();
+      }, 0);
+    }
+  });
+});
 
-    // ⌨️ NAVEGACIÓN entre películas
-    galeria.addEventListener('keydown', (e) => {
-      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-      const focusedCard = document.activeElement;
-      const index = peliculas.indexOf(focusedCard);
+galeria.addEventListener('keydown', (e) => {
+  const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+  const focusedCard = document.activeElement;
+  const index = peliculas.indexOf(focusedCard);
+  const columnas = 4;
 
-      if (index === -1) return;
+  if (index === -1) return;
 
-      const columnas = 4;
-
-      if (e.key === 'ArrowRight' && index < peliculas.length - 1) {
+  switch (e.key) {
+    case 'ArrowRight':
+      if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
         peliculas[index + 1].focus();
-      } else if (e.key === 'ArrowLeft' && index > 0) {
-        peliculas[index - 1].focus();
-      } else if (e.key === 'ArrowDown' && index + columnas < peliculas.length) {
-        peliculas[index + columnas].focus();
-      } else if (e.key === 'ArrowUp' && index - columnas >= 0) {
-        peliculas[index - columnas].focus();
       }
-    });
+      break;
+    case 'ArrowLeft':
+      if (index % columnas !== 0) {
+        peliculas[index - 1]?.focus();
+      } else {
+        // Primera columna: volver al menú lateral
+        document.querySelector('aside li.activo')?.focus();
+      }
+      break;
+    case 'ArrowDown':
+      if (index + columnas < peliculas.length) {
+        peliculas[index + columnas]?.focus();
+      }
+      break;
+    case 'ArrowUp':
+      if (index - columnas >= 0) {
+        peliculas[index - columnas]?.focus();
+      }
+      break;
+    case 'Enter':
+      // Aquí podrías abrir el detalle de la película o reproducirla
+      focusedCard.click?.();
+      break;
   }
 });
