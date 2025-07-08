@@ -22,6 +22,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];  // Aquí almacenamos las películas de Firebase
 
+    // ✅ Corrección del buscador para que no pierda el foco al escribir
+    buscador.addEventListener("keydown", function(e) {
+      const teclasPermitidas = [
+        "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+        "Enter", "Escape", "Backspace", "Delete", "Tab"
+      ];
+      if (!teclasPermitidas.includes(e.key)) {
+        e.stopPropagation();
+      }
+    });
+
+    buscador.addEventListener("focus", () => {
+      buscador.setAttribute("data-focused", "true");
+    });
+
+    buscador.addEventListener("blur", () => {
+      buscador.removeAttribute("data-focused");
+    });
+
     // Mostrar/ocultar menú usuario
     botonCuenta.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -35,23 +54,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     ordenar.addEventListener('change', () => {
-      renderPeliculas(filtrarPeliculas(buscador.value));  // Actualiza la búsqueda cuando se cambia el orden
+      renderPeliculas(filtrarPeliculas(buscador.value));
     });
 
-    // Manejo del evento de entrada para el campo de búsqueda
+    // Búsqueda dinámica
     buscador.addEventListener('input', (e) => {
-      renderPeliculas(filtrarPeliculas(e.target.value));  // Actualiza la búsqueda
+      renderPeliculas(filtrarPeliculas(e.target.value));
     });
 
-    // Filtra las películas según el valor del buscador
     function filtrarPeliculas(texto) {
       const filtro = texto.toLowerCase();
       return todasPeliculas.filter(p => p.titulo.toLowerCase().includes(filtro));
     }
 
-    // Función para renderizar las películas filtradas
     function renderPeliculas(lista) {
-      galeria.innerHTML = '';  // Limpiar la galería antes de renderizar
+      galeria.innerHTML = '';
       if (lista.length === 0) {
         galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
         return;
@@ -60,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lista.forEach(pelicula => {
         const card = document.createElement('div');
         card.className = 'pelicula';
-        card.setAttribute('tabindex', '0');  // Asegura que cada tarjeta sea enfocada
+        card.setAttribute('tabindex', '0');
         card.innerHTML = `
           <div class="imagen-contenedor">
             <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
@@ -70,30 +87,26 @@ document.addEventListener('DOMContentLoaded', () => {
         galeria.appendChild(card);
       });
 
-      // Asegura que el foco vaya a la primera tarjeta al cargar
       const primera = galeria.querySelector('.pelicula');
       if (primera) primera.focus();
     }
 
-    // Cargar las películas desde Firebase Firestore
     function cargarPeliculas() {
-      const peliculasRef = db.collection('peliculas');  // Reemplaza 'peliculas' con tu colección en Firestore.
+      const peliculasRef = db.collection('peliculas');
       
       peliculasRef.get().then(snapshot => {
         todasPeliculas = snapshot.docs.map(doc => {
-          return { id: doc.id, ...doc.data() };  // Recuperamos las películas
+          return { id: doc.id, ...doc.data() };
         });
 
-        renderPeliculas(todasPeliculas);  // Muestra todas las películas inicialmente
+        renderPeliculas(todasPeliculas);
       }).catch((error) => {
         console.error("Error al obtener las películas:", error);
       });
     }
 
-    // Llamamos a cargarPeliculas cuando la página cargue
     cargarPeliculas();
 
-    // Asignación de filtros de categorías
     window.filtrar = function (categoria) {
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
       const currentLi = document.querySelector(`#nav${capitalize(categoria)}`);
@@ -102,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tituloCategoria.textContent = categoria.toUpperCase();
 
       if (categoria === 'favoritos') {
-        renderPeliculas(todasPeliculas.filter(p => p.favoritos));  // Si tienes filtro de favoritos, lo agregas aquí
+        renderPeliculas(todasPeliculas.filter(p => p.favoritos));
       } else if (categoria === 'todos') {
         renderPeliculas(todasPeliculas);
       } else {
@@ -117,12 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    // Utilidad para capitalizar las primeras letras de los filtros
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Manejando el enfoque de las categorías
+    // Enfoque lateral (categorías)
     document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
@@ -135,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (nextSection) {
             nextSection.focus();
           } else {
-            galeria.querySelector('.pelicula')?.focus(); // Mueve al primer elemento de la galería
+            galeria.querySelector('.pelicula')?.focus();
           }
         }
 
@@ -144,31 +156,34 @@ document.addEventListener('DOMContentLoaded', () => {
           if (prevSection) {
             prevSection.focus();
           } else {
-            aside.querySelector('li')?.focus(); // Regresa al primer filtro del aside
+            aside.querySelector('li')?.focus();
           }
         }
 
         if (e.key === 'ArrowRight') {
           const firstMovie = galeria.querySelector('.pelicula');
-          if (firstMovie) firstMovie.focus(); // Mueve al primer elemento de la galería
+          if (firstMovie) firstMovie.focus();
         }
       });
     });
 
-    // Manejando el enfoque entre las tarjetas de la galería
+    // Navegación entre tarjetas
     galeria.addEventListener('keydown', (e) => {
+      // ⚠️ No mover el foco si el input está activo
+      if (document.activeElement === buscador) return;
+
       const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
       const focusedCard = document.activeElement;
       const currentIndex = peliculas.indexOf(focusedCard);
 
       if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
-        peliculas[currentIndex + 1].focus();  // Mueve a la siguiente tarjeta
+        peliculas[currentIndex + 1].focus();
       } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-        peliculas[currentIndex - 1].focus();  // Mueve a la tarjeta anterior
+        peliculas[currentIndex - 1].focus();
       } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
-        peliculas[currentIndex + 4].focus();  // Mueve hacia abajo (4 tarjetas por fila)
+        peliculas[currentIndex + 4].focus();
       } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
-        peliculas[currentIndex - 4].focus();  // Mueve hacia arriba (4 tarjetas por fila)
+        peliculas[currentIndex - 4].focus();
       }
     });
   }
