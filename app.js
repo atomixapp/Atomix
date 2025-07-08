@@ -22,18 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-    // 🔒 Evita que se pierda el foco al escribir en el buscador
-    buscador.addEventListener("keydown", function(e) {
-      const teclasPermitidas = [
-        "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
-        "Enter", "Escape", "Backspace", "Delete", "Tab"
-      ];
-      if (!teclasPermitidas.includes(e.key)) {
-        e.stopPropagation();
-      }
+    // 🔒 PREVIENE que el mando interfiera con el input
+    buscador.addEventListener('keydown', (e) => {
+      e.stopPropagation(); // esto evita que se pierda el foco
     });
 
-    // 📌 Evento para buscar dinámicamente mientras se escribe
+    // 🔍 FILTRO dinámico mientras se escribe
     buscador.addEventListener('input', (e) => {
       const texto = e.target.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
@@ -42,16 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPeliculas(filtradas);
     });
 
-    // 🎯 Cambiar orden
     ordenar.addEventListener('change', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
         p.titulo && p.titulo.toLowerCase().includes(texto)
       );
-      renderPeliculas(filtradas); // Por ahora solo re-renderiza, puedes añadir orden si quieres
+      renderPeliculas(filtradas);
     });
 
-    // 👤 Menú de usuario
     botonCuenta.addEventListener('click', (e) => {
       e.stopPropagation();
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -63,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 🧠 Render de películas
     function renderPeliculas(lista) {
       galeria.innerHTML = '';
 
@@ -85,11 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
         galeria.appendChild(card);
       });
 
-      const primera = galeria.querySelector('.pelicula');
-      if (primera) primera.focus();
+      galeria.querySelector('.pelicula')?.focus();
     }
 
-    // 🔄 Cargar desde Firebase
     function cargarPeliculas() {
       db.collection('peliculas').get().then(snapshot => {
         todasPeliculas = snapshot.docs.map(doc => ({
@@ -98,14 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
 
         renderPeliculas(todasPeliculas);
-      }).catch((error) => {
+      }).catch(error => {
         console.error("Error al obtener las películas:", error);
       });
     }
 
     cargarPeliculas();
 
-    // 🔘 Filtros por categoría
     window.filtrar = function (categoria) {
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
       const currentLi = document.querySelector(`#nav${capitalize(categoria)}`);
@@ -132,48 +120,44 @@ document.addEventListener('DOMContentLoaded', () => {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // ⌨️ Navegación con el mando
+    // ⌨️ NAVEGACIÓN lateral
     document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') li.click();
 
         if (e.key === 'ArrowDown') {
-          const next = li.nextElementSibling;
-          if (next) next.focus();
-          else galeria.querySelector('.pelicula')?.focus();
+          li.nextElementSibling?.focus();
         }
 
         if (e.key === 'ArrowUp') {
-          const prev = li.previousElementSibling;
-          if (prev) prev.focus();
-          else aside.querySelector('li')?.focus();
+          li.previousElementSibling?.focus();
         }
 
         if (e.key === 'ArrowRight') {
-          const firstMovie = galeria.querySelector('.pelicula');
-          if (firstMovie) firstMovie.focus();
+          galeria.querySelector('.pelicula')?.focus();
         }
       });
     });
 
+    // ⌨️ NAVEGACIÓN entre películas
     galeria.addEventListener('keydown', (e) => {
-      if (document.activeElement === buscador || buscador.contains(document.activeElement)) {
-        return;
-      }
-
       const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
       const focusedCard = document.activeElement;
-      const currentIndex = peliculas.indexOf(focusedCard);
+      const index = peliculas.indexOf(focusedCard);
 
-      if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
-        peliculas[currentIndex + 1].focus();
-      } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-        peliculas[currentIndex - 1].focus();
-      } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
-        peliculas[currentIndex + 4].focus();
-      } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
-        peliculas[currentIndex - 4].focus();
+      if (index === -1) return;
+
+      const columnas = 4;
+
+      if (e.key === 'ArrowRight' && index < peliculas.length - 1) {
+        peliculas[index + 1].focus();
+      } else if (e.key === 'ArrowLeft' && index > 0) {
+        peliculas[index - 1].focus();
+      } else if (e.key === 'ArrowDown' && index + columnas < peliculas.length) {
+        peliculas[index + columnas].focus();
+      } else if (e.key === 'ArrowUp' && index - columnas >= 0) {
+        peliculas[index - columnas].focus();
       }
     });
   }
