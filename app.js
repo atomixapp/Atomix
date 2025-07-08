@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-// Este bloque arregla el problema real del buscador
+// ✅ Escucha el input para filtrar dinámicamente
 buscador.addEventListener('input', (e) => {
   const texto = e.target.value.toLowerCase();
-  const filtradas = todasPeliculas.filter(p => {
-    return p.titulo && p.titulo.toLowerCase().includes(texto);
-  });
+  const filtradas = todasPeliculas.filter(p =>
+    p.titulo && p.titulo.toLowerCase().includes(texto)
+  );
   renderPeliculas(filtradas);
 });
 
