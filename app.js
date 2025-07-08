@@ -22,21 +22,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-// ✅ Arreglo REAL para permitir escribir letras en TV sin perder foco
-buscador.addEventListener('keydown', (e) => {
-  const teclasBloqueadas = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
-  if (teclasBloqueadas.includes(e.key)) {
-    e.stopPropagation(); // Evita que salte a otro foco con el mando
-  }
+// Este bloque arregla el problema real del buscador
+buscador.addEventListener('input', (e) => {
+  const texto = e.target.value.toLowerCase();
+  const filtradas = todasPeliculas.filter(p => {
+    return p.titulo && p.titulo.toLowerCase().includes(texto);
+  });
+  renderPeliculas(filtradas);
 });
 
-    buscador.addEventListener('input', (e) => {
-      const texto = e.target.value.toLowerCase();
-      const filtradas = todasPeliculas.filter(p =>
-        p.titulo && p.titulo.toLowerCase().includes(texto)
-      );
-      renderPeliculas(filtradas);
-    });
+// ✅ Esta es la clave: No bloqueamos teclas normales, solo flechas
+buscador.addEventListener('keydown', (e) => {
+  const teclasNavegacion = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+  if (teclasNavegacion.includes(e.key)) {
+    e.stopPropagation();  // Solo evitamos que se salga del input con flechas
+  }
+});
 
     ordenar.addEventListener('change', () => {
       const texto = buscador.value.toLowerCase();
