@@ -64,9 +64,9 @@ header .nav-left a.activo {
 /* CONTENEDOR PRINCIPAL */
 .app-container {
   display: flex;
-  flex-wrap: wrap;
-  overflow: hidden;         /* Evita que el contenido "se dispare" */
-  height: calc(100vh - 56px);  /* Altura sin contar el header */
+  flex-wrap: nowrap;
+  height: calc(100vh - 56px); /* Ocupa todo el alto sin el header */
+  overflow: hidden;           /* Evita scroll fuera de main */
 }
 
 /* ASIDE */
@@ -109,10 +109,10 @@ aside li.favoritos-boton {
 /* MAIN */
 main {
   flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;       /* Solo este contenedor maneja el scroll vertical */
+  padding: 1rem;
 }
 
 /* GALERIA HEADER */
@@ -165,8 +165,8 @@ main {
   justify-content: center;
   align-content: start;
   justify-items: center;
-  overflow-y: auto;
-  flex: 1;
+  overflow: visible;     /* Ya no debe controlar scroll */
+  flex: none;            /* Evita que se expanda en altura innecesariamente */
 }
 
 .pelicula {
