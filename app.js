@@ -57,10 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPeliculas(filtrarPeliculas(buscador.value));
     });
 
-    // Búsqueda dinámica
-    buscador.addEventListener('input', (e) => {
-      renderPeliculas(filtrarPeliculas(e.target.value));
-    });
+buscador.addEventListener('input', (e) => {
+  const texto = e.target.value.toLowerCase();
+  const filtradas = todasPeliculas.filter(p => p.titulo.toLowerCase().includes(texto));
+  renderPeliculas(filtradas);
+});
 
     function filtrarPeliculas(texto) {
       const filtro = texto.toLowerCase();
