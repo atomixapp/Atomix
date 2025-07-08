@@ -22,21 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-// ✅ Escucha el input para filtrar dinámicamente
 buscador.addEventListener('input', (e) => {
   const texto = e.target.value.toLowerCase();
   const filtradas = todasPeliculas.filter(p =>
     p.titulo && p.titulo.toLowerCase().includes(texto)
   );
   renderPeliculas(filtradas);
-});
-
-// ✅ Esta es la clave: No bloqueamos teclas normales, solo flechas
-buscador.addEventListener('keydown', (e) => {
-  const teclasNavegacion = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
-  if (teclasNavegacion.includes(e.key)) {
-    e.stopPropagation();  // Solo evitamos que se salga del input con flechas
-  }
 });
 
     ordenar.addEventListener('change', () => {
