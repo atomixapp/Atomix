@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!user) {
       window.location.href = 'index.html';
     } else {
-      inicializarPeliculas(user);
+      inicializarPeliculas();
     }
   });
 
-  function inicializarPeliculas(user) {
+  function inicializarPeliculas() {
     const galeria = document.getElementById('galeria');
     const buscador = document.getElementById('buscadorPeliculas');
     const ordenar = document.getElementById('ordenar');
@@ -22,7 +22,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-    // Mostrar/ocultar menú usuario
+    // 🔒 Evita que se pierda el foco al escribir en el buscador
+    buscador.addEventListener("keydown", function(e) {
+      const teclasPermitidas = [
+        "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+        "Enter", "Escape", "Backspace", "Delete", "Tab"
+      ];
+      if (!teclasPermitidas.includes(e.key)) {
+        e.stopPropagation();
+      }
+    });
+
+    // 📌 Evento para buscar dinámicamente mientras se escribe
+    buscador.addEventListener('input', (e) => {
+      const texto = e.target.value.toLowerCase();
+      const filtradas = todasPeliculas.filter(p =>
+        p.titulo && p.titulo.toLowerCase().includes(texto)
+      );
+      renderPeliculas(filtradas);
+    });
+
+    // 🎯 Cambiar orden
+    ordenar.addEventListener('change', () => {
+      const texto = buscador.value.toLowerCase();
+      const filtradas = todasPeliculas.filter(p =>
+        p.titulo && p.titulo.toLowerCase().includes(texto)
+      );
+      renderPeliculas(filtradas); // Por ahora solo re-renderiza, puedes añadir orden si quieres
+    });
+
+    // 👤 Menú de usuario
     botonCuenta.addEventListener('click', (e) => {
       e.stopPropagation();
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
@@ -34,26 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    ordenar.addEventListener('change', () => {
-      renderPeliculas(filtrarPeliculas(buscador.value));
-    });
-
-buscador.addEventListener('input', (e) => {
-  const texto = e.target.value.toLowerCase();
-  if (todasPeliculas.length === 0) return;  // Evita filtrar si aún no están cargadas
-  const filtradas = todasPeliculas.filter(p => 
-    p.titulo && p.titulo.toLowerCase().includes(texto)
-  );
-  renderPeliculas(filtradas);
-});
-
-    function filtrarPeliculas(texto) {
-      const filtro = texto.toLowerCase();
-      return todasPeliculas.filter(p => p.titulo && p.titulo.toLowerCase().includes(filtro));
-    }
-
+    // 🧠 Render de películas
     function renderPeliculas(lista) {
       galeria.innerHTML = '';
+
       if (lista.length === 0) {
         galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
         return;
@@ -76,12 +89,14 @@ buscador.addEventListener('input', (e) => {
       if (primera) primera.focus();
     }
 
+    // 🔄 Cargar desde Firebase
     function cargarPeliculas() {
       db.collection('peliculas').get().then(snapshot => {
         todasPeliculas = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
+
         renderPeliculas(todasPeliculas);
       }).catch((error) => {
         console.error("Error al obtener las películas:", error);
@@ -90,6 +105,7 @@ buscador.addEventListener('input', (e) => {
 
     cargarPeliculas();
 
+    // 🔘 Filtros por categoría
     window.filtrar = function (categoria) {
       document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
       const currentLi = document.querySelector(`#nav${capitalize(categoria)}`);
@@ -102,8 +118,7 @@ buscador.addEventListener('input', (e) => {
       } else if (categoria === 'todos') {
         renderPeliculas(todasPeliculas);
       } else {
-        const filtradas = todasPeliculas.filter(p => p.categoria === categoria);
-        renderPeliculas(filtradas);
+        renderPeliculas(todasPeliculas.filter(p => p.categoria === categoria));
       }
     };
 
@@ -117,7 +132,7 @@ buscador.addEventListener('input', (e) => {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // Navegación por teclado en aside
+    // ⌨️ Navegación con el mando
     document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
@@ -125,37 +140,41 @@ buscador.addEventListener('input', (e) => {
 
         if (e.key === 'ArrowDown') {
           const next = li.nextElementSibling;
-          next ? next.focus() : galeria.querySelector('.pelicula')?.focus();
+          if (next) next.focus();
+          else galeria.querySelector('.pelicula')?.focus();
         }
 
         if (e.key === 'ArrowUp') {
           const prev = li.previousElementSibling;
-          prev ? prev.focus() : aside.querySelector('li')?.focus();
+          if (prev) prev.focus();
+          else aside.querySelector('li')?.focus();
         }
 
         if (e.key === 'ArrowRight') {
-          galeria.querySelector('.pelicula')?.focus();
+          const firstMovie = galeria.querySelector('.pelicula');
+          if (firstMovie) firstMovie.focus();
         }
       });
     });
 
-galeria.addEventListener('keydown', (e) => {
-  // ⚠️ No interferir si el foco está en el buscador
-  if (document.activeElement === buscador || buscador.contains(document.activeElement)) {
-    return;
-  }
+    galeria.addEventListener('keydown', (e) => {
+      if (document.activeElement === buscador || buscador.contains(document.activeElement)) {
+        return;
+      }
 
-  const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-  const focusedCard = document.activeElement;
-  const currentIndex = peliculas.indexOf(focusedCard);
+      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+      const focusedCard = document.activeElement;
+      const currentIndex = peliculas.indexOf(focusedCard);
 
-  if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
-    peliculas[currentIndex + 1].focus();
-  } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-    peliculas[currentIndex - 1].focus();
-  } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
-    peliculas[currentIndex + 4].focus();
-  } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
-    peliculas[currentIndex - 4].focus();
+      if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
+        peliculas[currentIndex + 1].focus();
+      } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        peliculas[currentIndex - 1].focus();
+      } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
+        peliculas[currentIndex + 4].focus();
+      } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
+        peliculas[currentIndex - 4].focus();
+      }
+    });
   }
 });
