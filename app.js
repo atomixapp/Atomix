@@ -38,10 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPeliculas(filtrarPeliculas(buscador.value));
     });
 
-    // ✅ Buscador funcional en tiempo real
-    buscador.addEventListener('input', () => {
-      renderPeliculas(filtrarPeliculas(buscador.value));
-    });
+buscador.addEventListener('input', (e) => {
+  const texto = e.target.value.toLowerCase();
+  if (todasPeliculas.length === 0) return;  // Evita filtrar si aún no están cargadas
+  const filtradas = todasPeliculas.filter(p => 
+    p.titulo && p.titulo.toLowerCase().includes(texto)
+  );
+  renderPeliculas(filtradas);
+});
 
     function filtrarPeliculas(texto) {
       const filtro = texto.toLowerCase();
