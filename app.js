@@ -22,12 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-    // 🔒 PREVIENE que el mando interfiera con el input
-    buscador.addEventListener('keydown', (e) => {
-      e.stopPropagation(); // esto evita que se pierda el foco
-    });
+// ✅ Arreglo REAL para permitir escribir letras en TV sin perder foco
+buscador.addEventListener('keydown', (e) => {
+  const teclasBloqueadas = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+  if (teclasBloqueadas.includes(e.key)) {
+    e.stopPropagation(); // Evita que salte a otro foco con el mando
+  }
+});
 
-    // 🔍 FILTRO dinámico mientras se escribe
     buscador.addEventListener('input', (e) => {
       const texto = e.target.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
