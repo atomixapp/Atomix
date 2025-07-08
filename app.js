@@ -49,29 +49,32 @@ buscador.addEventListener('input', (e) => {
       }
     });
 
-    function renderPeliculas(lista) {
-      galeria.innerHTML = '';
+function renderPeliculas(lista) {
+  galeria.innerHTML = '';
 
-      if (lista.length === 0) {
-        galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-        return;
-      }
+  if (lista.length === 0) {
+    galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
+    return;
+  }
 
-      lista.forEach(pelicula => {
-        const card = document.createElement('div');
-        card.className = 'pelicula';
-        card.setAttribute('tabindex', '0');
-        card.innerHTML = `
-          <div class="imagen-contenedor">
-            <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-          </div>
-          <h3>${pelicula.titulo}</h3>
-        `;
-        galeria.appendChild(card);
-      });
+  lista.forEach(pelicula => {
+    const card = document.createElement('div');
+    card.className = 'pelicula';
+    card.setAttribute('tabindex', '0');
+    card.innerHTML = `
+      <div class="imagen-contenedor">
+        <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
+      </div>
+      <h3>${pelicula.titulo}</h3>
+    `;
+    galeria.appendChild(card);
+  });
 
-      galeria.querySelector('.pelicula')?.focus();
-    }
+  // ❌ Ya no forzar foco si el input está activo
+  if (document.activeElement !== document.getElementById('buscadorPeliculas')) {
+    galeria.querySelector('.pelicula')?.focus();
+  }
+}
 
     function cargarPeliculas() {
       db.collection('peliculas').get().then(snapshot => {
