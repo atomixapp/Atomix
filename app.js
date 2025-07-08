@@ -22,13 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let todasPeliculas = [];
 
-buscador.addEventListener('input', (e) => {
-  const texto = e.target.value.toLowerCase();
-  const filtradas = todasPeliculas.filter(p =>
-    p.titulo && p.titulo.toLowerCase().includes(texto)
-  );
-  renderPeliculas(filtradas);
-});
+    buscador.addEventListener('input', (e) => {
+      const texto = e.target.value.toLowerCase();
+      const filtradas = todasPeliculas.filter(p =>
+        p.titulo && p.titulo.toLowerCase().includes(texto)
+      );
+      renderPeliculas(filtradas);
+    });
 
     ordenar.addEventListener('change', () => {
       const texto = buscador.value.toLowerCase();
@@ -49,32 +49,32 @@ buscador.addEventListener('input', (e) => {
       }
     });
 
-function renderPeliculas(lista) {
-  galeria.innerHTML = '';
+    function renderPeliculas(lista) {
+      galeria.innerHTML = '';
 
-  if (lista.length === 0) {
-    galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
-    return;
-  }
+      if (lista.length === 0) {
+        galeria.innerHTML = '<p>No hay películas para mostrar.</p>';
+        return;
+      }
 
-  lista.forEach(pelicula => {
-    const card = document.createElement('div');
-    card.className = 'pelicula';
-    card.setAttribute('tabindex', '0');
-    card.innerHTML = `
-      <div class="imagen-contenedor">
-        <img src="${pelicula.imagen}" alt="${pelicula.titulo}">
-      </div>
-      <h3>${pelicula.titulo}</h3>
-    `;
-    galeria.appendChild(card);
-  });
+      lista.forEach(pelicula => {
+        const card = document.createElement('div');
+        card.className = 'pelicula';
+        card.setAttribute('tabindex', '0');
+        card.innerHTML = `
+          <div class="imagen-contenedor">
+            <img src="${pelicula.imagen || 'img/placeholder.png'}" alt="${pelicula.titulo}">
+          </div>
+          <h3>${pelicula.titulo}</h3>
+        `;
+        galeria.appendChild(card);
+      });
 
-  // ❌ Ya no forzar foco si el input está activo
-  if (document.activeElement !== document.getElementById('buscadorPeliculas')) {
-    galeria.querySelector('.pelicula')?.focus();
-  }
-}
+      // Solo enfocar si el usuario no está escribiendo
+      if (document.activeElement !== buscador) {
+        galeria.querySelector('.pelicula')?.focus();
+      }
+    }
 
     function cargarPeliculas() {
       db.collection('peliculas').get().then(snapshot => {
@@ -117,64 +117,65 @@ function renderPeliculas(lista) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // ⌨️ NAVEGACIÓN lateral
-document.querySelectorAll('aside li').forEach(li => {
-  li.setAttribute('tabindex', '0');
-  li.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') li.click();
+    // ⌨️ NAVEGACIÓN lateral con flechas y mando
+    document.querySelectorAll('aside li').forEach(li => {
+      li.setAttribute('tabindex', '0');
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') li.click();
 
-    if (e.key === 'ArrowDown') {
-      li.nextElementSibling?.focus();
-    }
+        if (e.key === 'ArrowDown') {
+          li.nextElementSibling?.focus();
+        }
 
-    if (e.key === 'ArrowUp') {
-      li.previousElementSibling?.focus();
-    }
+        if (e.key === 'ArrowUp') {
+          li.previousElementSibling?.focus();
+        }
 
-    if (e.key === 'ArrowRight') {
-      // Ir a la galería
-      setTimeout(() => {
-        galeria.querySelector('.pelicula')?.focus();
-      }, 0);
-    }
-  });
-});
+        if (e.key === 'ArrowRight') {
+          setTimeout(() => {
+            galeria.querySelector('.pelicula')?.focus();
+          }, 0);
+        }
+      });
+    });
 
-galeria.addEventListener('keydown', (e) => {
-  const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-  const focusedCard = document.activeElement;
-  const index = peliculas.indexOf(focusedCard);
-  const columnas = 4;
+    // ⌨️ NAVEGACIÓN entre tarjetas con control remoto
+    galeria.addEventListener('keydown', (e) => {
+      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+      const focusedCard = document.activeElement;
+      const index = peliculas.indexOf(focusedCard);
+      const columnas = 4;
 
-  if (index === -1) return;
+      if (index === -1) return;
 
-  switch (e.key) {
-    case 'ArrowRight':
-      if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
-        peliculas[index + 1].focus();
+      switch (e.key) {
+        case 'ArrowRight':
+          if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
+            peliculas[index + 1]?.focus();
+          }
+          break;
+        case 'ArrowLeft':
+          if (index % columnas !== 0) {
+            peliculas[index - 1]?.focus();
+          } else {
+            // Volver al menú lateral
+            document.querySelector('aside li.activo')?.focus();
+          }
+          break;
+        case 'ArrowDown':
+          if (index + columnas < peliculas.length) {
+            peliculas[index + columnas]?.focus();
+          }
+          break;
+        case 'ArrowUp':
+          if (index - columnas >= 0) {
+            peliculas[index - columnas]?.focus();
+          }
+          break;
+        case 'Enter':
+          focusedCard.click?.(); // Acción si pulsas OK
+          break;
       }
-      break;
-    case 'ArrowLeft':
-      if (index % columnas !== 0) {
-        peliculas[index - 1]?.focus();
-      } else {
-        // Primera columna: volver al menú lateral
-        document.querySelector('aside li.activo')?.focus();
-      }
-      break;
-    case 'ArrowDown':
-      if (index + columnas < peliculas.length) {
-        peliculas[index + columnas]?.focus();
-      }
-      break;
-    case 'ArrowUp':
-      if (index - columnas >= 0) {
-        peliculas[index - columnas]?.focus();
-      }
-      break;
-    case 'Enter':
-      // Aquí podrías abrir el detalle de la película o reproducirla
-      focusedCard.click?.();
-      break;
+    });
   }
 });
