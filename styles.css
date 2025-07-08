@@ -9,8 +9,6 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background-color: #101010;
   color: #fff;
-  padding-top: 56px;
-  overflow: visible;
 }
 
 a {
@@ -26,7 +24,6 @@ header {
   padding: 0.7rem 1.2rem;
   background: #181818;
   border-bottom: 1px solid #222;
-  z-index: 100;
 }
 
 header .nav-left a {
@@ -67,7 +64,6 @@ header .nav-left a.activo {
   height: calc(100vh - 56px);
   overflow: hidden;
   flex-wrap: wrap;
-  padding-top: 1rem;
 }
 
 /* ASIDE */
@@ -122,7 +118,6 @@ main {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
-  padding-top: 1rem;
 }
 
 .titulo-categoria {
