@@ -167,24 +167,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Navegación entre tarjetas
-    galeria.addEventListener('keydown', (e) => {
-      // ⚠️ No mover el foco si el input está activo
-      if (document.activeElement === buscador) return;
+// ✅ Arreglar que el buscador pierda el foco al escribir
+galeria.addEventListener('keydown', (e) => {
+  if (document.activeElement === buscador || buscador.contains(document.activeElement)) {
+    // Si estás escribiendo en el buscador, no hacer nada
+    return;
+  }
 
-      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-      const focusedCard = document.activeElement;
-      const currentIndex = peliculas.indexOf(focusedCard);
+  const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+  const focusedCard = document.activeElement;
+  const currentIndex = peliculas.indexOf(focusedCard);
 
-      if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
-        peliculas[currentIndex + 1].focus();
-      } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-        peliculas[currentIndex - 1].focus();
-      } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
-        peliculas[currentIndex + 4].focus();
-      } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
-        peliculas[currentIndex - 4].focus();
-      }
-    });
+  if (e.key === 'ArrowRight' && currentIndex < peliculas.length - 1) {
+    peliculas[currentIndex + 1].focus();
+  } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+    peliculas[currentIndex - 1].focus();
+  } else if (e.key === 'ArrowDown' && currentIndex + 4 < peliculas.length) {
+    peliculas[currentIndex + 4].focus();
+  } else if (e.key === 'ArrowUp' && currentIndex - 4 >= 0) {
+    peliculas[currentIndex - 4].focus();
   }
 });
