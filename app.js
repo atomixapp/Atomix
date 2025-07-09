@@ -39,12 +39,12 @@ const cerrarModal = document.getElementById('cerrarModal');
 const btnVerAhora = document.getElementById('btnVerAhora');
 
 function abrirModal(pelicula) {
+  peliculaActiva = pelicula; // ✅ Se guarda la película activa al abrir el modal
   modalImagen.src = pelicula.imagen || 'img/placeholder.png';
   modalTitulo.textContent = pelicula.titulo || 'Sin título';
   modalDescripcion.textContent = pelicula.descripcion || 'Sin descripción disponible.';
   modal.style.display = 'flex';
 
-  // Dar foco al modal para navegación con mando
   setTimeout(() => {
     document.querySelector('.modal-contenido').focus();
   }, 100);
@@ -112,7 +112,6 @@ btnVerAhora.addEventListener('click', () => {
   if (!peliculaActiva) return;
 
   const videoUrl = peliculaActiva.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4";
-
   videoPlayer.querySelector('source').src = videoUrl;
   videoPlayer.load();
   videoPlayer.play();
