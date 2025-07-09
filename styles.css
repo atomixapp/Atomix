@@ -148,7 +148,9 @@ main {
 }
 
 #buscadorPeliculas:focus {
-  border: 2px solid #00bfff;  /* Borde para resaltar cuando está enfocado */
+  outline: none;
+  border: 2px solid #00bfff;
+  box-shadow: 0 0 8px #00bfff88;
 }
 
 .fa-magnifying-glass {
