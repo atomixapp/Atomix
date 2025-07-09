@@ -110,11 +110,13 @@ const cerrarVideo = document.getElementById('cerrarVideo');
 
 // Simulación de reproducción con video dummy (ajusta si tienes URLs reales)
 btnVerAhora.addEventListener('click', () => {
-  const videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; // 🔁 Reemplaza por tu enlace real
+  const videoUrl = pelicula.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4"; // Cambia por tu URL real
   videoPlayer.querySelector('source').src = videoUrl;
   videoPlayer.load();
+  videoPlayer.play(); // Fuerza reproducción en algunos dispositivos
   modal.style.display = 'none';
   modalVideo.style.display = 'flex';
+
   setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
 });
 
