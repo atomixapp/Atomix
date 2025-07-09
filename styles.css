@@ -258,62 +258,128 @@ main {
   border-color: #00bfff;
 }
 
-/* ✅ Estilos para modal principal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 
-/* ✅ Contenido centrado del modal */
 .modal-contenido {
-  background: #222;
-  color: white;
+  background: #1c1c1c;
+  color: #fff;
+  border-radius: 15px;
   padding: 20px;
-  border-radius: 10px;
   width: 90%;
   max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
   outline: none;
 }
 
-/* ✅ Imagen principal del modal */
-.modal-contenido .imagen-detalles {
+.modal-imagen-contenedor {
+  position: relative;
+}
+
+.imagen-detalles {
   width: 100%;
   max-height: 300px;
   object-fit: cover;
   border-radius: 10px;
-  margin-bottom: 15px;
 }
 
-/* ✅ Botón cerrar modal */
+.btn-ver-ahora {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 0, 0, 0.8);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-ver-ahora:hover {
+  background: red;
+}
+
+.titulo-modal {
+  margin-top: 15px;
+  font-size: 24px;
+}
+
+.modal-extra {
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+.modal-extra p {
+  margin: 5px 0;
+}
+
+/* Botón ver sinopsis */
+.btn-sinopsis {
+  margin-top: 10px;
+  padding: 8px 18px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.btn-sinopsis:hover {
+  background-color: #2980b9;
+}
+
+/* Sinopsis como overlay */
+.overlay-sinopsis {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(20,20,20,0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sinopsis-contenido {
+  background: #2c2c2c;
+  color: white;
+  padding: 25px;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 15px;
+  text-align: left;
+  outline: none;
+}
+
+.sinopsis-contenido h3 {
+  margin-top: 0;
+}
+
 .cerrar-modal {
   position: absolute;
-  top: 15px;
-  right: 25px;
-  font-size: 28px;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
   cursor: pointer;
   color: white;
-  z-index: 10000;
-}
-
-#btnVerAhora {
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  background: #00bfff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  color: black;
+  z-index: 10001;
 }
 
 #btnVerAhora:focus,
