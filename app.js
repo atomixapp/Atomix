@@ -30,6 +30,79 @@ document.addEventListener('DOMContentLoaded', () => {
       renderPeliculas(filtradas);
     });
 
+    // Modal elementos
+const modal = document.getElementById('modalPelicula');
+const modalImagen = document.getElementById('modalImagen');
+const modalTitulo = document.getElementById('modalTitulo');
+const modalDescripcion = document.getElementById('modalDescripcion');
+const cerrarModal = document.getElementById('cerrarModal');
+const btnVerAhora = document.getElementById('btnVerAhora');
+
+function abrirModal(pelicula) {
+  modalImagen.src = pelicula.imagen || 'img/placeholder.png';
+  modalTitulo.textContent = pelicula.titulo || 'Sin título';
+  modalDescripcion.textContent = pelicula.descripcion || 'Sin descripción disponible.';
+  modal.style.display = 'flex';
+
+  // Dar foco al modal para navegación con mando
+  setTimeout(() => {
+    document.querySelector('.modal-contenido').focus();
+  }, 100);
+}
+
+function cerrarModalFunc() {
+  modal.style.display = 'none';
+  // Devuelve el foco a la tarjeta activa
+  document.activeElement.blur();
+  galeria.querySelector('.pelicula:focus')?.focus();
+}
+
+cerrarModal.addEventListener('click', cerrarModalFunc);
+window.addEventListener('keydown', (e) => {
+  if (modal.style.display === 'flex' && e.key === 'Escape') {
+    cerrarModalFunc();
+  }
+});
+
+// Abrir modal al pulsar Enter en tarjeta
+galeria.addEventListener('keydown', (e) => {
+  const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+  const focusedCard = document.activeElement;
+  const index = peliculas.indexOf(focusedCard);
+  const columnas = 4;
+
+  if (index === -1) return;
+
+  switch (e.key) {
+    case 'ArrowRight':
+      if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
+        peliculas[index + 1]?.focus();
+      }
+      break;
+    case 'ArrowLeft':
+      if (index % columnas !== 0) {
+        peliculas[index - 1]?.focus();
+      } else {
+        document.querySelector('aside li.activo')?.focus();
+      }
+      break;
+    case 'ArrowDown':
+      if (index + columnas < peliculas.length) {
+        peliculas[index + columnas]?.focus();
+      }
+      break;
+    case 'ArrowUp':
+      if (index - columnas >= 0) {
+        peliculas[index - columnas]?.focus();
+      }
+      break;
+    case 'Enter':
+      const pelicula = todasPeliculas[index];
+      if (pelicula) abrirModal(pelicula);
+      break;
+  }
+});
+    
     ordenar.addEventListener('change', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
