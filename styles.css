@@ -357,6 +357,12 @@ main {
   z-index: 10;
 }
 
+.modal-extra p {
+  margin: 4px 0;
+  font-size: 0.9em;
+  color: #ccc;
+}
+
 /* RESPONSIVE */
 @media (min-width: 1024px) {
   .app-container {
