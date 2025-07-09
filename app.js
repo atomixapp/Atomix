@@ -242,18 +242,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    function cargarPeliculas() {
-      db.collection('peliculas').get().then(snapshot => {
-        todasPeliculas = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+function cargarPeliculas() {
+  db.collection('peliculas')
+    .orderBy('fechaCreacion', 'desc')
+    .get()
+    .then(snapshot => {
+      todasPeliculas = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-        renderPeliculas(todasPeliculas);
-      }).catch(error => {
-        console.error("Error al obtener las películas:", error);
-      });
-    }
+      renderPeliculas(todasPeliculas);
+    })
+    .catch(error => {
+      console.error("Error al obtener las películas:", error);
+    });
+}
 
     cargarPeliculas();
 
