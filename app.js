@@ -102,6 +102,36 @@ galeria.addEventListener('keydown', (e) => {
       break;
   }
 });
+
+   // Reproductor de video
+const modalVideo = document.getElementById('modalVideo');
+const videoPlayer = document.getElementById('videoPlayer');
+const cerrarVideo = document.getElementById('cerrarVideo');
+
+// Simulación de reproducción con video dummy (ajusta si tienes URLs reales)
+btnVerAhora.addEventListener('click', () => {
+  const videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4"; // 🔁 Reemplaza por tu enlace real
+  videoPlayer.querySelector('source').src = videoUrl;
+  videoPlayer.load();
+  modal.style.display = 'none';
+  modalVideo.style.display = 'flex';
+  setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
+});
+
+cerrarVideo.addEventListener('click', cerrarVideoFunc);
+
+function cerrarVideoFunc() {
+  modalVideo.style.display = 'none';
+  videoPlayer.pause();
+  videoPlayer.currentTime = 0;
+  galeria.querySelector('.pelicula:focus')?.focus();
+}
+
+window.addEventListener('keydown', (e) => {
+  if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
+    cerrarVideoFunc();
+  }
+});
     
     ordenar.addEventListener('change', () => {
       const texto = buscador.value.toLowerCase();
