@@ -108,16 +108,21 @@ const modalVideo = document.getElementById('modalVideo');
 const videoPlayer = document.getElementById('videoPlayer');
 const cerrarVideo = document.getElementById('cerrarVideo');
 
-// Simulación de reproducción con video dummy (ajusta si tienes URLs reales)
 btnVerAhora.addEventListener('click', () => {
-  const videoUrl = pelicula.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4"; // Cambia por tu URL real
+  if (!peliculaActiva) return;
+
+  const videoUrl = peliculaActiva.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4";
+
   videoPlayer.querySelector('source').src = videoUrl;
   videoPlayer.load();
-  videoPlayer.play(); // Fuerza reproducción en algunos dispositivos
+  videoPlayer.play();
+
   modal.style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
+  setTimeout(() => {
+    document.querySelector('.video-contenido').focus();
+  }, 100);
 });
 
 cerrarVideo.addEventListener('click', cerrarVideoFunc);
