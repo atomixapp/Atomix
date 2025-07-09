@@ -159,12 +159,6 @@ main {
   border: 2px solid #00bfff;
 }
 
-.fa-magnifying-glass {
-  font-size: 1rem;
-  cursor: pointer;
-  color: #ccc;
-}
-
 /* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
