@@ -58,6 +58,7 @@
   </main>
 </div>
 
+<!-- ✅ Modal unificado y limpio -->
 <div id="modalPelicula" class="modal" style="display: none;">
   <div class="modal-contenido" tabindex="0">
     <span id="cerrarModal" class="cerrar-modal">&times;</span>
@@ -68,6 +69,18 @@
     <button id="btnVerAhora">▶ Ver ahora</button>
   </div>
 </div>
+
+<!-- ✅ Modal de video -->
+<div id="modalVideo" class="modal" style="display: none;">
+  <div class="video-contenido" tabindex="0">
+    <span id="cerrarVideo" class="cerrar-modal">&times;</span>
+    <video id="videoPlayer" controls>
+      <source src="" type="video/mp4">
+      Tu navegador no soporta HTML5 video.
+    </video>
+  </div>
+</div>
+
 
 <script src="app.js"></script>
 </body>
