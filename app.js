@@ -61,6 +61,21 @@ modalExtraInfo.innerHTML = `
   }, 100);
 }
 
+const btnMostrarSinopsis = document.getElementById('btnMostrarSinopsis');
+const overlaySinopsis = document.getElementById('overlaySinopsis');
+const cerrarSinopsis = document.getElementById('cerrarSinopsis');
+
+btnMostrarSinopsis.addEventListener('click', () => {
+  overlaySinopsis.style.display = 'flex';
+  setTimeout(() => {
+    document.querySelector('.sinopsis-contenido').focus();
+  }, 100);
+});
+
+cerrarSinopsis.addEventListener('click', () => {
+  overlaySinopsis.style.display = 'none';
+});
+
 function cerrarModalFunc() {
   modal.style.display = 'none';
   // Devuelve el foco a la tarjeta activa
