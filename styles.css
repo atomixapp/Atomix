@@ -155,7 +155,7 @@ main {
 
 #buscadorPeliculas:focus {
   outline: none;
-  box-shadow: none;  /* elimina sombra extra si existe */
+  box-shadow: 0 0 0 3px #00bfff; /* Un halo del color que quieres */
   border: 2px solid #00bfff;
 }
 
