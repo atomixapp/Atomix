@@ -37,6 +37,7 @@ const modalTitulo = document.getElementById('modalTitulo');
 const modalDescripcion = document.getElementById('modalDescripcion');
 const cerrarModal = document.getElementById('cerrarModal');
 const btnVerAhora = document.getElementById('btnVerAhora');
+const modalExtraInfo = document.getElementById('modalExtraInfo');
 
 let ocultarCerrarTimeout;
 
