@@ -220,18 +220,22 @@ window.addEventListener('keydown', (e) => {
         return;
       }
 
-      lista.forEach(pelicula => {
-        const card = document.createElement('div');
-        card.className = 'pelicula';
-        card.setAttribute('tabindex', '0');
-        card.innerHTML = `
-          <div class="imagen-contenedor">
-            <img src="${pelicula.imagen || 'img/placeholder.png'}" alt="${pelicula.titulo}">
-          </div>
-          <h3>${pelicula.titulo}</h3>
-        `;
-        galeria.appendChild(card);
-      });
+lista.forEach(pelicula => {
+  const card = document.createElement('div');
+  card.className = 'pelicula';
+  card.setAttribute('tabindex', '0');
+  card.innerHTML = `
+    <div class="imagen-contenedor">
+      <img src="${pelicula.imagen || 'img/placeholder.png'}" alt="${pelicula.titulo}">
+    </div>
+    <h3>${pelicula.titulo}</h3>
+  `;
+  // Abrir modal al hacer click en la card
+  card.addEventListener('click', () => {
+    abrirModal(pelicula);
+  });
+  galeria.appendChild(card);
+});
 
       // Solo enfocar si el usuario no está escribiendo
       if (document.activeElement !== buscador) {
