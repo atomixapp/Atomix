@@ -58,15 +58,30 @@
   </main>
 </div>
 
-<!-- ✅ Modal unificado y limpio -->
+<!-- ✅ Modal limpio y moderno -->
 <div id="modalPelicula" class="modal" style="display: none;">
   <div class="modal-contenido" tabindex="0">
     <span id="cerrarModal" class="cerrar-modal">&times;</span>
-    <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
-    <h2 id="modalTitulo"></h2>
-    <p id="modalDescripcion"></p>
+    
+    <div class="modal-imagen-contenedor">
+      <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
+      <button id="btnVerAhora" class="btn-ver-ahora">▶ Ver ahora</button>
+    </div>
+
+    <h2 id="modalTitulo" class="titulo-modal"></h2>
+
     <div class="modal-extra" id="modalExtraInfo"></div>
-    <button id="btnVerAhora">▶ Ver ahora</button>
+
+    <button id="btnMostrarSinopsis" class="btn-sinopsis">📖 Ver sinopsis</button>
+  </div>
+</div>
+
+<!-- ✅ Overlay para sinopsis -->
+<div id="overlaySinopsis" class="overlay-sinopsis" style="display: none;">
+  <div class="sinopsis-contenido" tabindex="0">
+    <span id="cerrarSinopsis" class="cerrar-modal">&times;</span>
+    <h3>Sinopsis</h3>
+    <p id="modalDescripcion"></p>
   </div>
 </div>
 
@@ -80,7 +95,6 @@
     </video>
   </div>
 </div>
-
 
 <script src="app.js"></script>
 </body>
