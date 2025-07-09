@@ -147,6 +147,12 @@ main {
   outline: none;
 }
 
+#buscadorPeliculas {
+  -webkit-appearance: none; /* Elimina efectos nativos WebKit */
+  -moz-appearance: none; /* Para Firefox */
+  appearance: none;
+}
+
 #buscadorPeliculas:focus {
   outline: none;
   box-shadow: none;  /* elimina sombra extra si existe */
