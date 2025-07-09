@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aside = document.querySelector('aside');
 
     let todasPeliculas = [];
-
+    
     buscador.addEventListener('input', (e) => {
       const texto = e.target.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
@@ -37,6 +37,8 @@ const modalTitulo = document.getElementById('modalTitulo');
 const modalDescripcion = document.getElementById('modalDescripcion');
 const cerrarModal = document.getElementById('cerrarModal');
 const btnVerAhora = document.getElementById('btnVerAhora');
+
+let ocultarCerrarTimeout;
 
 function abrirModal(pelicula) {
   peliculaActiva = pelicula; // ✅ Se guarda la película activa al abrir el modal
@@ -119,6 +121,13 @@ btnVerAhora.addEventListener('click', () => {
   modal.style.display = 'none';
   modalVideo.style.display = 'flex';
 
+  // Ocultar el botón de cerrar tras 5 segundos
+  cerrarVideo.style.display = 'block'; // mostrar al inicio
+  clearTimeout(ocultarCerrarTimeout);
+  ocultarCerrarTimeout = setTimeout(() => {
+    cerrarVideo.style.display = 'none';
+  }, 5000);
+
   setTimeout(() => {
     document.querySelector('.video-contenido').focus();
   }, 100);
@@ -134,8 +143,22 @@ function cerrarVideoFunc() {
 }
 
 window.addEventListener('keydown', (e) => {
-  if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
-    cerrarVideoFunc();
+  if (modalVideo.style.display === 'flex') {
+    if (e.key === 'Escape') {
+      if (cerrarVideo.style.display === 'none') {
+        cerrarVideo.style.display = 'block';
+        clearTimeout(ocultarCerrarTimeout);
+        ocultarCerrarTimeout = setTimeout(() => {
+          cerrarVideo.style.display = 'none';
+        }, 5000);
+      } else {
+        cerrarVideoFunc(); // cerrar si ya estaba visible
+      }
+    }
+  }
+
+  if (modal.style.display === 'flex' && e.key === 'Escape') {
+    cerrarModalFunc();
   }
 });
     
