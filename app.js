@@ -42,39 +42,44 @@ const modalExtraInfo = document.getElementById('modalExtraInfo');
 let ocultarCerrarTimeout;
 
 function abrirModal(pelicula) {
-  peliculaActiva = pelicula; // ✅ Se guarda la película activa al abrir el modal
-modalImagen.src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-modalTitulo.textContent = pelicula.titulo || 'Sin título';
-modalDescripcion.textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+  peliculaActiva = pelicula;
 
-// Agrega info adicional
-modalExtraInfo.innerHTML = `
-  <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-  <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-  <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-`;
-  
+  modalImagen.src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+  modalTitulo.textContent = pelicula.titulo || 'Sin título';
+  modalDescripcion.textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+
+  // Agrega info adicional
+  modalExtraInfo.innerHTML = `
+    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+  `;
+
   modal.style.display = 'flex';
 
   setTimeout(() => {
     document.querySelector('.modal-contenido').focus();
   }, 100);
+
+  // 🔁 Estos elementos solo existen después de abrir el modal
+  const btnMostrarSinopsis = document.getElementById('btnMostrarSinopsis');
+  const overlaySinopsis = document.getElementById('overlaySinopsis');
+  const cerrarSinopsis = document.getElementById('cerrarSinopsis');
+
+  if (btnMostrarSinopsis && overlaySinopsis && cerrarSinopsis) {
+    btnMostrarSinopsis.addEventListener('click', () => {
+      overlaySinopsis.style.display = 'flex';
+      setTimeout(() => {
+        document.querySelector('.sinopsis-contenido').focus();
+      }, 100);
+    });
+
+    cerrarSinopsis.addEventListener('click', () => {
+      overlaySinopsis.style.display = 'none';
+    });
+  }
 }
 
-const btnMostrarSinopsis = document.getElementById('btnMostrarSinopsis');
-const overlaySinopsis = document.getElementById('overlaySinopsis');
-const cerrarSinopsis = document.getElementById('cerrarSinopsis');
-
-btnMostrarSinopsis.addEventListener('click', () => {
-  overlaySinopsis.style.display = 'flex';
-  setTimeout(() => {
-    document.querySelector('.sinopsis-contenido').focus();
-  }, 100);
-});
-
-cerrarSinopsis.addEventListener('click', () => {
-  overlaySinopsis.style.display = 'none';
-});
 
 function cerrarModalFunc() {
   modal.style.display = 'none';
