@@ -69,14 +69,14 @@
   </div>
 </div>
 
-<!-- Modal de reproducción de video estilo Netflix -->
-<div id="modalVideo" class="modal-video" style="display: none;">
-  <div class="video-contenido" tabindex="0">
-    <span id="cerrarVideo" class="cerrar-modal">&times;</span>
-    <video id="videoPlayer" autoplay playsinline controls style="width: 100%; border-radius: 12px;">
-      <source src="" type="video/mp4">
-      Tu dispositivo no soporta este video.
-    </video>
+<div id="modalPelicula" class="modal" style="display: none;">
+  <div class="modal-contenido" tabindex="0">
+    <span id="cerrarModal" class="cerrar-modal">&times;</span>
+    <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
+    <h2 id="modalTitulo"></h2>
+    <p id="modalDescripcion"></p>
+    <div id="modalExtraInfo"></div>
+    <button id="btnVerAhora">▶ Ver ahora</button>
   </div>
 </div>
 
