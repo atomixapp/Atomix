@@ -204,10 +204,8 @@ main {
 
 .pelicula:focus {
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(0, 255, 204, 0.6); /* sombra suave verde-agua */
-  outline: 3px solid #00ffcc;
-  outline-offset: -2px;
-  border: none;
+  box-shadow: 0 0 0 3px #00ffcc, 0 0 15px rgba(0, 255, 204, 0.6);
+  outline: none;
   z-index: 10;
 }
 
