@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const aside = document.querySelector('aside');
 
     let todasPeliculas = [];
-    
+
+    // Audio click
+    const sonidoClick = new Audio('assets/sounds/click.mp3');
+
     buscador.addEventListener('input', (e) => {
       const texto = e.target.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
@@ -31,168 +34,166 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Modal elementos
-const modal = document.getElementById('modalPelicula');
-const modalImagen = document.getElementById('modalImagen');
-const modalTitulo = document.getElementById('modalTitulo');
-const modalDescripcion = document.getElementById('modalDescripcion');
-const cerrarModal = document.getElementById('cerrarModal');
-const btnVerAhora = document.getElementById('btnVerAhora');
-const modalExtraInfo = document.getElementById('modalExtraInfo');
+    const modal = document.getElementById('modalPelicula');
+    const modalImagen = document.getElementById('modalImagen');
+    const modalTitulo = document.getElementById('modalTitulo');
+    const modalDescripcion = document.getElementById('modalDescripcion');
+    const cerrarModal = document.getElementById('cerrarModal');
+    const btnVerAhora = document.getElementById('btnVerAhora');
+    const modalExtraInfo = document.getElementById('modalExtraInfo');
 
-let ocultarCerrarTimeout;
+    let ocultarCerrarTimeout;
+    let peliculaActiva;
 
-function abrirModal(pelicula) {
-  peliculaActiva = pelicula;
+    function abrirModal(pelicula) {
+      peliculaActiva = pelicula;
 
-  modalImagen.src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-  modalTitulo.textContent = pelicula.titulo || 'Sin título';
-  modalDescripcion.textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+      modalImagen.src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+      modalTitulo.textContent = pelicula.titulo || 'Sin título';
+      modalDescripcion.textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
 
-  // Agrega info adicional
-  modalExtraInfo.innerHTML = `
-    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-  `;
+      modalExtraInfo.innerHTML = `
+        <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+        <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+        <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+      `;
 
-  modal.style.display = 'flex';
+      modal.style.display = 'flex';
 
-  setTimeout(() => {
-    document.querySelector('.modal-contenido').focus();
-  }, 100);
-
-  // 🔁 Estos elementos solo existen después de abrir el modal
-  const btnMostrarSinopsis = document.getElementById('btnMostrarSinopsis');
-  const overlaySinopsis = document.getElementById('overlaySinopsis');
-  const cerrarSinopsis = document.getElementById('cerrarSinopsis');
-
-  if (btnMostrarSinopsis && overlaySinopsis && cerrarSinopsis) {
-    btnMostrarSinopsis.addEventListener('click', () => {
-      overlaySinopsis.style.display = 'flex';
       setTimeout(() => {
-        document.querySelector('.sinopsis-contenido').focus();
+        document.querySelector('.modal-contenido').focus();
+      }, 100);
+
+      const btnMostrarSinopsis = document.getElementById('btnMostrarSinopsis');
+      const overlaySinopsis = document.getElementById('overlaySinopsis');
+      const cerrarSinopsis = document.getElementById('cerrarSinopsis');
+
+      if (btnMostrarSinopsis && overlaySinopsis && cerrarSinopsis) {
+        btnMostrarSinopsis.addEventListener('click', () => {
+          overlaySinopsis.style.display = 'flex';
+          setTimeout(() => {
+            document.querySelector('.sinopsis-contenido').focus();
+          }, 100);
+        });
+
+        cerrarSinopsis.addEventListener('click', () => {
+          overlaySinopsis.style.display = 'none';
+        });
+      }
+    }
+
+    function cerrarModalFunc() {
+      modal.style.display = 'none';
+      document.activeElement.blur();
+      galeria.querySelector('.pelicula:focus')?.focus();
+    }
+
+    cerrarModal.addEventListener('click', cerrarModalFunc);
+    window.addEventListener('keydown', (e) => {
+      if (modal.style.display === 'flex' && e.key === 'Escape') {
+        cerrarModalFunc();
+      }
+    });
+
+    galeria.addEventListener('keydown', (e) => {
+      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+      const focusedCard = document.activeElement;
+      const index = peliculas.indexOf(focusedCard);
+      const columnas = 4;
+
+      if (index === -1) return;
+
+      switch (e.key) {
+        case 'ArrowRight':
+          if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
+            peliculas[index + 1]?.focus();
+            sonidoClick.play().catch(() => {});
+          }
+          break;
+        case 'ArrowLeft':
+          if (index % columnas !== 0) {
+            peliculas[index - 1]?.focus();
+            sonidoClick.play().catch(() => {});
+          } else {
+            document.querySelector('aside li.activo')?.focus();
+            sonidoClick.play().catch(() => {});
+          }
+          break;
+        case 'ArrowDown':
+          if (index + columnas < peliculas.length) {
+            peliculas[index + columnas]?.focus();
+            sonidoClick.play().catch(() => {});
+          }
+          break;
+        case 'ArrowUp':
+          if (index - columnas >= 0) {
+            peliculas[index - columnas]?.focus();
+            sonidoClick.play().catch(() => {});
+          }
+          break;
+        case 'Enter':
+          focusedCard.click?.();
+          break;
+      }
+    });
+
+    const modalVideo = document.getElementById('modalVideo');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const cerrarVideo = document.getElementById('cerrarVideo');
+
+    btnVerAhora.addEventListener('click', () => {
+      if (!peliculaActiva) return;
+
+      const videoUrl = peliculaActiva.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4";
+      videoPlayer.querySelector('source').src = videoUrl;
+      videoPlayer.muted = false;
+      videoPlayer.volume = 1;
+      videoPlayer.load();
+      videoPlayer.play();
+
+      modal.style.display = 'none';
+      modalVideo.style.display = 'flex';
+
+      cerrarVideo.style.display = 'block';
+      clearTimeout(ocultarCerrarTimeout);
+      ocultarCerrarTimeout = setTimeout(() => {
+        cerrarVideo.style.display = 'none';
+      }, 5000);
+
+      setTimeout(() => {
+        document.querySelector('.video-contenido').focus();
       }, 100);
     });
 
-    cerrarSinopsis.addEventListener('click', () => {
-      overlaySinopsis.style.display = 'none';
-    });
-  }
-}
+    cerrarVideo.addEventListener('click', cerrarVideoFunc);
 
-
-function cerrarModalFunc() {
-  modal.style.display = 'none';
-  // Devuelve el foco a la tarjeta activa
-  document.activeElement.blur();
-  galeria.querySelector('.pelicula:focus')?.focus();
-}
-
-cerrarModal.addEventListener('click', cerrarModalFunc);
-window.addEventListener('keydown', (e) => {
-  if (modal.style.display === 'flex' && e.key === 'Escape') {
-    cerrarModalFunc();
-  }
-});
-
-// Abrir modal al pulsar Enter en tarjeta
-galeria.addEventListener('keydown', (e) => {
-  const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-  const focusedCard = document.activeElement;
-  const index = peliculas.indexOf(focusedCard);
-  const columnas = 4;
-
-  if (index === -1) return;
-
-  switch (e.key) {
-    case 'ArrowRight':
-      if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
-        peliculas[index + 1]?.focus();
-      }
-      break;
-    case 'ArrowLeft':
-      if (index % columnas !== 0) {
-        peliculas[index - 1]?.focus();
-      } else {
-        document.querySelector('aside li.activo')?.focus();
-      }
-      break;
-    case 'ArrowDown':
-      if (index + columnas < peliculas.length) {
-        peliculas[index + columnas]?.focus();
-      }
-      break;
-    case 'ArrowUp':
-      if (index - columnas >= 0) {
-        peliculas[index - columnas]?.focus();
-      }
-      break;
-    case 'Enter':
-      const pelicula = todasPeliculas[index];
-      if (pelicula) abrirModal(pelicula);
-      break;
-  }
-});
-
-   // Reproductor de video
-const modalVideo = document.getElementById('modalVideo');
-const videoPlayer = document.getElementById('videoPlayer');
-const cerrarVideo = document.getElementById('cerrarVideo');
-
-btnVerAhora.addEventListener('click', () => {
-  if (!peliculaActiva) return;
-
-  const videoUrl = peliculaActiva.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4";
-  videoPlayer.querySelector('source').src = videoUrl;
-  videoPlayer.muted = false;
-  videoPlayer.volume = 1;
-  videoPlayer.load();
-  videoPlayer.play();
-
-  modal.style.display = 'none';
-  modalVideo.style.display = 'flex';
-
-  // Ocultar el botón de cerrar tras 5 segundos
-  cerrarVideo.style.display = 'block'; // mostrar al inicio
-  clearTimeout(ocultarCerrarTimeout);
-  ocultarCerrarTimeout = setTimeout(() => {
-    cerrarVideo.style.display = 'none';
-  }, 5000);
-
-  setTimeout(() => {
-    document.querySelector('.video-contenido').focus();
-  }, 100);
-});
-
-cerrarVideo.addEventListener('click', cerrarVideoFunc);
-
-function cerrarVideoFunc() {
-  modalVideo.style.display = 'none';
-  videoPlayer.pause();
-  videoPlayer.currentTime = 0;
-  galeria.querySelector('.pelicula:focus')?.focus();
-}
-
-window.addEventListener('keydown', (e) => {
-  if (modalVideo.style.display === 'flex') {
-    if (e.key === 'Escape') {
-      if (cerrarVideo.style.display === 'none') {
-        cerrarVideo.style.display = 'block';
-        clearTimeout(ocultarCerrarTimeout);
-        ocultarCerrarTimeout = setTimeout(() => {
-          cerrarVideo.style.display = 'none';
-        }, 5000);
-      } else {
-        cerrarVideoFunc(); // cerrar si ya estaba visible
-      }
+    function cerrarVideoFunc() {
+      modalVideo.style.display = 'none';
+      videoPlayer.pause();
+      videoPlayer.currentTime = 0;
+      galeria.querySelector('.pelicula:focus')?.focus();
     }
-  }
 
-  if (modal.style.display === 'flex' && e.key === 'Escape') {
-    cerrarModalFunc();
-  }
-});
-    
+    window.addEventListener('keydown', (e) => {
+      if (modalVideo.style.display === 'flex') {
+        if (e.key === 'Escape') {
+          if (cerrarVideo.style.display === 'none') {
+            cerrarVideo.style.display = 'block';
+            clearTimeout(ocultarCerrarTimeout);
+            ocultarCerrarTimeout = setTimeout(() => {
+              cerrarVideo.style.display = 'none';
+            }, 5000);
+          } else {
+            cerrarVideoFunc();
+          }
+        }
+      }
+
+      if (modal.style.display === 'flex' && e.key === 'Escape') {
+        cerrarModalFunc();
+      }
+    });
+
     ordenar.addEventListener('change', () => {
       const texto = buscador.value.toLowerCase();
       const filtradas = todasPeliculas.filter(p =>
@@ -220,24 +221,22 @@ window.addEventListener('keydown', (e) => {
         return;
       }
 
-lista.forEach(pelicula => {
-  const card = document.createElement('div');
-  card.className = 'pelicula';
-  card.setAttribute('tabindex', '0');
-  card.innerHTML = `
-    <div class="imagen-contenedor">
-      <img src="${pelicula.imagen || 'img/placeholder.png'}" alt="${pelicula.titulo}">
-    </div>
-    <h3>${pelicula.titulo}</h3>
-  `;
-  // Abrir modal al hacer click en la card
-  card.addEventListener('click', () => {
-    abrirModal(pelicula);
-  });
-  galeria.appendChild(card);
-});
+      lista.forEach(pelicula => {
+        const card = document.createElement('div');
+        card.className = 'pelicula';
+        card.setAttribute('tabindex', '0');
+        card.innerHTML = `
+          <div class="imagen-contenedor">
+            <img src="${pelicula.imagen || 'img/placeholder.png'}" alt="${pelicula.titulo}">
+          </div>
+          <h3>${pelicula.titulo}</h3>
+        `;
+        card.addEventListener('click', () => {
+          abrirModal(pelicula);
+        });
+        galeria.appendChild(card);
+      });
 
-      // Solo enfocar si el usuario no está escribiendo
       if (document.activeElement !== buscador) {
         galeria.querySelector('.pelicula')?.focus();
       }
@@ -284,7 +283,7 @@ lista.forEach(pelicula => {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    // ⌨️ NAVEGACIÓN lateral con flechas y mando
+    // Navegación lateral con flechas y sonido
     document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', (e) => {
@@ -292,57 +291,21 @@ lista.forEach(pelicula => {
 
         if (e.key === 'ArrowDown') {
           li.nextElementSibling?.focus();
+          sonidoClick.play().catch(() => {});
         }
 
         if (e.key === 'ArrowUp') {
           li.previousElementSibling?.focus();
+          sonidoClick.play().catch(() => {});
         }
 
         if (e.key === 'ArrowRight') {
           setTimeout(() => {
             galeria.querySelector('.pelicula')?.focus();
+            sonidoClick.play().catch(() => {});
           }, 0);
         }
       });
-    });
-
-    // ⌨️ NAVEGACIÓN entre tarjetas con control remoto
-    galeria.addEventListener('keydown', (e) => {
-      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-      const focusedCard = document.activeElement;
-      const index = peliculas.indexOf(focusedCard);
-      const columnas = 4;
-
-      if (index === -1) return;
-
-      switch (e.key) {
-        case 'ArrowRight':
-          if (index % columnas !== columnas - 1 && index < peliculas.length - 1) {
-            peliculas[index + 1]?.focus();
-          }
-          break;
-        case 'ArrowLeft':
-          if (index % columnas !== 0) {
-            peliculas[index - 1]?.focus();
-          } else {
-            // Volver al menú lateral
-            document.querySelector('aside li.activo')?.focus();
-          }
-          break;
-        case 'ArrowDown':
-          if (index + columnas < peliculas.length) {
-            peliculas[index + columnas]?.focus();
-          }
-          break;
-        case 'ArrowUp':
-          if (index - columnas >= 0) {
-            peliculas[index - columnas]?.focus();
-          }
-          break;
-        case 'Enter':
-          focusedCard.click?.(); // Acción si pulsas OK
-          break;
-      }
     });
   }
 });
