@@ -115,6 +115,8 @@ btnVerAhora.addEventListener('click', () => {
 
   const videoUrl = peliculaActiva.videoUrl || "https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4";
   videoPlayer.querySelector('source').src = videoUrl;
+  videoPlayer.muted = false;
+  videoPlayer.volume = 1;
   videoPlayer.load();
   videoPlayer.play();
 
