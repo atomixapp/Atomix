@@ -37,23 +37,14 @@ const modalTitulo = document.getElementById('modalTitulo');
 const modalDescripcion = document.getElementById('modalDescripcion');
 const cerrarModal = document.getElementById('cerrarModal');
 const btnVerAhora = document.getElementById('btnVerAhora');
-const modalExtraInfo = document.getElementById('modalExtraInfo');
 
 let ocultarCerrarTimeout;
 
 function abrirModal(pelicula) {
   peliculaActiva = pelicula; // ✅ Se guarda la película activa al abrir el modal
-modalImagen.src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-modalTitulo.textContent = pelicula.titulo || 'Sin título';
-modalDescripcion.textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-
-// Agrega info adicional
-modalExtraInfo.innerHTML = `
-  <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-  <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-  <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-`;
-  
+  modalImagen.src = pelicula.imagen || 'img/placeholder.png';
+  modalTitulo.textContent = pelicula.titulo || 'Sin título';
+  modalDescripcion.textContent = pelicula.descripcion || 'Sin descripción disponible.';
   modal.style.display = 'flex';
 
   setTimeout(() => {
