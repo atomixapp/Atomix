@@ -305,12 +305,22 @@ window.filtrar = function (categoria) {
 
   tituloCategoria.textContent = categoria.toUpperCase();
 
-  const generoMatch = (pelicula, genero) => {
+  const esGenero = [
+    'accion', 'aventuras', 'animacion', 'comedia', 'suspense',
+    'cienciaficcion', 'terror', 'fantasia', 'romance', 'drama', 'artesmarciales'
+  ];
+
+  const matchGenero = (pelicula, generoClave) => {
     if (!pelicula.genero) return false;
-    const g = Array.isArray(pelicula.genero)
-      ? pelicula.genero.map(g => g.toLowerCase())
-      : pelicula.genero.toLowerCase();
-    return Array.isArray(g) ? g.includes(genero) : g.includes(genero);
+    const generoNormalizado = generoClave
+      .replace('cienciaficcion', 'ciencia ficción')
+      .replace('artesmarciales', 'artes marciales');
+
+    if (Array.isArray(pelicula.genero)) {
+      return pelicula.genero.some(g => g.toLowerCase() === generoNormalizado);
+    } else {
+      return pelicula.genero.toLowerCase() === generoNormalizado;
+    }
   };
 
   switch (categoria) {
@@ -323,29 +333,18 @@ window.filtrar = function (categoria) {
     case 'estrenos2024':
       renderPeliculas(todasPeliculas.filter(p => String(p.anio) === '2024'));
       break;
-    case 'accion':
-    case 'aventuras':
-    case 'animacion':
-    case 'comedia':
-    case 'suspense':
-    case 'cienciaficcion':
-    case 'terror':
-    case 'fantasia':
-    case 'romance':
-    case 'drama':
-    case 'artesmarciales':
-      renderPeliculas(todasPeliculas.filter(p => generoMatch(p, categoria.replace('cienciaficcion', 'ciencia ficción')
-                                                                         .replace('artesmarciales', 'artes marciales'))));
-      break;
     case 'todos':
       renderPeliculas(todasPeliculas);
       break;
     default:
-      renderPeliculas(todasPeliculas.filter(p => p.categoria === categoria));
+      if (esGenero.includes(categoria)) {
+        renderPeliculas(todasPeliculas.filter(p => matchGenero(p, categoria)));
+      } else {
+        renderPeliculas(todasPeliculas.filter(p => p.categoria === categoria));
+      }
   }
 };
 
-// Convierte IDs como "artesmarciales" a "navArtesmarciales"
 function capitalizeId(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
