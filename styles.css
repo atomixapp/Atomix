@@ -71,12 +71,13 @@ header .nav-left a.activo {
 /* ASIDE */
 aside {
   width: 220px;
-  background-color: #0d1b34;
+  background-color: #0a162f;
   color: #fff;
   padding: 20px;
   box-sizing: border-box;
   height: 100%;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
 }
 
 aside h2 {
@@ -107,6 +108,10 @@ aside li:focus {
 
 aside li.favoritos-boton {
   color: #f44336;
+}
+
+aside::-webkit-scrollbar {
+  display: none; /* Chrome, Edge y derivados */
 }
 
 /* MAIN */
