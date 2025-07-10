@@ -274,8 +274,8 @@ function actualizarPeliculasSinFecha() {
 
 actualizarPeliculasSinFecha();
 cargarPeliculas();
-    
-function cargarPeliculas() {
+
+    function cargarPeliculas() {
   db.collection('peliculas')
     .orderBy('fechaCreacion', 'desc')
     .get()
@@ -287,23 +287,18 @@ function cargarPeliculas() {
 
       renderPeliculas(todasPeliculas);
 
-      // ✅ Mueve aquí el foco al aside y al primer ítem del menú
-      const aside = document.querySelector('aside');
-      const navTodos = document.getElementById('navTodos');
-
-      if (aside && navTodos) {
-        aside.setAttribute('tabindex', '-1'); // Asegura que sea enfocable
-        aside.focus();
-
-        setTimeout(() => {
-          navTodos.focus();
-        }, 150);
-      }
+      // ✅ Establecer foco después de render
+      establecerFocoInicial();
     })
     .catch(error => {
       console.error("Error al obtener las películas:", error);
     });
 }
+
+// Foco inicial después de cargar películas
+function establecerFocoInicial() {
+  const aside = document.querySelector('aside');
+  const navTodos = document.getElementById('navTodos');
     
 window.filtrar = function (categoria) {
   document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
