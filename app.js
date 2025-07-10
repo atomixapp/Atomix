@@ -297,11 +297,13 @@ cargarPeliculas();
 
 function establecerFocoInicial() {
   const navTodos = document.getElementById('navTodos');
-  if (navTodos) {
+  if (!navTodos) return;
+
+  requestAnimationFrame(() => {
     setTimeout(() => {
       navTodos.focus();
-    }, 200);
-  }
+    }, 300); // Puedes aumentar a 500ms si no funciona en PWA
+  });
 }
     
 window.filtrar = function (categoria) {
