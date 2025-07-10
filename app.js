@@ -294,12 +294,19 @@ function cargarPeliculas() {
 
     cargarPeliculas();
 
-// Foco inicial en 'Todas'
+// Foco inicial en el aside y en el primer ítem de la lista
+const aside = document.querySelector('aside');
 const navTodos = document.getElementById('navTodos');
-if (navTodos) {
+
+if (aside && navTodos) {
+  // Establece primero el foco visual al contenedor
+  aside.setAttribute('tabindex', '-1'); // Asegura que sea enfocable
+  aside.focus();
+
+  // Luego enfoca el primer ítem usable del menú
   setTimeout(() => {
     navTodos.focus();
-  }, 100);
+  }, 150);
 }
     
 window.filtrar = function (categoria) {
