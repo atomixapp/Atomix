@@ -29,6 +29,10 @@ header {
   border-bottom: 1px solid #222;
 }
 
+header a, #botonCuenta {
+  outline: none;
+}
+
 header .nav-left a {
   margin-right: 1rem;
   font-weight: 600;
