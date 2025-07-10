@@ -202,21 +202,21 @@ ordenar.addEventListener('change', () => {
 
   const criterio = ordenar.value;
 
-  switch (criterio) {
-    case 'nombre':
-      filtradas.sort((a, b) => a.titulo?.localeCompare(b.titulo));
-      break;
-    case 'anio':
-      filtradas.sort((a, b) => (b.anio || 0) - (a.anio || 0));
-      break;
-    case 'recientes':
-      filtradas.sort((a, b) => {
-        const fechaA = a.fechaCreacion?.toDate?.() || new Date(0);
-        const fechaB = b.fechaCreacion?.toDate?.() || new Date(0);
-        return fechaB - fechaA;
-      });
-      break;
-  }
+switch (criterio) {
+  case 'titulo':
+    filtradas.sort((a, b) => a.titulo?.localeCompare(b.titulo));
+    break;
+  case 'anio':
+    filtradas.sort((a, b) => (b.anio || 0) - (a.anio || 0));
+    break;
+  case 'añadido':
+    filtradas.sort((a, b) => {
+      const fechaA = a.fechaCreacion?.toDate?.() || new Date(0);
+      const fechaB = b.fechaCreacion?.toDate?.() || new Date(0);
+      return fechaB - fechaA;
+    });
+    break;
+}
 
   renderPeliculas(filtradas);
 });
