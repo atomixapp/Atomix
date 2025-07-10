@@ -136,14 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
           break;
       }
     });
-
-// Foco inicial en 'Todas'
-const navTodos = document.getElementById('navTodos');
-if (navTodos) {
-  setTimeout(() => {
-    navTodos.focus();
-  }, 100);
-}
     
     const modalVideo = document.getElementById('modalVideo');
     const videoPlayer = document.getElementById('videoPlayer');
@@ -302,6 +294,14 @@ function cargarPeliculas() {
 
     cargarPeliculas();
 
+// Foco inicial en 'Todas'
+const navTodos = document.getElementById('navTodos');
+if (navTodos) {
+  setTimeout(() => {
+    navTodos.focus();
+  }, 100);
+}
+    
 window.filtrar = function (categoria) {
   document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
   const currentLi = document.querySelector(`#nav${capitalizeId(categoria)}`);
