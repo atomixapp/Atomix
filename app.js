@@ -137,6 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+// Foco inicial en 'Todas'
+const navTodos = document.getElementById('navTodos');
+if (navTodos) {
+  setTimeout(() => {
+    navTodos.focus();
+  }, 100);
+}
+    
     const modalVideo = document.getElementById('modalVideo');
     const videoPlayer = document.getElementById('videoPlayer');
     const cerrarVideo = document.getElementById('cerrarVideo');
@@ -255,10 +263,6 @@ switch (criterio) {
         });
         galeria.appendChild(card);
       });
-
-      if (document.activeElement !== buscador) {
-        galeria.querySelector('.pelicula')?.focus();
-      }
     }
 
 function actualizarPeliculasSinFecha() {
