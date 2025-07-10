@@ -194,13 +194,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    ordenar.addEventListener('change', () => {
-      const texto = buscador.value.toLowerCase();
-      const filtradas = todasPeliculas.filter(p =>
-        p.titulo && p.titulo.toLowerCase().includes(texto)
-      );
-      renderPeliculas(filtradas);
-    });
+ordenar.addEventListener('change', () => {
+  const texto = buscador.value.toLowerCase();
+  let filtradas = todasPeliculas.filter(p =>
+    p.titulo && p.titulo.toLowerCase().includes(texto)
+  );
+
+  const criterio = ordenar.value;
+
+  switch (criterio) {
+    case 'nombre':
+      filtradas.sort((a, b) => a.titulo?.localeCompare(b.titulo));
+      break;
+    case 'anio':
+      filtradas.sort((a, b) => (b.anio || 0) - (a.anio || 0));
+      break;
+    case 'recientes':
+      filtradas.sort((a, b) => {
+        const fechaA = a.fechaCreacion?.toDate?.() || new Date(0);
+        const fechaB = b.fechaCreacion?.toDate?.() || new Date(0);
+        return fechaB - fechaA;
+      });
+      break;
+  }
+
+  renderPeliculas(filtradas);
+});
 
     botonCuenta.addEventListener('click', (e) => {
       e.stopPropagation();
