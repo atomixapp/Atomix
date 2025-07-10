@@ -295,10 +295,14 @@ cargarPeliculas();
     });
 }
 
-// Foco inicial después de cargar películas
 function establecerFocoInicial() {
-  const aside = document.querySelector('aside');
   const navTodos = document.getElementById('navTodos');
+  if (navTodos) {
+    setTimeout(() => {
+      navTodos.focus();
+    }, 200);
+  }
+}
     
 window.filtrar = function (categoria) {
   document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
