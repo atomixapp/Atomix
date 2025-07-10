@@ -32,11 +32,25 @@
 <div class="app-container">
   <aside>
     <h2>Categorías</h2>
-    <ul>
-      <li onclick="filtrar('favoritos')" id="navFavoritos" class="favoritos-boton" tabindex="0">❤️ Favoritos</li>
-      <li class="activo" onclick="filtrar('todos')" id="navPeliculas" tabindex="0">Todas</li>
-      <li onclick="filtrar('2025')" tabindex="0">ESTRENOS 2025</li>
-    </ul>
+  <ul>
+    <li id="navFavoritos" onclick="filtrar('favoritos')">❤️ Favoritos</li>
+    <li id="navEstrenos2025" onclick="filtrar('estrenos2025')">🎬 Estrenos 2025</li>
+    <li id="navEstrenos2024" onclick="filtrar('estrenos2024')">🆕 Estrenos 2024</li>
+
+    <li id="navAnimacion" onclick="filtrar('animacion')">🐭 Animación</li>
+    <li id="navArtesmarciales" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
+    <li id="navAventura" onclick="filtrar('aventuras')">🌋 Aventuras</li>
+    <li id="navCienciaficcion" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
+    <li id="navComedia" onclick="filtrar('comedia')">😂 Comedia</li>
+    <li id="navDrama" onclick="filtrar('drama')">🎭 Drama</li>
+    <li id="navFantasia" onclick="filtrar('fantasia')">🧚 Fantasía</li>
+    <li id="navRomance" onclick="filtrar('romance')">💘 Romance</li>
+    <li id="navSuspense" onclick="filtrar('suspense')">😱 Suspense</li>
+    <li id="navTerror" onclick="filtrar('terror')">👻 Terror</li>
+    <li id="navAccion" onclick="filtrar('accion')">🔥 Acción</li>
+
+    <li id="navTodos" onclick="filtrar('todos')">📁 Todas</li>
+  </ul>
   </aside>
 
   <main>
