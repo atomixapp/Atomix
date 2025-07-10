@@ -15,16 +15,16 @@
 
 <header>
   <nav class="nav-left">
-    <a href="tv.html">TV</a>
-    <a class="activo" href="#">Películas</a>
-    <a href="#">Series</a>
+    <a href="tv.html" tabindex="-1">TV</a>
+    <a class="activo" href="#" tabindex="-1">Películas</a>
+    <a href="#" tabindex="-1">Series</a>
   </nav>
   <div class="nav-right" style="position:relative;">
-    <button id="botonCuenta">Mi cuenta</button>
+    <button id="botonCuenta" tabindex="-1">Mi cuenta</button>
     <div id="menuUsuario">
       <p id="nombreUsuario">Usuario</p>
       <p id="correoUsuario">correo@correo.com</p>
-      <button onclick="cerrarSesion()" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
+      <button onclick="cerrarSesion()" tabindex="-1" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
     </div>
   </div>
 </header>
