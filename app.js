@@ -256,6 +256,9 @@ function actualizarPeliculasSinFecha() {
     });
   });
 }
+
+actualizarPeliculasSinFecha();
+cargarPeliculas();
     
 function cargarPeliculas() {
   db.collection('peliculas')
