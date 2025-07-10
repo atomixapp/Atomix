@@ -286,27 +286,23 @@ function cargarPeliculas() {
       }));
 
       renderPeliculas(todasPeliculas);
+
+      // ✅ Mueve aquí el foco al aside y al primer ítem del menú
+      const aside = document.querySelector('aside');
+      const navTodos = document.getElementById('navTodos');
+
+      if (aside && navTodos) {
+        aside.setAttribute('tabindex', '-1'); // Asegura que sea enfocable
+        aside.focus();
+
+        setTimeout(() => {
+          navTodos.focus();
+        }, 150);
+      }
     })
     .catch(error => {
       console.error("Error al obtener las películas:", error);
     });
-}
-
-    cargarPeliculas();
-
-// Foco inicial en el aside y en el primer ítem de la lista
-const aside = document.querySelector('aside');
-const navTodos = document.getElementById('navTodos');
-
-if (aside && navTodos) {
-  // Establece primero el foco visual al contenedor
-  aside.setAttribute('tabindex', '-1'); // Asegura que sea enfocable
-  aside.focus();
-
-  // Luego enfoca el primer ítem usable del menú
-  setTimeout(() => {
-    navTodos.focus();
-  }, 150);
 }
     
 window.filtrar = function (categoria) {
