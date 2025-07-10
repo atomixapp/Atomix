@@ -64,17 +64,19 @@ header .nav-left a.activo {
 /* CONTENEDOR PRINCIPAL */
 .app-container {
   display: flex;
-  flex-wrap: nowrap;
-  height: calc(100vh - 56px); /* Ocupa todo el alto sin el header */
-  overflow: hidden;           /* Evita scroll fuera de main */
+  height: calc(100vh - 50px); /* Ocupa todo el alto sin el header */
+  overflow: hidden;
 }
 
 /* ASIDE */
 aside {
   width: 220px;
-  background: #161616;
-  padding: 1rem;
-  border-right: 1px solid #222;
+  background-color: #0d1b34;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-y: auto;
 }
 
 aside h2 {
@@ -113,7 +115,7 @@ main {
   display: flex;
   flex-direction: column;
   overflow-y: auto;       /* Solo este contenedor maneja el scroll vertical */
-  padding: 1rem;
+  padding: 20px;
 }
 
 /* GALERIA HEADER */
