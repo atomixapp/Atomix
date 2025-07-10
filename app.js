@@ -242,6 +242,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+function actualizarPeliculasSinFecha() {
+  db.collection("peliculas").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!data.fechaCreacion) {
+        db.collection("peliculas").doc(doc.id).update({
+          fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          console.log(`✅ Actualizada: ${doc.id}`);
+        }).catch(err => console.error("❌ Error al actualizar:", err));
+      }
+    });
+  });
+}
+    
 function cargarPeliculas() {
   db.collection('peliculas')
     .orderBy('fechaCreacion', 'desc')
