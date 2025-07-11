@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function configurarOrdenado() {
   ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      aplicarOrden(); // Solo aplicamos si se pulsa Enter
+      aplicarOrden(); // Aplica el orden
     } else if (e.key === 'ArrowLeft') {
       buscador.focus();
     } else if (e.key === 'ArrowDown') {
@@ -43,14 +43,9 @@ function configurarOrdenado() {
   });
 }
 
-  ordenar.addEventListener('change', e => {
-    // Evitamos que se dispare al enfocar sin Enter
-    e.stopImmediatePropagation();
-  });
-}
-
-                          function aplicarOrden() {
+function aplicarOrden() {
   const criterio = ordenar.value;
+
   let filtradas = todasPeliculas.filter(p =>
     p.titulo?.toLowerCase().includes(buscador.value.toLowerCase())
   );
