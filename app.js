@@ -32,17 +32,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarOrdenado() {
-  // Pulsación de tecla
-  ordenar.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      aplicarOrden(); // aplica el orden al pulsar Enter directamente
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      buscador.focus();
-    } else if (e.key === 'ArrowDown') {
+ordenar.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    aplicarOrden();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    buscador.focus();
+    e.preventDefault();
+  } else if (e.key === 'ArrowDown') {
+    // Previene que Android TV saque el foco del select al usar la flecha abajo
+    // Solo permitimos bajar a la galería si el desplegable no está abierto
+    setTimeout(() => {
+      if (document.activeElement !== ordenar) return; // Foco se fue (por select abierto)
       galeria.querySelector('.pelicula')?.focus();
-    }
-    sonidoClick.play().catch(() => {});
-  });
+    }, 150); // tiempo suficiente para ver si el select abrió o no
+    e.preventDefault(); // evita salto inmediato
+  }
+  sonidoClick.play().catch(() => {});
+});
 
   // Cambio real de opción con click o control remoto
   ordenar.addEventListener('change', () => {
