@@ -36,16 +36,16 @@ function configurarOrdenado() {
   const listaOrdenar = document.getElementById('listaOrdenar');
   const opciones = Array.from(listaOrdenar.querySelectorAll('li'));
 
-  let indiceActual = 0;
-
   botonOrdenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       listaOrdenar.classList.add('mostrar');
-      opciones[0].focus();
+      opciones[0]?.focus();
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       buscador.focus();
+      e.preventDefault();
     } else if (e.key === 'ArrowDown') {
       galeria.querySelector('.pelicula')?.focus();
+      e.preventDefault();
     }
     sonidoClick.play().catch(() => {});
   });
@@ -53,8 +53,10 @@ function configurarOrdenado() {
   opciones.forEach((opcion, i) => {
     opcion.addEventListener('keydown', e => {
       if (e.key === 'ArrowDown') {
+        e.preventDefault();
         opciones[i + 1]?.focus();
       } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
         opciones[i - 1]?.focus();
       } else if (e.key === 'Enter') {
         const valor = opcion.getAttribute('data-valor');
@@ -62,9 +64,11 @@ function configurarOrdenado() {
         listaOrdenar.classList.remove('mostrar');
         aplicarOrden(valor);
         botonOrdenar.focus();
+        e.preventDefault();
       } else if (e.key === 'Escape') {
         listaOrdenar.classList.remove('mostrar');
         botonOrdenar.focus();
+        e.preventDefault();
       }
       sonidoClick.play().catch(() => {});
     });
