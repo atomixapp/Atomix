@@ -140,31 +140,12 @@ main {
   font-weight: bold;
 }
 
-.menu-ordenar {
-  position: relative;
-  display: inline-block;
-}
-.menu-ordenar ul {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  background: #222;
-  border: 1px solid #555;
-  padding: 5px 0;
-  list-style: none;
-  z-index: 10;
-  display: none;
-}
-.menu-ordenar ul li {
-  padding: 5px 15px;
+#ordenar {
+  padding: 0.4rem;
+  background: #252525;
   color: white;
-}
-.menu-ordenar ul li:focus {
-  background: #555;
-  outline: none;
-}
-.menu-ordenar ul.mostrar {
-  display: block;
+  border: none;
+  border-radius: 5px;
 }
 
 #buscadorPeliculas {
