@@ -297,27 +297,5 @@ document.addEventListener('keydown', e => {
     sonidoClick.play().catch(() => {});
   }
 });
-
-// 🔁 Foco cíclico vertical dentro del modal de película
-const modal = document.getElementById('modalPelicula');
-
-modal.addEventListener('keydown', e => {
-  const focoOrdenado = [
-    document.getElementById('cerrarModal'),
-    document.getElementById('btnVerAhora'),
-    document.getElementById('btnMostrarSinopsis')
-  ].filter(Boolean);
-
-  const i = focoOrdenado.indexOf(document.activeElement);
-  if (i === -1) return;
-
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    focoOrdenado[Math.min(i + 1, focoOrdenado.length - 1)]?.focus();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    focoOrdenado[Math.max(i - 1, 0)]?.focus();
-  }
-});
   
 });
