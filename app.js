@@ -178,7 +178,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function abrirModal(pelicula) {
     peliculaActiva = pelicula;
-    const modal = document.getElementById('modalPelicula');
+   const modalContenido = document.querySelector('.modal-contenido');
+
+modalContenido.addEventListener('keydown', e => {
+  const focoOrdenado = [
+    document.getElementById('cerrarModal'),
+    document.getElementById('btnVerAhora'),
+    document.getElementById('btnMostrarSinopsis')
+  ].filter(Boolean);
+
+  const i = focoOrdenado.indexOf(document.activeElement);
+  if (i === -1) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    focoOrdenado[Math.min(i + 1, focoOrdenado.length - 1)]?.focus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    focoOrdenado[Math.max(i - 1, 0)]?.focus();
+  }
+});
+
     document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
     document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
     document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
@@ -189,8 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
 modal.style.display = 'flex';
+
 setTimeout(() => {
-  document.getElementById('cerrarModal')?.focus();
+  document.getElementById('cerrarModal')?.focus(); // Primer foco
+  document.querySelector('.modal-contenido')?.focus(); // Para que escuche keydown
 }, 100);
 
     document.getElementById('cerrarModal').onclick = cerrarModal;
