@@ -1,8 +1,6 @@
-/* global auth, db, firebase */
 document.addEventListener('DOMContentLoaded', () => {
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
-  const ordenar = document.getElementById('ordenar');
   const botonCuenta = document.getElementById('botonCuenta');
   const menuUsuario = document.getElementById('menuUsuario');
   const tituloCategoria = document.getElementById('tituloCategoria');
@@ -18,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function inicializarPeliculas() {
     configurarBuscador();
-    configurarOrdenado();
     configurarCuenta();
     configurarNavegacionLateral();
     actualizarPeliculasSinFecha();
@@ -31,50 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-function configurarOrdenado() {
-  // Pulsación de tecla
-  ordenar.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      aplicarOrden(); // aplica el orden al pulsar Enter directamente
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      buscador.focus();
-    } else if (e.key === 'ArrowDown') {
-      galeria.querySelector('.pelicula')?.focus();
-    }
-    sonidoClick.play().catch(() => {});
-  });
+  let filtroActual = () => true;
 
-  // Cambio real de opción con click o control remoto
-  ordenar.addEventListener('change', () => {
-    aplicarOrden();
-  });
-}
-
-let filtroActual = () => true; // Por defecto, mostrar todo
-
-function filtrarYPintar(filtro) {
-  filtroActual = filtro;
-  renderPeliculas(todasPeliculas.filter(filtro));
-}
-
-function aplicarOrden() {
-  const criterio = ordenar.value;
-  let filtradas = todasPeliculas.filter(filtroActual);
-
-  filtradas.sort((a, b) => {
-    switch (criterio) {
-      case 'titulo':
-        return a.titulo?.localeCompare(b.titulo);
-      case 'anio':
-        return (b.anio || 0) - (a.anio || 0);
-      case 'añadido':
-      default:
-        return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
-    }
-  });
-
-  renderPeliculas(filtradas);
-}
+  function filtrarYPintar(filtro) {
+    filtroActual = filtro;
+    renderPeliculas(todasPeliculas.filter(filtro));
+  }
 
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
@@ -89,117 +48,88 @@ function aplicarOrden() {
     });
   }
 
-function configurarNavegacionLateral() {
-  const asideItems = Array.from(document.querySelectorAll('aside li'));
-  const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
-  const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
+  function configurarNavegacionLateral() {
+    const asideItems = Array.from(document.querySelectorAll('aside li'));
+    const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
+    const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
 
-  // ASIDE
-  asideItems.forEach((li, idx) => {
-    li.setAttribute('tabindex', '0');
-    li.addEventListener('keydown', e => {
-      if (e.key === 'Enter') li.click();
-      else if (e.key === 'ArrowDown') {
-        if (asideItems[idx + 1]) asideItems[idx + 1].focus();
-        else peliculas()[0]?.focus();
-      } else if (e.key === 'ArrowUp') {
-        if (asideItems[idx - 1]) asideItems[idx - 1].focus();
-        else navLinks[0]?.focus(); // Subir al header
-      } else if (e.key === 'ArrowRight') {
-        peliculas()[0]?.focus();
+    asideItems.forEach((li, idx) => {
+      li.setAttribute('tabindex', '0');
+      li.addEventListener('keydown', e => {
+        if (e.key === 'Enter') li.click();
+        else if (e.key === 'ArrowDown') {
+          if (asideItems[idx + 1]) asideItems[idx + 1].focus();
+          else peliculas()[0]?.focus();
+        } else if (e.key === 'ArrowUp') {
+          if (asideItems[idx - 1]) asideItems[idx - 1].focus();
+          else navLinks[0]?.focus();
+        } else if (e.key === 'ArrowRight') {
+          peliculas()[0]?.focus();
+        }
+        if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
+      });
+    });
+
+    navLinks.forEach((link, i) => {
+      link.setAttribute('tabindex', '0');
+      link.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') {
+          if (i < navLinks.length - 1) navLinks[i + 1].focus();
+          else botonCuenta.focus();
+        } else if (e.key === 'ArrowLeft') {
+          if (i > 0) navLinks[i - 1].focus();
+        } else if (e.key === 'ArrowDown') {
+          asideItems[0]?.focus();
+        }
+        sonidoClick.play().catch(() => {});
+      });
+    });
+
+    botonCuenta.setAttribute('tabindex', '0');
+    botonCuenta.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
+    });
+
+    galeria.addEventListener('keydown', e => {
+      const cards = peliculas();
+      const columnas = 4;
+      const i = cards.indexOf(document.activeElement);
+      if (i === -1) return;
+
+      switch (e.key) {
+        case 'ArrowRight':
+          cards[i + 1]?.focus();
+          break;
+        case 'ArrowLeft':
+          if (i % columnas === 0) {
+            document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+          } else {
+            cards[i - 1]?.focus();
+          }
+          break;
+        case 'ArrowDown':
+          cards[i + columnas]?.focus();
+          break;
+        case 'ArrowUp':
+          if (i < columnas) buscador.focus();
+          else cards[i - columnas]?.focus();
+          break;
+        case 'Enter':
+          cards[i].click();
+          break;
       }
+
       if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
     });
-  });
 
-  // HEADER
-  navLinks.forEach((link, i) => {
-    link.setAttribute('tabindex', '0');
-    link.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') {
-        if (i < navLinks.length - 1) navLinks[i + 1].focus();
-        else botonCuenta.focus(); // Último link, salta a Mi Cuenta
-      } else if (e.key === 'ArrowLeft') {
-        if (i > 0) navLinks[i - 1].focus();
-      } else if (e.key === 'ArrowDown') {
-        asideItems[0]?.focus();
+    buscador.setAttribute('tabindex', '0');
+    buscador.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') {
+        peliculas()[0]?.focus();
       }
       sonidoClick.play().catch(() => {});
     });
-  });
-
-  // BOTÓN CUENTA (solo desde nav con ArrowRight)
-  botonCuenta.setAttribute('tabindex', '0');
-  botonCuenta.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
-  });
-
-  // GALERÍA
-  galeria.addEventListener('keydown', e => {
-    const cards = peliculas();
-    const columnas = 4;
-    const i = cards.indexOf(document.activeElement);
-    if (i === -1) return;
-
-    switch (e.key) {
-      case 'ArrowRight':
-        cards[i + 1]?.focus();
-        break;
-      case 'ArrowLeft':
-        if (i % columnas === 0) {
-          // A la izquierda en la primera columna: volver a aside
-          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
-        } else {
-          cards[i - 1]?.focus();
-        }
-        break;
-      case 'ArrowDown':
-        cards[i + columnas]?.focus();
-        break;
-      case 'ArrowUp':
-        if (i < columnas) {
-          // Estamos en la primera fila → ir al buscador
-          buscador.focus();
-        } else {
-          cards[i - columnas]?.focus();
-        }
-        break;
-      case 'Enter':
-        cards[i].click();
-        break;
-    }
-
-    if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
-  });
-
-  // BUSCADOR
-  buscador.setAttribute('tabindex', '0');
-  buscador.addEventListener('keydown', e => {
-    if (e.key === 'ArrowDown') {
-      // Si bajas, vas a la galería (primera card)
-      peliculas()[0]?.focus();
-    } else if (e.key === 'ArrowRight') {
-      ordenar.focus();
-    } else if (e.key === 'ArrowLeft') {
-      ordenar.focus();
-    }
-    sonidoClick.play().catch(() => {});
-  });
-
-  // ORDENAR
-  ordenar.setAttribute('tabindex', '0');
-  ordenar.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-    } else if (e.key === 'ArrowLeft') {
-      buscador.focus();
-    } else if (e.key === 'ArrowRight') {
-      buscador.focus();
-    } else if (e.key === 'ArrowDown') {
-      peliculas()[0]?.focus();
-    }
-    sonidoClick.play().catch(() => {});
-  });
-}
+  }
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
@@ -223,7 +153,6 @@ function configurarNavegacionLateral() {
 
   function establecerFocoInicial() {
     setTimeout(() => {
-      // Empieza en header primer link activo o primer link
       const navLinks = document.querySelectorAll('header .nav-left a');
       const focoInicial = Array.from(navLinks).find(a => a.classList.contains('activo')) || navLinks[0];
       focoInicial?.focus();
@@ -322,10 +251,6 @@ function configurarNavegacionLateral() {
 
     filtrarYPintar(filtro);
   };
-
-  function filtrarYPintar(filtro) {
-    renderPeliculas(todasPeliculas.filter(filtro));
-  }
 
   window.cerrarSesion = () => auth.signOut().then(() => window.location.href = 'index.html');
 
