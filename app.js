@@ -31,24 +31,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function configurarOrdenado() {
-    // Eliminamos event listener 'change' si existe
-    // Solo ordenamos al pulsar Enter en el select
-    ordenar.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const criterio = ordenar.value;
-        let filtradas = todasPeliculas.filter(p => p.titulo?.toLowerCase().includes(buscador.value.toLowerCase()));
+function configurarOrdenado() {
+  ordenar.addEventListener('change', () => {
+    aplicarOrden();
+  });
 
-        filtradas.sort((a, b) => {
-          switch (criterio) {
-            case 'titulo': return a.titulo?.localeCompare(b.titulo);
-            case 'anio': return (b.anio || 0) - (a.anio || 0);
-            case 'añadido':
-              return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
-            default: return 0;
-          }
-        });
-        renderPeliculas(filtradas);
+  ordenar.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      aplicarOrden(); // Aplica el orden al pulsar Enter
+    }
+  });
+}
+
+function aplicarOrden() {
+  const criterio = ordenar.value;
+  let filtradas = todasPeliculas.filter(p =>
+    p.titulo?.toLowerCase().includes(buscador.value.toLowerCase())
+  );
+
+  filtradas.sort((a, b) => {
+    switch (criterio) {
+      case 'titulo':
+        return a.titulo?.localeCompare(b.titulo);
+      case 'anio':
+        return (b.anio || 0) - (a.anio || 0);
+      case 'añadido':
+        return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
+      default:
+        return 0;
+    }
+  });
+
+  renderPeliculas(filtradas);
         sonidoClick.play().catch(() => {});
       }
     });
