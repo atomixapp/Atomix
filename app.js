@@ -32,53 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarOrdenado() {
-  const botonOrdenar = document.getElementById('botonOrdenar');
-  const listaOrdenar = document.getElementById('listaOrdenar');
-  const opciones = Array.from(listaOrdenar.querySelectorAll('li'));
-
-  botonOrdenar.addEventListener('keydown', e => {
+  // Pulsación de tecla
+  ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      listaOrdenar.classList.add('mostrar');
-      opciones[0]?.focus();
+      aplicarOrden(); // aplica el orden al pulsar Enter directamente
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       buscador.focus();
-      e.preventDefault();
     } else if (e.key === 'ArrowDown') {
       galeria.querySelector('.pelicula')?.focus();
-      e.preventDefault();
     }
     sonidoClick.play().catch(() => {});
   });
-
-  opciones.forEach((opcion, i) => {
-    opcion.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        opciones[i + 1]?.focus();
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        opciones[i - 1]?.focus();
-      } else if (e.key === 'Enter') {
-        const valor = opcion.getAttribute('data-valor');
-        botonOrdenar.textContent = 'Ordenar: ' + opcion.textContent;
-        listaOrdenar.classList.remove('mostrar');
-        aplicarOrden(valor);
-        botonOrdenar.focus();
-        e.preventDefault();
-      } else if (e.key === 'Escape') {
-        listaOrdenar.classList.remove('mostrar');
-        botonOrdenar.focus();
-        e.preventDefault();
-      }
-      sonidoClick.play().catch(() => {});
-    });
-  });
-}
-
-// Restablecer tamaño cuando pierda foco
-ordenar.addEventListener('blur', () => {
-  ordenar.size = 1;
-});
 
   // Cambio real de opción con click o control remoto
   ordenar.addEventListener('change', () => {
@@ -93,12 +57,9 @@ function filtrarYPintar(filtro) {
   renderPeliculas(todasPeliculas.filter(filtro));
 }
 
-function aplicarOrden(valorManual = null) {
-  const criterio = valorManual || (ordenar?.value ?? 'añadido');
-
-  let filtradas = todasPeliculas.filter(p =>
-    p.titulo?.toLowerCase().includes(buscador.value.toLowerCase())
-  );
+function aplicarOrden() {
+  const criterio = ordenar.value;
+  let filtradas = todasPeliculas.filter(filtroActual);
 
   filtradas.sort((a, b) => {
     switch (criterio) {
