@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     configurarOrdenado();
     configurarCuenta();
     configurarNavegacionLateral();
+    configurarOrdenPersonalizado();
     actualizarPeliculasSinFecha();
     cargarPeliculas();
   }
@@ -69,24 +70,24 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPeliculas(todasPeliculas.filter(filtro));
   }
 
-  function aplicarOrden() {
-    const criterio = ordenar.value;
-    let filtradas = todasPeliculas.filter(filtroActual);
+function aplicarOrden(valor) {
+  const criterio = valor || document.querySelector('.ordenar-custom .activo').dataset.valor;
+  let filtradas = todasPeliculas.filter(filtroActual);
 
-    filtradas.sort((a, b) => {
-      switch (criterio) {
-        case 'titulo':
-          return a.titulo?.localeCompare(b.titulo);
-        case 'anio':
-          return (b.anio || 0) - (a.anio || 0);
-        case 'añadido':
-        default:
-          return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
-      }
-    });
+  filtradas.sort((a, b) => {
+    switch (criterio) {
+      case 'titulo':
+        return a.titulo?.localeCompare(b.titulo);
+      case 'anio':
+        return (b.anio || 0) - (a.anio || 0);
+      case 'añadido':
+      default:
+        return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
+    }
+  });
 
-    renderPeliculas(filtradas);
-  }
+  renderPeliculas(filtradas);
+}
 
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
@@ -176,6 +177,53 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
     });
 
+function configurarOrdenPersonalizado() {
+  const ordenarCustom = document.getElementById('ordenarCustom');
+  const ordenActual = document.getElementById('ordenActual');
+  const opcionesOrden = document.getElementById('opcionesOrden');
+  const opciones = Array.from(opcionesOrden.querySelectorAll('li'));
+
+  let indiceSeleccionado = 0;
+  let desplegado = false;
+
+  ordenarCustom.addEventListener('keydown', e => {
+    if (!desplegado && e.key === 'Enter') {
+      opcionesOrden.classList.remove('oculto');
+      opciones[indiceSeleccionado].classList.add('activo');
+      desplegado = true;
+    } else if (desplegado && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      opciones[indiceSeleccionado].classList.remove('activo');
+      if (e.key === 'ArrowDown') {
+        indiceSeleccionado = (indiceSeleccionado + 1) % opciones.length;
+      } else {
+        indiceSeleccionado = (indiceSeleccionado - 1 + opciones.length) % opciones.length;
+      }
+      opciones[indiceSeleccionado].classList.add('activo');
+    } else if (desplegado && e.key === 'Enter') {
+      const valor = opciones[indiceSeleccionado].dataset.valor;
+      ordenActual.textContent = opciones[indiceSeleccionado].textContent;
+      opcionesOrden.classList.add('oculto');
+      desplegado = false;
+      aplicarOrden(valor); // usa el nuevo valor
+
+      setTimeout(() => {
+        document.querySelectorAll('.pelicula')[0]?.focus();
+      }, 100);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      buscador.focus();
+    } else if (e.key === 'ArrowDown' && !desplegado) {
+      document.querySelectorAll('.pelicula')[0]?.focus();
+    }
+
+    if (e.key.startsWith('Arrow') || e.key === 'Enter') {
+      e.preventDefault();
+      sonidoClick.play().catch(() => {});
+    }
+  });
+
+  ordenarCustom.setAttribute('tabindex', '0');
+}
+    
     buscador.setAttribute('tabindex', '0');
     buscador.addEventListener('keydown', e => {
       if (e.key === 'ArrowDown') {
