@@ -268,26 +268,25 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// Navegación por teclado en el modal
+// 🔁 Foco cíclico vertical dentro del modal de película
 const modal = document.getElementById('modalPelicula');
+
 modal.addEventListener('keydown', e => {
-  const botones = [
+  const focoOrdenado = [
     document.getElementById('cerrarModal'),
     document.getElementById('btnVerAhora'),
     document.getElementById('btnMostrarSinopsis')
   ].filter(Boolean);
 
-  const i = botones.indexOf(document.activeElement);
+  const i = focoOrdenado.indexOf(document.activeElement);
   if (i === -1) return;
 
-  if (e.key === 'ArrowRight') {
-    botones[(i + 1) % botones.length]?.focus();
-  } else if (e.key === 'ArrowLeft') {
-    botones[(i - 1 + botones.length) % botones.length]?.focus();
-  } else if (e.key === 'ArrowDown') {
-    botones[(i + 1) % botones.length]?.focus();
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    focoOrdenado[Math.min(i + 1, focoOrdenado.length - 1)]?.focus();
   } else if (e.key === 'ArrowUp') {
-    botones[(i - 1 + botones.length) % botones.length]?.focus();
+    e.preventDefault();
+    focoOrdenado[Math.max(i - 1, 0)]?.focus();
   }
 });
   
