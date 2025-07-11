@@ -193,7 +193,7 @@ function abrirModal(pelicula) {
   modal.style.display = 'flex';
 
   setTimeout(() => {
-    document.getElementById('cerrarModal')?.focus(); // Primer foco
+    document.getElementById('btnVerAhora')?.focus(); // Primer foco
   }, 100);
 
   // Acciones de botones
