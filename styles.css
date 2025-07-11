@@ -140,12 +140,37 @@ main {
   font-weight: bold;
 }
 
-#ordenar {
-  padding: 0.4rem;
-  background: #252525;
+.ordenar-custom {
+  position: relative;
+  background: #222;
   color: white;
-  border: none;
-  border-radius: 5px;
+  border: 1px solid #555;
+  padding: 0.5em;
+  cursor: pointer;
+  width: 140px;
+  font-size: 0.9em;
+}
+.ordenar-custom ul {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #111;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  border: 1px solid #444;
+  z-index: 99;
+}
+.ordenar-custom ul li {
+  padding: 0.5em;
+}
+.ordenar-custom ul li.activo,
+.ordenar-custom ul li:hover {
+  background: #333;
+}
+.oculto {
+  display: none;
 }
 
 #buscadorPeliculas {
