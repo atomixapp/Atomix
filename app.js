@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function inicializarPeliculas() {
     configurarBuscador();
+    configurarOrdenado();
     configurarCuenta();
     configurarNavegacionLateral();
     actualizarPeliculasSinFecha();
@@ -32,35 +33,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function configurarOrdenado() {
     ordenar.setAttribute('tabindex', '0');
-    ordenar.addEventListener('keydown', e => {
-      const cards = peliculas();
 
-      switch (e.key) {
-        case 'Enter':
-          aplicarOrden();
-          break;
-        case 'ArrowLeft':
-        case 'ArrowRight':
-          buscador.focus();
-          break;
-        case 'ArrowDown':
-          cards[0]?.focus();
-          break;
-        case 'ArrowUp':
-          buscador.focus();
-          break;
+    ordenar.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') {
+        buscador.focus();
+        e.preventDefault();
+      } else if (e.key === 'ArrowRight') {
+        buscador.focus();
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        document.querySelector('.pelicula')?.focus();
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        buscador.focus();
+        e.preventDefault();
       }
 
       if (e.key.startsWith('Arrow')) {
-        e.preventDefault();
         sonidoClick.play().catch(() => {});
       }
     });
 
     ordenar.addEventListener('change', () => {
       aplicarOrden();
-      setTimeout(() => peliculas()[0]?.focus(), 100);
+      setTimeout(() => {
+        document.querySelector('.pelicula')?.focus();
+      }, 100);
     });
+  }
+
+  let filtroActual = () => true;
+
+  function filtrarYPintar(filtro) {
+    filtroActual = filtro;
+    renderPeliculas(todasPeliculas.filter(filtro));
+  }
+
+  function aplicarOrden() {
+    const criterio = ordenar.value;
+    let filtradas = todasPeliculas.filter(filtroActual);
+
+    filtradas.sort((a, b) => {
+      switch (criterio) {
+        case 'titulo':
+          return a.titulo?.localeCompare(b.titulo);
+        case 'anio':
+          return (b.anio || 0) - (a.anio || 0);
+        case 'añadido':
+        default:
+          return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
+      }
+    });
+
+    renderPeliculas(filtradas);
   }
 
   function configurarCuenta() {
@@ -79,34 +104,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
     const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
-
-    // Películas
     const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
 
     asideItems.forEach((li, idx) => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', e => {
-        switch (e.key) {
-          case 'Enter':
-            li.click();
-            break;
-          case 'ArrowDown':
-            if (asideItems[idx + 1]) {
-              asideItems[idx + 1].focus();
-            }
-            break;
-          case 'ArrowUp':
-            if (asideItems[idx - 1]) {
-              asideItems[idx - 1].focus();
-            } else {
-              navLinks[navLinks.length - 1]?.focus();
-            }
-            break;
-          case 'ArrowRight':
-            peliculas()[0]?.focus();
-            break;
+        if (e.key === 'Enter') li.click();
+        else if (e.key === 'ArrowDown') {
+          if (asideItems[idx + 1]) asideItems[idx + 1].focus();
+        } else if (e.key === 'ArrowUp') {
+          if (asideItems[idx - 1]) asideItems[idx - 1].focus();
+          else navLinks[navLinks.length - 1]?.focus();
+        } else if (e.key === 'ArrowRight') {
+          peliculas()[0]?.focus();
         }
-
         if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
       });
     });
@@ -114,23 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
     navLinks.forEach((link, i) => {
       link.setAttribute('tabindex', '0');
       link.addEventListener('keydown', e => {
-        switch (e.key) {
-          case 'ArrowRight':
-            if (i < navLinks.length - 1) {
-              navLinks[i + 1].focus();
-            }
-            break;
-          case 'ArrowLeft':
-            if (i > 0) {
-              navLinks[i - 1].focus();
-            }
-            break;
-          case 'ArrowDown':
-            asideItems[0]?.focus();
-            break;
+        if (e.key === 'ArrowRight') {
+          if (i < navLinks.length - 1) navLinks[i + 1].focus();
+        } else if (e.key === 'ArrowLeft') {
+          if (i > 0) navLinks[i - 1].focus();
+        } else if (e.key === 'ArrowDown') {
+          asideItems[0]?.focus();
         }
-
-        if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
+        sonidoClick.play().catch(() => {});
       });
     });
 
@@ -176,38 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     buscador.setAttribute('tabindex', '0');
     buscador.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown') peliculas()[0]?.focus();
-      else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') ordenar.focus();
+      if (e.key === 'ArrowDown') {
+        peliculas()[0]?.focus();
+      } else if (e.key === 'ArrowRight') {
+        ordenar.focus();
+      } else if (e.key === 'ArrowLeft') {
+        ordenar.focus();
+      }
       sonidoClick.play().catch(() => {});
     });
-
-    configurarOrdenado();
-  }
-
-  function aplicarOrden() {
-    const criterio = ordenar.value;
-    let filtradas = todasPeliculas.filter(filtroActual);
-
-    filtradas.sort((a, b) => {
-      switch (criterio) {
-        case 'titulo':
-          return a.titulo?.localeCompare(b.titulo);
-        case 'anio':
-          return (b.anio || 0) - (a.anio || 0);
-        case 'añadido':
-        default:
-          return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
-      }
-    });
-
-    renderPeliculas(filtradas);
-  }
-
-  let filtroActual = () => true;
-
-  function filtrarYPintar(filtro) {
-    filtroActual = filtro;
-    renderPeliculas(todasPeliculas.filter(filtro));
   }
 
   function cargarPeliculas() {
