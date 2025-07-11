@@ -223,15 +223,6 @@ function configurarNavegacionLateral() {
     }, 100);
   });
 
-
-  ordenar.addEventListener('change', () => {
-    aplicarOrden();
-    // Opcional: mover el foco a la galería tras cambiar orden
-    setTimeout(() => {
-      peliculas()[0]?.focus();
-    }, 100);
-  });
-
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
       todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
