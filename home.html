@@ -37,15 +37,14 @@
     <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
     <li id="navEstrenos2025" tabindex="0" onclick="filtrar('estrenos2025')">🆕 Estrenos 2025</li>
     <li id="navEstrenos2024" tabindex="0" onclick="filtrar('estrenos2024')">🎬 Estrenos 2024</li>
-
     <li id="navAccion" tabindex="0" onclick="filtrar('accion')">🔥 Acción</li>
-    <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐭 Animación</li>
+    <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐽 Animación</li>
     <li id="navArtesmarciales" tabindex="0" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
     <li id="navAventura" tabindex="0" onclick="filtrar('aventuras')">🌋 Aventuras</li>
     <li id="navCienciaficcion" tabindex="0" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
     <li id="navComedia" tabindex="0" onclick="filtrar('comedia')">😂 Comedia</li>
     <li id="navDrama" tabindex="0" onclick="filtrar('drama')">🎭 Drama</li>
-    <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧚 Fantasía</li>
+    <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧙 Fantasía</li>
     <li id="navRomance" tabindex="0" onclick="filtrar('romance')">💘 Romance</li>
     <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
     <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
@@ -53,49 +52,41 @@
 </aside>
   
   <main>
-    <!-- ✅ Nueva galeria-header organizada -->
     <div class="galeria-header">
       <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
       <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
     </div>
-
-    <!-- Galería de películas -->
     <div id="galeria" class="galeria"></div>
-
   </main>
 </div>
 
-<!-- ✅ Modal limpio y moderno -->
+<!-- Modal Película -->
 <div id="modalPelicula" class="modal" style="display: none;">
   <div class="modal-contenido" tabindex="0">
-    <span id="cerrarModal" class="cerrar-modal">&times;</span>
-    
+    <span id="cerrarModal" class="cerrar-modal" tabindex="0">&times;</span>
     <div class="modal-imagen-contenedor">
       <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
-      <button id="btnVerAhora" class="btn-ver-ahora">▶ Ver ahora</button>
+      <button id="btnVerAhora" class="btn-ver-ahora" tabindex="0">▶ Ver ahora</button>
     </div>
-
     <h2 id="modalTitulo" class="titulo-modal"></h2>
-
     <div class="modal-extra" id="modalExtraInfo"></div>
-
-    <button id="btnMostrarSinopsis" class="btn-sinopsis">📖 Ver sinopsis</button>
+    <button id="btnMostrarSinopsis" class="btn-sinopsis" tabindex="0">📖 Ver sinopsis</button>
   </div>
 </div>
 
-<!-- ✅ Overlay para sinopsis -->
+<!-- Overlay Sinopsis -->
 <div id="overlaySinopsis" class="overlay-sinopsis" style="display: none;">
   <div class="sinopsis-contenido" tabindex="0">
-    <span id="cerrarSinopsis" class="cerrar-modal">&times;</span>
+    <span id="cerrarSinopsis" class="cerrar-modal" tabindex="0">&times;</span>
     <h3>Sinopsis</h3>
     <p id="modalDescripcion"></p>
   </div>
 </div>
 
-<!-- ✅ Modal de video -->
+<!-- Modal Video -->
 <div id="modalVideo" class="modal" style="display: none;">
   <div class="video-contenido" tabindex="0">
-    <span id="cerrarVideo" class="cerrar-modal">&times;</span>
+    <span id="cerrarVideo" class="cerrar-modal" tabindex="0">&times;</span>
     <video id="videoPlayer" controls>
       <source src="" type="video/mp4">
       Tu navegador no soporta HTML5 video.
@@ -104,5 +95,33 @@
 </div>
 
 <script src="app.js"></script>
+<script>
+  const sonidoClick = new Audio('assets/sounds/click.mp3');
+  document.addEventListener('keydown', e => {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  });
+
+  document.getElementById('modalPelicula').addEventListener('keydown', e => {
+    const botones = [
+      document.getElementById('cerrarModal'),
+      document.getElementById('btnVerAhora'),
+      document.getElementById('btnMostrarSinopsis')
+    ].filter(Boolean);
+
+    const i = botones.indexOf(document.activeElement);
+    if (i === -1) return;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      botones[(i + 1) % botones.length]?.focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      botones[(i - 1 + botones.length) % botones.length]?.focus();
+    } else if (e.key === 'Enter') {
+      botones[i]?.click();
+    }
+  });
+</script>
 </body>
 </html>
