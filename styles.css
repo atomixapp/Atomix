@@ -127,10 +127,11 @@ main {
   padding: 20px;
 }
 
-/* GALERIA HEADER */
 .galeria-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -138,14 +139,6 @@ main {
 .titulo-categoria {
   font-size: 1.2rem;
   font-weight: bold;
-}
-
-#ordenar {
-  padding: 0.4rem;
-  background: #252525;
-  color: white;
-  border: none;
-  border-radius: 5px;
 }
 
 #buscadorPeliculas {
@@ -278,8 +271,6 @@ main {
   outline: 2px solid #00bfff;
 }
 
-/* Selector y buscador con efecto foco en TV */
-#ordenar:focus,
 #buscadorPeliculas:focus {
   outline: 2px solid #00bfff;
   border-color: #00bfff;
