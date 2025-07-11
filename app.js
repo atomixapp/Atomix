@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     configurarBusqueda();
     configurarOrden();
     configurarCuenta();
+    configurarHeader();
     configurarAside();
     cargarPeliculas();
     actualizarFechas();
