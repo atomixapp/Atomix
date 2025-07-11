@@ -57,14 +57,12 @@
     <div class="galeria-header">
       <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
       <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
-<div id="ordenarCustom" tabindex="0" class="ordenar-custom">
-  <span id="ordenActual">Añadido</span>
-  <ul id="opcionesOrden" class="oculto">
-    <li data-valor="añadido" class="activo">Añadido</li>
-    <li data-valor="titulo">A-Z</li>
-    <li data-valor="anio">Año</li>
-  </ul>
-</div>
+      <select id="ordenar">
+        <option value="añadido">Añadido</option>
+        <option value="titulo">A-Z</option>
+        <option value="anio">Año</option>
+      </select>
+    </div>
 
     <!-- Galería de películas -->
     <div id="galeria" class="galeria"></div>
