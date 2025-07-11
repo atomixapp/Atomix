@@ -34,21 +34,26 @@ document.addEventListener('DOMContentLoaded', () => {
 function configurarOrdenado() {
   ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      aplicarOrden(); // Aplica el orden
-    } else if (e.key === 'ArrowLeft') {
+      aplicarOrden(); // ✅ Aquí aplicamos el orden directamente
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       buscador.focus();
     } else if (e.key === 'ArrowDown') {
       galeria.querySelector('.pelicula')?.focus();
     }
+    sonidoClick.play().catch(() => {});
   });
+}
+
+let filtroActual = () => true; // Por defecto, mostrar todo
+
+function filtrarYPintar(filtro) {
+  filtroActual = filtro;
+  renderPeliculas(todasPeliculas.filter(filtro));
 }
 
 function aplicarOrden() {
   const criterio = ordenar.value;
-
-  let filtradas = todasPeliculas.filter(p =>
-    p.titulo?.toLowerCase().includes(buscador.value.toLowerCase())
-  );
+  let filtradas = todasPeliculas.filter(filtroActual);
 
   filtradas.sort((a, b) => {
     switch (criterio) {
@@ -179,7 +184,6 @@ function configurarNavegacionLateral() {
   ordenar.setAttribute('tabindex', '0');
   ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      ordenar.dispatchEvent(new Event('change')); // Solo cambia orden con Enter
     } else if (e.key === 'ArrowLeft') {
       buscador.focus();
     } else if (e.key === 'ArrowRight') {
