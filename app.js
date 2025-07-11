@@ -176,55 +176,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function abrirModal(pelicula) {
-    peliculaActiva = pelicula;
-  document.addEventListener('DOMContentLoaded', () => {
+function abrirModal(pelicula) {
+  peliculaActiva = pelicula;
   const modal = document.getElementById('modalPelicula');
-  const modalContenido = document.querySelector('.modal-contenido');
 
-  // Listener para el foco cíclico vertical con flechas arriba/abajo
-  modalContenido.addEventListener('keydown', e => {
-    const focoOrdenado = [
-      document.getElementById('cerrarModal'),
-      document.getElementById('btnVerAhora'),
-      document.getElementById('btnMostrarSinopsis')
-    ].filter(Boolean);
+  // Mostrar datos
+  document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+  document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
+  document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+  document.getElementById('modalExtraInfo').innerHTML = `
+    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+  `;
 
-    const i = focoOrdenado.indexOf(document.activeElement);
+  modal.style.display = 'flex';
+
+  // Establecer foco inicial en botón cerrar
+  setTimeout(() => {
+    document.getElementById('cerrarModal')?.focus();
+  }, 100);
+
+  // Acciones de botones
+  document.getElementById('cerrarModal').onclick = cerrarModal;
+  document.getElementById('btnVerAhora').onclick = verVideo;
+
+  // Navegación con flechas en el modal
+  const botones = [
+    document.getElementById('cerrarModal'),
+    document.getElementById('btnVerAhora'),
+    document.getElementById('btnMostrarSinopsis')
+  ].filter(Boolean);
+
+  modal.onkeydown = e => {
+    const i = botones.indexOf(document.activeElement);
     if (i === -1) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      focoOrdenado[(i + 1) % focoOrdenado.length].focus();
+      const next = i + 1 < botones.length ? i + 1 : i;
+      botones[next].focus();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      focoOrdenado[(i - 1 + focoOrdenado.length) % focoOrdenado.length].focus();
+      const prev = i - 1 >= 0 ? i - 1 : i;
+      botones[prev].focus();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      botones[i].click();
     }
-  });
-
-  window.abrirModal = function(pelicula) {
-    peliculaActiva = pelicula;
-
-    document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-    document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
-    document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-    document.getElementById('modalExtraInfo').innerHTML = `
-      <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-      <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-    `;
-
-    modal.style.display = 'flex';
-
-    // Dar tiempo a que el modal sea visible antes de enfocar
-    setTimeout(() => {
-      document.getElementById('cerrarModal').focus();
-    }, 100);
-
-    document.getElementById('cerrarModal').onclick = cerrarModal;
-    document.getElementById('btnVerAhora').onclick = verVideo;
   };
-});
+}
 
   function cerrarModal() {
     document.getElementById('modalPelicula').style.display = 'none';
