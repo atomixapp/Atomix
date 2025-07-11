@@ -32,14 +32,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarOrdenado() {
-  ordenar.addEventListener('change', () => {
-    aplicarOrden();
-  });
-
+  // Aplica el orden al cambiar opción desde teclado (Enter) o con clic
   ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      aplicarOrden(); // Aplica el orden al pulsar Enter
+      aplicarOrden();
+      e.preventDefault();
     }
+    if (e.key === 'ArrowLeft') {
+      buscador.focus();
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowDown') {
+      const primeraCard = galeria.querySelector('.pelicula');
+      if (primeraCard) primeraCard.focus();
+      e.preventDefault();
+    }
+  });
+
+  ordenar.addEventListener('change', e => {
+    // Evitamos que se dispare al enfocar sin Enter
+    e.stopImmediatePropagation();
   });
 }
 
@@ -63,10 +75,7 @@ function aplicarOrden() {
   });
 
   renderPeliculas(filtradas);
-        sonidoClick.play().catch(() => {});
-      }
-    });
-  }
+}
 
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
