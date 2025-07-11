@@ -32,15 +32,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarOrdenado() {
+  // Pulsación de tecla
   ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      aplicarOrden(); // ✅ Aquí aplicamos el orden directamente
+      aplicarOrden(); // aplica el orden al pulsar Enter directamente
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       buscador.focus();
     } else if (e.key === 'ArrowDown') {
       galeria.querySelector('.pelicula')?.focus();
     }
     sonidoClick.play().catch(() => {});
+  });
+
+  // Cambio real de opción con click o control remoto
+  ordenar.addEventListener('change', () => {
+    aplicarOrden();
   });
 }
 
