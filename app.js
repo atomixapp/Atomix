@@ -178,9 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function abrirModal(pelicula) {
     peliculaActiva = pelicula;
+  document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('modalPelicula');
   const modalContenido = document.querySelector('.modal-contenido');
 
-  // Listener de teclado para foco cíclico en modal, solo se añade una vez
+  // Listener para el foco cíclico vertical con flechas arriba/abajo
   modalContenido.addEventListener('keydown', e => {
     const focoOrdenado = [
       document.getElementById('cerrarModal'),
@@ -193,17 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      focoOrdenado[Math.min(i + 1, focoOrdenado.length - 1)]?.focus();
+      focoOrdenado[(i + 1) % focoOrdenado.length].focus();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      focoOrdenado[Math.max(i - 1, 0)]?.focus();
+      focoOrdenado[(i - 1 + focoOrdenado.length) % focoOrdenado.length].focus();
     }
   });
 
-  // Función abrir modal simplificada, sin añadir event listener dentro
   window.abrirModal = function(pelicula) {
     peliculaActiva = pelicula;
-    const modal = document.getElementById('modalPelicula');
 
     document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
     document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
@@ -216,13 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modal.style.display = 'flex';
 
+    // Dar tiempo a que el modal sea visible antes de enfocar
     setTimeout(() => {
-      document.getElementById('cerrarModal')?.focus(); // Enfoca el primer botón
+      document.getElementById('cerrarModal').focus();
     }, 100);
 
     document.getElementById('cerrarModal').onclick = cerrarModal;
     document.getElementById('btnVerAhora').onclick = verVideo;
-  }
+  };
 });
 
   function cerrarModal() {
