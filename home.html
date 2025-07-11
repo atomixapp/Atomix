@@ -32,28 +32,26 @@
 <div class="app-container">
   <aside>
     <h2>Categorías</h2>
-  <ul>
-    <li id="navFavoritos" tabindex="0" onclick="filtrar('favoritos')">❤️ Favoritos</li>
-    <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
-    <li id="navEstrenos2025" tabindex="0" onclick="filtrar('estrenos2025')">🆕 Estrenos 2025</li>
-    <li id="navEstrenos2024" tabindex="0" onclick="filtrar('estrenos2024')">🎬 Estrenos 2024</li>
-
-    <li id="navAccion" tabindex="0" onclick="filtrar('accion')">🔥 Acción</li>
-    <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐭 Animación</li>
-    <li id="navArtesmarciales" tabindex="0" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
-    <li id="navAventura" tabindex="0" onclick="filtrar('aventuras')">🌋 Aventuras</li>
-    <li id="navCienciaficcion" tabindex="0" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
-    <li id="navComedia" tabindex="0" onclick="filtrar('comedia')">😂 Comedia</li>
-    <li id="navDrama" tabindex="0" onclick="filtrar('drama')">🎭 Drama</li>
-    <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧚 Fantasía</li>
-    <li id="navRomance" tabindex="0" onclick="filtrar('romance')">💘 Romance</li>
-    <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
-    <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
-  </ul>
-</aside>
+    <ul>
+      <li id="navFavoritos" tabindex="0" onclick="filtrar('favoritos')">❤️ Favoritos</li>
+      <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
+      <li id="navEstrenos2025" tabindex="0" onclick="filtrar('estrenos2025')">🆕 Estrenos 2025</li>
+      <li id="navEstrenos2024" tabindex="0" onclick="filtrar('estrenos2024')">🎬 Estrenos 2024</li>
+      <li id="navAccion" tabindex="0" onclick="filtrar('accion')">🔥 Acción</li>
+      <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐭 Animación</li>
+      <li id="navArtesmarciales" tabindex="0" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
+      <li id="navAventura" tabindex="0" onclick="filtrar('aventuras')">🌋 Aventuras</li>
+      <li id="navCienciaficcion" tabindex="0" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
+      <li id="navComedia" tabindex="0" onclick="filtrar('comedia')">😂 Comedia</li>
+      <li id="navDrama" tabindex="0" onclick="filtrar('drama')">🎭 Drama</li>
+      <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧚 Fantasía</li>
+      <li id="navRomance" tabindex="0" onclick="filtrar('romance')">💘 Romance</li>
+      <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
+      <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
+    </ul>
+  </aside>
   
   <main>
-    <!-- ✅ Nueva galeria-header organizada -->
     <div class="galeria-header">
       <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
       <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
@@ -64,31 +62,23 @@
       </select>
     </div>
 
-    <!-- Galería de películas -->
     <div id="galeria" class="galeria"></div>
-
   </main>
 </div>
 
-<!-- ✅ Modal limpio y moderno -->
 <div id="modalPelicula" class="modal" style="display: none;">
   <div class="modal-contenido" tabindex="0">
     <span id="cerrarModal" class="cerrar-modal">&times;</span>
-    
     <div class="modal-imagen-contenedor">
       <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
       <button id="btnVerAhora" class="btn-ver-ahora">▶ Ver ahora</button>
     </div>
-
     <h2 id="modalTitulo" class="titulo-modal"></h2>
-
     <div class="modal-extra" id="modalExtraInfo"></div>
-
     <button id="btnMostrarSinopsis" class="btn-sinopsis">📖 Ver sinopsis</button>
   </div>
 </div>
 
-<!-- ✅ Overlay para sinopsis -->
 <div id="overlaySinopsis" class="overlay-sinopsis" style="display: none;">
   <div class="sinopsis-contenido" tabindex="0">
     <span id="cerrarSinopsis" class="cerrar-modal">&times;</span>
@@ -97,7 +87,6 @@
   </div>
 </div>
 
-<!-- ✅ Modal de video -->
 <div id="modalVideo" class="modal" style="display: none;">
   <div class="video-contenido" tabindex="0">
     <span id="cerrarVideo" class="cerrar-modal">&times;</span>
@@ -108,6 +97,5 @@
   </div>
 </div>
 
-<script src="app.js"></script>
 </body>
 </html>
