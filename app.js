@@ -257,4 +257,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+
+// Reproducir sonido al usar flechas o Enter en cualquier parte
+document.addEventListener('keydown', e => {
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    sonidoClick.currentTime = 0; // Reinicia el audio si ya está sonando
+    sonidoClick.play().catch(() => {});
+  }
+});
+  
 });
