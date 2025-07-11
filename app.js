@@ -1,3 +1,4 @@
+/* global auth, db, firebase */
 document.addEventListener('DOMContentLoaded', () => {
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -12,15 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   auth.onAuthStateChanged(user => {
     if (!user) window.location.href = 'index.html';
-    else inicializar();
+    else inicializarPeliculas();
   });
 
-  function inicializar() {
+  function inicializarPeliculas() {
     configurarBuscador();
-    configurarOrden();
+    configurarOrdenado();
     configurarCuenta();
-    configurarNavegacionAside();
-    configurarNavegacionHeader();
+    configurarNavegacionLateral();
+    actualizarPeliculasSinFecha();
     cargarPeliculas();
   }
 
@@ -28,33 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
     buscador.addEventListener('input', e => {
       filtrarYPintar(p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase()));
     });
-
-    buscador.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') ordenar.focus();
-      else if (e.key === 'ArrowLeft') document.querySelector('aside li.activo')?.focus();
-      else if (e.key === 'ArrowDown') galeria.querySelector('.pelicula')?.focus();
-      sonidoClick.play().catch(() => {});
-    });
   }
 
-  function configurarOrden() {
-    ordenar.addEventListener('change', ordenarPeliculas);
-    ordenar.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft') buscador.focus();
-      else if (e.key === 'ArrowDown') galeria.querySelector('.pelicula')?.focus();
-      sonidoClick.play().catch(() => {});
-    });
-  }
+  function configurarOrdenado() {
+    ordenar.addEventListener('change', () => {
+      const criterio = ordenar.value;
+      let filtradas = todasPeliculas.filter(p => p.titulo?.toLowerCase().includes(buscador.value.toLowerCase()));
 
-  function ordenarPeliculas() {
-    const criterio = ordenar.value;
-    let filtradas = todasPeliculas.filter(p => p.titulo?.toLowerCase().includes(buscador.value.toLowerCase()));
-    filtradas.sort((a, b) => {
-      if (criterio === 'titulo') return a.titulo.localeCompare(b.titulo);
-      if (criterio === 'anio') return (b.anio || 0) - (a.anio || 0);
-      return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
+      filtradas.sort((a, b) => {
+        switch (criterio) {
+          case 'titulo': return a.titulo?.localeCompare(b.titulo);
+          case 'anio': return (b.anio || 0) - (a.anio || 0);
+          case 'añadido':
+            return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
+          default: return 0;
+        }
+      });
+      renderPeliculas(filtradas);
     });
-    renderPeliculas(filtradas);
   }
 
   function configurarCuenta() {
@@ -62,42 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
     });
+
     document.addEventListener('click', e => {
       if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
         menuUsuario.style.display = 'none';
       }
     });
-
-    botonCuenta.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft') document.querySelector('header .nav-left a.activo')?.focus();
-      else if (e.key === 'ArrowDown') buscador.focus();
-      sonidoClick.play().catch(() => {});
-    });
   }
 
-  function configurarNavegacionHeader() {
-    const headerLinks = document.querySelectorAll('header .nav-left a');
-    headerLinks.forEach((link, i) => {
-      link.setAttribute('tabindex', '0');
-      link.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') {
-          if (i < headerLinks.length - 1) headerLinks[i + 1].focus();
-          else botonCuenta.focus();
-        } else if (e.key === 'ArrowDown') buscador.focus();
-        sonidoClick.play().catch(() => {});
-      });
-    });
-  }
-
-  function configurarNavegacionAside() {
-    const items = document.querySelectorAll('aside li');
-    items.forEach((li, i) => {
+  function configurarNavegacionLateral() {
+    document.querySelectorAll('aside li').forEach(li => {
       li.setAttribute('tabindex', '0');
       li.addEventListener('keydown', e => {
-        if (e.key === 'ArrowDown') items[i + 1]?.focus();
-        else if (e.key === 'ArrowUp') items[i - 1]?.focus();
-        else if (e.key === 'ArrowRight') buscador.focus();
-        else if (e.key === 'Enter') li.click();
+        if (e.key === 'Enter') li.click();
+        if (e.key === 'ArrowDown') li.nextElementSibling?.focus();
+        if (e.key === 'ArrowUp') li.previousElementSibling?.focus();
+        if (e.key === 'ArrowRight') galeria.querySelector('.pelicula')?.focus();
         sonidoClick.play().catch(() => {});
       });
     });
@@ -107,8 +79,24 @@ document.addEventListener('DOMContentLoaded', () => {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
       todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderPeliculas(todasPeliculas);
-      setTimeout(() => document.getElementById('navTodos')?.focus(), 300);
+      establecerFocoInicial();
     });
+  }
+
+  function actualizarPeliculasSinFecha() {
+    db.collection("peliculas").get().then(snapshot => {
+      snapshot.forEach(doc => {
+        if (!doc.data().fechaCreacion) {
+          db.collection("peliculas").doc(doc.id).update({
+            fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+      });
+    });
+  }
+
+  function establecerFocoInicial() {
+    setTimeout(() => document.getElementById('navTodos')?.focus(), 300);
   }
 
   function renderPeliculas(lista) {
@@ -123,19 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('')
       : '<p>No hay películas para mostrar.</p>';
 
-    const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-    const columnas = Math.floor(galeria.offsetWidth / 180);
-
-    peliculas.forEach((card, i) => {
+    galeria.querySelectorAll('.pelicula').forEach((card, i) => {
       card.addEventListener('click', () => abrirModal(lista[i]));
-      card.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') peliculas[i + 1]?.focus();
-        else if (e.key === 'ArrowLeft') peliculas[i - 1]?.focus() || ordenar.focus();
-        else if (e.key === 'ArrowDown') peliculas[i + columnas]?.focus() || botonCuenta.focus();
-        else if (e.key === 'ArrowUp') peliculas[i - columnas]?.focus() || buscador.focus();
-        else if (e.key === 'Enter') card.click();
-        sonidoClick.play().catch(() => {});
-      });
     });
   }
 
@@ -148,10 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalExtraInfo').innerHTML = `
       <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
       <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>`;
+      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+    `;
 
     modal.style.display = 'flex';
-    setTimeout(() => document.querySelector('.modal-contenido')?.focus(), 100);
+    setTimeout(() => document.querySelector('.modal-contenido').focus(), 100);
+
     document.getElementById('cerrarModal').onclick = cerrarModal;
     document.getElementById('btnVerAhora').onclick = verVideo;
   }
@@ -166,18 +145,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const videoPlayer = document.getElementById('videoPlayer');
     const cerrarVideo = document.getElementById('cerrarVideo');
-    const modalVideo = document.getElementById('modalVideo');
-
     videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
     videoPlayer.load();
     videoPlayer.play();
 
     document.getElementById('modalPelicula').style.display = 'none';
+    const modalVideo = document.getElementById('modalVideo');
     modalVideo.style.display = 'flex';
     cerrarVideo.style.display = 'block';
 
     let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-
     cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
 
     window.addEventListener('keydown', e => {
@@ -186,14 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    setTimeout(() => document.querySelector('.video-contenido')?.focus(), 100);
+    setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
   }
 
-  function cerrarVideoFunc(player, modal, timeout) {
-    clearTimeout(timeout);
-    player.pause();
-    player.currentTime = 0;
-    modal.style.display = 'none';
+  function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
+    clearTimeout(ocultarCerrar);
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
+    modalVideo.style.display = 'none';
     galeria.querySelector('.pelicula:focus')?.focus();
   }
 
@@ -223,5 +200,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+});
+
+// ✅ BLOQUE FINAL DE NAVEGACIÓN POR FLECHAS
+
+document.addEventListener('keydown', (e) => {
+  const focusableSelectors = `
+    aside li,
+    .pelicula,
+    #buscadorPeliculas,
+    #ordenar,
+    header a,
+    #botonCuenta
+  `;
+  const focusables = Array.from(document.querySelectorAll(focusableSelectors)).filter(el => el.offsetParent !== null);
+
+  const currentIndex = focusables.indexOf(document.activeElement);
+  if (currentIndex === -1) return;
+
+  const current = document.activeElement;
+
+  const isPelicula = current.classList.contains('pelicula');
+  const isAside = current.closest('aside');
+  const isBuscador = current.id === 'buscadorPeliculas';
+  const isOrdenar = current.id === 'ordenar';
+  const isHeader = current.closest('header');
+
+  const columnas = 4;
+
+  if (e.key === 'ArrowDown') {
+    if (isAside) {
+      current.nextElementSibling?.focus();
+    } else if (isPelicula) {
+      const next = focusables.slice(currentIndex + 1).find(el => el.classList.contains('pelicula'));
+      if (next) next.focus();
+      else document.getElementById('botonCuenta')?.focus();
+    } else if (isBuscador) {
+      const peli = document.querySelector('.pelicula');
+      if (peli) peli.focus();
+    } else if (isHeader) {
+      document.getElementById('navTodos')?.focus();
+    }
+  }
+
+  if (e.key === 'ArrowUp') {
+    if (isAside) {
+      current.previousElementSibling?.focus();
+    } else if (isPelicula) {
+      const prev = focusables.slice(0, currentIndex).reverse().find(el => el.classList.contains('pelicula'));
+      if (prev) prev.focus();
+      else document.getElementById('buscadorPeliculas')?.focus();
+    } else if (isBuscador || isOrdenar) {
+      const galeria = document.querySelector('.pelicula');
+      if (galeria) galeria.focus();
+    } else if (isHeader) {
+      document.getElementById('ordenar')?.focus();
+    }
+  }
+
+  if (e.key === 'ArrowRight') {
+    if (isAside) {
+      const peli = document.querySelector('.pelicula');
+      if (peli) peli.focus();
+    } else {
+      const next = focusables[currentIndex + 1];
+      if (next) next.focus();
+    }
+  }
+
+  if (e.key === 'ArrowLeft') {
+    if (isPelicula) {
+      document.querySelector('aside li.activo')?.focus();
+    } else {
+      const prev = focusables[currentIndex - 1];
+      if (prev) prev.focus();
+    }
+  }
+
+  if (e.key === 'Enter') {
+    current.click?.();
   }
 });
