@@ -188,8 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
     `;
 
-    modal.style.display = 'flex';
-    setTimeout(() => document.querySelector('.modal-contenido').focus(), 100);
+modal.style.display = 'flex';
+setTimeout(() => {
+  document.getElementById('cerrarModal')?.focus();
+}, 100);
 
     document.getElementById('cerrarModal').onclick = cerrarModal;
     document.getElementById('btnVerAhora').onclick = verVideo;
@@ -263,6 +265,29 @@ document.addEventListener('keydown', e => {
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
     sonidoClick.currentTime = 0; // Reinicia el audio si ya está sonando
     sonidoClick.play().catch(() => {});
+  }
+});
+
+// Navegación por teclado en el modal
+const modal = document.getElementById('modalPelicula');
+modal.addEventListener('keydown', e => {
+  const botones = [
+    document.getElementById('cerrarModal'),
+    document.getElementById('btnVerAhora'),
+    document.getElementById('btnMostrarSinopsis')
+  ].filter(Boolean);
+
+  const i = botones.indexOf(document.activeElement);
+  if (i === -1) return;
+
+  if (e.key === 'ArrowRight') {
+    botones[(i + 1) % botones.length]?.focus();
+  } else if (e.key === 'ArrowLeft') {
+    botones[(i - 1 + botones.length) % botones.length]?.focus();
+  } else if (e.key === 'ArrowDown') {
+    botones[(i + 1) % botones.length]?.focus();
+  } else if (e.key === 'ArrowUp') {
+    botones[(i - 1 + botones.length) % botones.length]?.focus();
   }
 });
   
