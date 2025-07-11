@@ -32,22 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarOrdenado() {
-  // Aplica el orden al cambiar opción desde teclado (Enter) o con clic
   ordenar.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      aplicarOrden();
-      e.preventDefault();
-    }
-    if (e.key === 'ArrowLeft') {
+      aplicarOrden(); // Solo aplicamos si se pulsa Enter
+    } else if (e.key === 'ArrowLeft') {
       buscador.focus();
-      e.preventDefault();
-    }
-    if (e.key === 'ArrowDown') {
-      const primeraCard = galeria.querySelector('.pelicula');
-      if (primeraCard) primeraCard.focus();
-      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      galeria.querySelector('.pelicula')?.focus();
     }
   });
+}
 
   ordenar.addEventListener('change', e => {
     // Evitamos que se dispare al enfocar sin Enter
@@ -55,7 +49,7 @@ function configurarOrdenado() {
   });
 }
 
-function aplicarOrden() {
+                          function aplicarOrden() {
   const criterio = ordenar.value;
   let filtradas = todasPeliculas.filter(p =>
     p.titulo?.toLowerCase().includes(buscador.value.toLowerCase())
@@ -68,9 +62,8 @@ function aplicarOrden() {
       case 'anio':
         return (b.anio || 0) - (a.anio || 0);
       case 'añadido':
-        return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
       default:
-        return 0;
+        return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
     }
   });
 
