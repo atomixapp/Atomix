@@ -192,39 +192,42 @@ function abrirModal(pelicula) {
 
   modal.style.display = 'flex';
 
-  // Establecer foco inicial en botón cerrar
   setTimeout(() => {
-    document.getElementById('cerrarModal')?.focus();
+    document.getElementById('cerrarModal')?.focus(); // Primer foco
   }, 100);
 
   // Acciones de botones
   document.getElementById('cerrarModal').onclick = cerrarModal;
   document.getElementById('btnVerAhora').onclick = verVideo;
 
-// Navegación con flechas en el modal (foco ordenado)
-const botones = [
-  document.getElementById('cerrarModal'),
-  document.getElementById('btnVerAhora'),
-  document.getElementById('btnMostrarSinopsis')
-].filter(btn => btn && btn.offsetParent !== null); // Solo visibles
+  // 🔁 Navegación ordenada dentro del modal
+  const modalContenido = modal.querySelector('.modal-contenido');
 
-modal.querySelector('.modal-contenido').addEventListener('keydown', e => {
-  const i = botones.indexOf(document.activeElement);
-  if (i === -1) return;
+  modalContenido.addEventListener('keydown', e => {
+    const botones = [
+      document.getElementById('cerrarModal'),
+      document.getElementById('btnVerAhora'),
+      document.getElementById('btnMostrarSinopsis')
+    ].filter(btn => btn && btn.offsetParent !== null); // Solo visibles
 
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    const next = i + 1 < botones.length ? i + 1 : i;
-    botones[next].focus();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    const prev = i - 1 >= 0 ? i - 1 : i;
-    botones[prev].focus();
-  } else if (e.key === 'Enter') {
-    e.preventDefault();
-    botones[i].click();
-  }
-});
+    const i = botones.indexOf(document.activeElement);
+    if (i === -1) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = i + 1 < botones.length ? i + 1 : i;
+      botones[next].focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = i - 1 >= 0 ? i - 1 : i;
+      botones[prev].focus();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      botones[i].click();
+    }
+  }, { once: true }); // ✅ solo se añade una vez por apertura
+}
+
 
   function cerrarModal() {
     document.getElementById('modalPelicula').style.display = 'none';
