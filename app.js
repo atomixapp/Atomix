@@ -89,9 +89,12 @@ function filtrarYPintar(filtro) {
   renderPeliculas(todasPeliculas.filter(filtro));
 }
 
-function aplicarOrden() {
-  const criterio = ordenar.value;
-  let filtradas = todasPeliculas.filter(filtroActual);
+function aplicarOrden(valorManual = null) {
+  const criterio = valorManual || (ordenar?.value ?? 'añadido');
+
+  let filtradas = todasPeliculas.filter(p =>
+    p.titulo?.toLowerCase().includes(buscador.value.toLowerCase())
+  );
 
   filtradas.sort((a, b) => {
     switch (criterio) {
