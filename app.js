@@ -68,120 +68,115 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarNavegacionLateral() {
-  // Navegación en aside
   const asideItems = Array.from(document.querySelectorAll('aside li'));
+  const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
+  const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
+
+  // ASIDE
   asideItems.forEach((li, idx) => {
     li.setAttribute('tabindex', '0');
     li.addEventListener('keydown', e => {
       if (e.key === 'Enter') li.click();
       else if (e.key === 'ArrowDown') {
         if (asideItems[idx + 1]) asideItems[idx + 1].focus();
-        else {
-          // Cuando llegamos al último del aside, bajamos a galería (primer película)
-          galeria.querySelector('.pelicula')?.focus();
-        }
+        else peliculas()[0]?.focus();
       } else if (e.key === 'ArrowUp') {
         if (asideItems[idx - 1]) asideItems[idx - 1].focus();
-        else {
-          // Si estamos en el primero del aside y presionamos arriba, vamos al header (primer link activo o primer link)
-          const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
-          const focoHeader = navLinks.find(a => a.classList.contains('activo')) || navLinks[0];
-          focoHeader?.focus();
-        }
+        else navLinks[0]?.focus(); // Subir al header
       } else if (e.key === 'ArrowRight') {
-        // Al presionar derecha en aside, ir a la galería (primer película)
-        galeria.querySelector('.pelicula')?.focus();
+        peliculas()[0]?.focus();
       }
       if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
     });
   });
 
-  // Navegación en header (nav-left)
-  const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
-  navLinks.forEach((link, index) => {
+  // HEADER
+  navLinks.forEach((link, i) => {
     link.setAttribute('tabindex', '0');
     link.addEventListener('keydown', e => {
       if (e.key === 'ArrowRight') {
-        navLinks[(index + 1) % navLinks.length].focus();
-        sonidoClick.play().catch(() => {});
+        if (i < navLinks.length - 1) navLinks[i + 1].focus();
+        else botonCuenta.focus(); // Último link, salta a Mi Cuenta
       } else if (e.key === 'ArrowLeft') {
-        navLinks[(index - 1 + navLinks.length) % navLinks.length].focus();
-        sonidoClick.play().catch(() => {});
+        if (i > 0) navLinks[i - 1].focus();
       } else if (e.key === 'ArrowDown') {
-        // Baja a aside (primer li activo o primer li)
-        document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
-        sonidoClick.play().catch(() => {});
+        asideItems[0]?.focus();
       }
+      sonidoClick.play().catch(() => {});
     });
   });
 
-  // Navegación en galería
+  // BOTÓN CUENTA (solo desde nav con ArrowRight)
+  botonCuenta.setAttribute('tabindex', '0');
+  botonCuenta.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
+  });
+
+  // GALERÍA
   galeria.addEventListener('keydown', e => {
-    const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
+    const cards = peliculas();
     const columnas = 4;
-    const i = peliculas.indexOf(document.activeElement);
+    const i = cards.indexOf(document.activeElement);
     if (i === -1) return;
 
     switch (e.key) {
       case 'ArrowRight':
-        if (peliculas[i + 1]) peliculas[i + 1].focus();
-        else buscador.focus(); // Al final de galería, ir a buscador
+        cards[i + 1]?.focus();
         break;
       case 'ArrowLeft':
-        if (peliculas[i - 1]) peliculas[i - 1].focus();
-        else {
-          // Vuelve a aside activo o primer li
+        if (i % columnas === 0) {
+          // A la izquierda en la primera columna: volver a aside
           document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+        } else {
+          cards[i - 1]?.focus();
         }
         break;
       case 'ArrowDown':
-        if (peliculas[i + columnas]) peliculas[i + columnas].focus();
-        else botonCuenta.focus(); // Al final de galería hacia abajo, ir a botón cuenta
+        cards[i + columnas]?.focus();
         break;
       case 'ArrowUp':
-        if (peliculas[i - columnas]) peliculas[i - columnas].focus();
-        else {
-          // Arriba galería, ir a aside activo o primer li
-          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+        if (i < columnas) {
+          // Estamos en la primera fila → ir al buscador
+          buscador.focus();
+        } else {
+          cards[i - columnas]?.focus();
         }
         break;
       case 'Enter':
-        peliculas[i].click();
+        cards[i].click();
         break;
+    }
+
+    if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
+  });
+
+  // BUSCADOR
+  buscador.setAttribute('tabindex', '0');
+  buscador.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') {
+      // Si bajas, vas a la galería (primera card)
+      peliculas()[0]?.focus();
+    } else if (e.key === 'ArrowRight') {
+      ordenar.focus();
+    } else if (e.key === 'ArrowLeft') {
+      ordenar.focus();
     }
     sonidoClick.play().catch(() => {});
   });
 
-  // Navegación buscador y ordenar
-  buscador.addEventListener('keydown', e => {
-    if (e.key === 'ArrowDown') {
-      ordenar.focus();
-      sonidoClick.play().catch(() => {});
-    } else if (e.key === 'ArrowUp') {
-      // Vuelve a última card visible de galería
-      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-      peliculas.length && peliculas[peliculas.length - 1].focus();
-      sonidoClick.play().catch(() => {});
-    }
-  });
-
+  // ORDENAR
+  ordenar.setAttribute('tabindex', '0');
   ordenar.addEventListener('keydown', e => {
-    if (e.key === 'ArrowUp') {
+    if (e.key === 'Enter') {
+      ordenar.dispatchEvent(new Event('change')); // Solo cambia orden con Enter
+    } else if (e.key === 'ArrowLeft') {
       buscador.focus();
-      sonidoClick.play().catch(() => {});
+    } else if (e.key === 'ArrowRight') {
+      buscador.focus();
     } else if (e.key === 'ArrowDown') {
-      botonCuenta.focus();
-      sonidoClick.play().catch(() => {});
+      peliculas()[0]?.focus();
     }
-  });
-
-  // Navegación botón cuenta
-  botonCuenta.addEventListener('keydown', e => {
-    if (e.key === 'ArrowUp') {
-      const peliculas = Array.from(galeria.querySelectorAll('.pelicula'));
-      peliculas.length && peliculas[peliculas.length - 1].focus();
-      sonidoClick.play().catch(() => {});
-    }
+    sonidoClick.play().catch(() => {});
   });
 }
 
