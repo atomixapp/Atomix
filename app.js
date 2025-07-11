@@ -32,19 +32,44 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 function configurarOrdenado() {
-ordenar.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    ordenar.size = 3; // simula apertura del desplegable
-    aplicarOrden();
-  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-    buscador.focus();
-    e.preventDefault();
-  } else if (e.key === 'ArrowDown') {
-    e.preventDefault(); // evita que abra el menú nativo
-    galeria.querySelector('.pelicula')?.focus();
-  }
-  sonidoClick.play().catch(() => {});
-});
+  const botonOrdenar = document.getElementById('botonOrdenar');
+  const listaOrdenar = document.getElementById('listaOrdenar');
+  const opciones = Array.from(listaOrdenar.querySelectorAll('li'));
+
+  let indiceActual = 0;
+
+  botonOrdenar.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      listaOrdenar.classList.add('mostrar');
+      opciones[0].focus();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      buscador.focus();
+    } else if (e.key === 'ArrowDown') {
+      galeria.querySelector('.pelicula')?.focus();
+    }
+    sonidoClick.play().catch(() => {});
+  });
+
+  opciones.forEach((opcion, i) => {
+    opcion.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') {
+        opciones[i + 1]?.focus();
+      } else if (e.key === 'ArrowUp') {
+        opciones[i - 1]?.focus();
+      } else if (e.key === 'Enter') {
+        const valor = opcion.getAttribute('data-valor');
+        botonOrdenar.textContent = 'Ordenar: ' + opcion.textContent;
+        listaOrdenar.classList.remove('mostrar');
+        aplicarOrden(valor);
+        botonOrdenar.focus();
+      } else if (e.key === 'Escape') {
+        listaOrdenar.classList.remove('mostrar');
+        botonOrdenar.focus();
+      }
+      sonidoClick.play().catch(() => {});
+    });
+  });
+}
 
 // Restablecer tamaño cuando pierda foco
 ordenar.addEventListener('blur', () => {
