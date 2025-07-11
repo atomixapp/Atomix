@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let todasPeliculas = [];
   let peliculaActiva = null;
+  let filtroActual = () => true;
 
   auth.onAuthStateChanged(user => {
     if (!user) window.location.href = 'index.html';
@@ -18,63 +19,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function inicializarPeliculas() {
     configurarBuscador();
-    configurarOrdenado();
     configurarCuenta();
-    configurarNavegacionLateral();
+    configurarNavegacion();
     actualizarPeliculasSinFecha();
     cargarPeliculas();
   }
 
   function configurarBuscador() {
     buscador.addEventListener('input', e => {
-      filtrarYPintar(p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase()));
+      filtroActual = p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase());
+      renderPeliculas(todasPeliculas.filter(filtroActual));
     });
   }
-
-function configurarOrdenado() {
-  // Pulsación de tecla
-  ordenar.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      aplicarOrden(); // aplica el orden al pulsar Enter directamente
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      buscador.focus();
-    } else if (e.key === 'ArrowDown') {
-      galeria.querySelector('.pelicula')?.focus();
-    }
-    sonidoClick.play().catch(() => {});
-  });
-
-  // Cambio real de opción con click o control remoto
-  ordenar.addEventListener('change', () => {
-    aplicarOrden();
-  });
-}
-
-let filtroActual = () => true; // Por defecto, mostrar todo
-
-function filtrarYPintar(filtro) {
-  filtroActual = filtro;
-  renderPeliculas(todasPeliculas.filter(filtro));
-}
-
-function aplicarOrden() {
-  const criterio = ordenar.value;
-  let filtradas = todasPeliculas.filter(filtroActual);
-
-  filtradas.sort((a, b) => {
-    switch (criterio) {
-      case 'titulo':
-        return a.titulo?.localeCompare(b.titulo);
-      case 'anio':
-        return (b.anio || 0) - (a.anio || 0);
-      case 'añadido':
-      default:
-        return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
-    }
-  });
-
-  renderPeliculas(filtradas);
-}
 
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
@@ -89,139 +45,96 @@ function aplicarOrden() {
     });
   }
 
-function configurarNavegacionLateral() {
-  const asideItems = Array.from(document.querySelectorAll('aside li'));
-  const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
-  const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
+  function configurarNavegacion() {
+    const asideItems = Array.from(document.querySelectorAll('aside li'));
+    const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
+    const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
 
-  // ASIDE
-  asideItems.forEach((li, idx) => {
-    li.setAttribute('tabindex', '0');
-    li.addEventListener('keydown', e => {
-      if (e.key === 'Enter') li.click();
-      else if (e.key === 'ArrowDown') {
-        if (asideItems[idx + 1]) asideItems[idx + 1].focus();
-        else peliculas()[0]?.focus();
-      } else if (e.key === 'ArrowUp') {
-        if (asideItems[idx - 1]) asideItems[idx - 1].focus();
-        else navLinks[0]?.focus(); // Subir al header
-      } else if (e.key === 'ArrowRight') {
-        peliculas()[0]?.focus();
+    asideItems.forEach((li, idx) => {
+      li.setAttribute('tabindex', '0');
+      li.addEventListener('keydown', e => {
+        if (e.key === 'Enter') li.click();
+        else if (e.key === 'ArrowDown') asideItems[idx + 1]?.focus() || peliculas()[0]?.focus();
+        else if (e.key === 'ArrowUp') asideItems[idx - 1]?.focus() || navLinks[0]?.focus();
+        else if (e.key === 'ArrowRight') peliculas()[0]?.focus();
+        if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
+      });
+    });
+
+    navLinks.forEach((link, i) => {
+      link.setAttribute('tabindex', '0');
+      link.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') navLinks[i + 1]?.focus() || botonCuenta.focus();
+        else if (e.key === 'ArrowLeft') navLinks[i - 1]?.focus();
+        else if (e.key === 'ArrowDown') asideItems[0]?.focus();
+        sonidoClick.play().catch(() => {});
+      });
+    });
+
+    botonCuenta.setAttribute('tabindex', '0');
+    botonCuenta.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
+    });
+
+    galeria.addEventListener('keydown', e => {
+      const cards = peliculas();
+      const columnas = 4;
+      const i = cards.indexOf(document.activeElement);
+      if (i === -1) return;
+
+      switch (e.key) {
+        case 'ArrowRight': cards[i + 1]?.focus(); break;
+        case 'ArrowLeft': i % columnas === 0 ? (document.querySelector('aside li.activo') || asideItems[0])?.focus() : cards[i - 1]?.focus(); break;
+        case 'ArrowDown': cards[i + columnas]?.focus(); break;
+        case 'ArrowUp': i < columnas ? buscador.focus() : cards[i - columnas]?.focus(); break;
+        case 'Enter': cards[i].click(); break;
       }
+
       if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
     });
-  });
 
-  // HEADER
-  navLinks.forEach((link, i) => {
-    link.setAttribute('tabindex', '0');
-    link.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') {
-        if (i < navLinks.length - 1) navLinks[i + 1].focus();
-        else botonCuenta.focus(); // Último link, salta a Mi Cuenta
-      } else if (e.key === 'ArrowLeft') {
-        if (i > 0) navLinks[i - 1].focus();
-      } else if (e.key === 'ArrowDown') {
-        asideItems[0]?.focus();
-      }
+    buscador.setAttribute('tabindex', '0');
+    buscador.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') peliculas()[0]?.focus();
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') ordenar.focus();
       sonidoClick.play().catch(() => {});
     });
-  });
 
-  // BOTÓN CUENTA (solo desde nav con ArrowRight)
-  botonCuenta.setAttribute('tabindex', '0');
-  botonCuenta.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
-  });
+    ordenar.setAttribute('tabindex', '0');
+    ordenar.addEventListener('keydown', e => {
+      const cards = peliculas();
+      switch (e.key) {
+        case 'Enter': aplicarOrden(); break;
+        case 'ArrowLeft':
+        case 'ArrowRight':
+        case 'ArrowUp': buscador.focus(); break;
+        case 'ArrowDown': cards[0]?.focus(); break;
+      }
+      if (e.key.startsWith('Arrow')) {
+        e.preventDefault();
+        sonidoClick.play().catch(() => {});
+      }
+    });
 
-  // GALERÍA
-  galeria.addEventListener('keydown', e => {
-    const cards = peliculas();
-    const columnas = 4;
-    const i = cards.indexOf(document.activeElement);
-    if (i === -1) return;
+    ordenar.addEventListener('change', () => {
+      aplicarOrden();
+      setTimeout(() => peliculas()[0]?.focus(), 100);
+    });
+  }
 
-    switch (e.key) {
-      case 'ArrowRight':
-        cards[i + 1]?.focus();
-        break;
-      case 'ArrowLeft':
-        if (i % columnas === 0) {
-          // A la izquierda en la primera columna: volver a aside
-          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
-        } else {
-          cards[i - 1]?.focus();
-        }
-        break;
-      case 'ArrowDown':
-        cards[i + columnas]?.focus();
-        break;
-      case 'ArrowUp':
-        if (i < columnas) {
-          // Estamos en la primera fila → ir al buscador
-          buscador.focus();
-        } else {
-          cards[i - columnas]?.focus();
-        }
-        break;
-      case 'Enter':
-        cards[i].click();
-        break;
-    }
-
-    if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
-  });
-
-  // BUSCADOR
-  buscador.setAttribute('tabindex', '0');
-  buscador.addEventListener('keydown', e => {
-    if (e.key === 'ArrowDown') {
-      // Si bajas, vas a la galería (primera card)
-      peliculas()[0]?.focus();
-    } else if (e.key === 'ArrowRight') {
-      ordenar.focus();
-    } else if (e.key === 'ArrowLeft') {
-      ordenar.focus();
-    }
-    sonidoClick.play().catch(() => {});
-  });
-
-  // ORDENAR (mejorado dentro de configurarNavegacionLateral)
-  ordenar.setAttribute('tabindex', '0');
-  ordenar.addEventListener('keydown', e => {
-    const cards = peliculas(); // ahora sí funciona porque estamos dentro
-
-    switch (e.key) {
-      case 'Enter':
-        aplicarOrden();
-        break;
-
-      case 'ArrowLeft':
-      case 'ArrowRight':
-        buscador.focus();
-        break;
-
-      case 'ArrowDown':
-        cards[0]?.focus();
-        break;
-
-      case 'ArrowUp':
-        buscador.focus();
-        break;
-    }
-
-    if (e.key.startsWith('Arrow')) {
-      e.preventDefault();
-      sonidoClick.play().catch(() => {});
-    }
-  });
-
-  ordenar.addEventListener('change', () => {
-    aplicarOrden();
-    setTimeout(() => {
-      peliculas()[0]?.focus();
-    }, 100);
-  });
+  function aplicarOrden() {
+    const criterio = ordenar.value;
+    let filtradas = todasPeliculas.filter(filtroActual);
+    filtradas.sort((a, b) => {
+      switch (criterio) {
+        case 'titulo': return a.titulo?.localeCompare(b.titulo);
+        case 'anio': return (b.anio || 0) - (a.anio || 0);
+        case 'añadido':
+        default: return (b.fechaCreacion?.toDate?.() || 0) - (a.fechaCreacion?.toDate?.() || 0);
+      }
+    });
+    renderPeliculas(filtradas);
+  }
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
@@ -245,7 +158,6 @@ function configurarNavegacionLateral() {
 
   function establecerFocoInicial() {
     setTimeout(() => {
-      // Empieza en header primer link activo o primer link
       const navLinks = document.querySelectorAll('header .nav-left a');
       const focoInicial = Array.from(navLinks).find(a => a.classList.contains('activo')) || navLinks[0];
       focoInicial?.focus();
@@ -280,10 +192,8 @@ function configurarNavegacionLateral() {
       <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
       <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
     `;
-
     modal.style.display = 'flex';
     setTimeout(() => document.querySelector('.modal-contenido').focus(), 100);
-
     document.getElementById('cerrarModal').onclick = cerrarModal;
     document.getElementById('btnVerAhora').onclick = verVideo;
   }
@@ -295,13 +205,11 @@ function configurarNavegacionLateral() {
 
   function verVideo() {
     if (!peliculaActiva) return;
-
     const videoPlayer = document.getElementById('videoPlayer');
     const cerrarVideo = document.getElementById('cerrarVideo');
     videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
     videoPlayer.load();
     videoPlayer.play();
-
     document.getElementById('modalPelicula').style.display = 'none';
     const modalVideo = document.getElementById('modalVideo');
     modalVideo.style.display = 'flex';
@@ -311,9 +219,7 @@ function configurarNavegacionLateral() {
     cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
 
     window.addEventListener('keydown', e => {
-      if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
-        cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
-      }
+      if (modalVideo.style.display === 'flex' && e.key === 'Escape') cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
     });
 
     setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
@@ -335,22 +241,16 @@ function configurarNavegacionLateral() {
     const generos = ['accion', 'aventuras', 'animacion', 'comedia', 'suspense', 'cienciaficcion', 'terror', 'fantasia', 'romance', 'drama', 'artesmarciales'];
     const normalizaGenero = g => g.replace('cienciaficcion', 'ciencia ficción').replace('artesmarciales', 'artes marciales');
 
-    let filtro;
-    if (categoria === 'favoritos') filtro = p => p.favoritos;
-    else if (categoria.startsWith('estrenos')) filtro = p => String(p.anio) === categoria.replace('estrenos', '');
-    else if (categoria === 'todos') filtro = () => true;
-    else if (generos.includes(categoria)) filtro = p => [].concat(p.genero || []).map(g => g.toLowerCase()).includes(normalizaGenero(categoria));
-    else filtro = p => p.categoria === categoria;
+    if (categoria === 'favoritos') filtroActual = p => p.favoritos;
+    else if (categoria.startsWith('estrenos')) filtroActual = p => String(p.anio) === categoria.replace('estrenos', '');
+    else if (categoria === 'todos') filtroActual = () => true;
+    else if (generos.includes(categoria)) filtroActual = p => [].concat(p.genero || []).map(g => g.toLowerCase()).includes(normalizaGenero(categoria));
+    else filtroActual = p => p.categoria === categoria;
 
-    filtrarYPintar(filtro);
+    renderPeliculas(todasPeliculas.filter(filtroActual));
   };
 
-  function filtrarYPintar(filtro) {
-    renderPeliculas(todasPeliculas.filter(filtro));
-  }
-
   window.cerrarSesion = () => auth.signOut().then(() => window.location.href = 'index.html');
-
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
