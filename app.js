@@ -186,10 +186,10 @@ function configurarNavegacionLateral() {
     sonidoClick.play().catch(() => {});
   });
 
-  // ORDENAR (mejorado)
+  // ORDENAR (mejorado dentro de configurarNavegacionLateral)
   ordenar.setAttribute('tabindex', '0');
   ordenar.addEventListener('keydown', e => {
-    const peliculasCards = peliculas();
+    const cards = peliculas(); // ahora sí funciona porque estamos dentro
 
     switch (e.key) {
       case 'Enter':
@@ -197,27 +197,32 @@ function configurarNavegacionLateral() {
         break;
 
       case 'ArrowLeft':
+      case 'ArrowRight':
         buscador.focus();
         break;
 
-      case 'ArrowRight':
-        buscador.focus(); // Puedes cambiarlo si tienes otro control a la derecha
-        break;
-
       case 'ArrowDown':
-        peliculasCards[0]?.focus();
+        cards[0]?.focus();
         break;
 
       case 'ArrowUp':
-        buscador.focus(); // O header/nav si prefieres
+        buscador.focus();
         break;
     }
 
     if (e.key.startsWith('Arrow')) {
-      e.preventDefault(); // Evita bugs nativos del <select>
+      e.preventDefault();
       sonidoClick.play().catch(() => {});
     }
   });
+
+  ordenar.addEventListener('change', () => {
+    aplicarOrden();
+    setTimeout(() => {
+      peliculas()[0]?.focus();
+    }, 100);
+  });
+
 
   ordenar.addEventListener('change', () => {
     aplicarOrden();
