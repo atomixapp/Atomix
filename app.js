@@ -249,12 +249,14 @@ function verVideo() {
 
   videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
   videoPlayer.load();
-  videoPlayer.play();
 
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
   cerrarVideo.style.display = 'block';
-  cerrarVideo.focus(); // ✅ Foco correcto
+  cerrarVideo.focus();
+
+  // Empieza a reproducir *después* de mostrar el modal
+  videoPlayer.play().catch(() => {});
 
   let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
 
@@ -269,7 +271,7 @@ function verVideo() {
         cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
       }
     }
-  }, { once: true });
+  });
 }
 
 function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
