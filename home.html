@@ -95,33 +95,5 @@
 </div>
 
 <script src="app.js"></script>
-<script>
-  const sonidoClick = new Audio('assets/sounds/click.mp3');
-  document.addEventListener('keydown', e => {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter"].includes(e.key)) {
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
-    }
-  });
-
-  document.getElementById('modalPelicula').addEventListener('keydown', e => {
-    const botones = [
-      document.getElementById('cerrarModal'),
-      document.getElementById('btnVerAhora'),
-      document.getElementById('btnMostrarSinopsis')
-    ].filter(Boolean);
-
-    const i = botones.indexOf(document.activeElement);
-    if (i === -1) return;
-
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      botones[(i + 1) % botones.length]?.focus();
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      botones[(i - 1 + botones.length) % botones.length]?.focus();
-    } else if (e.key === 'Enter') {
-      botones[i]?.click();
-    }
-  });
-</script>
 </body>
 </html>
