@@ -240,31 +240,32 @@ function cerrarModal() {
   }
 }
 
-  function verVideo() {
-    if (!peliculaActiva) return;
+function verVideo() {
+  if (!peliculaActiva) return;
 
-    const videoPlayer = document.getElementById('videoPlayer');
-    const cerrarVideo = document.getElementById('cerrarVideo');
-    videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-    videoPlayer.load();
-    videoPlayer.play();
+  const videoPlayer = document.getElementById('videoPlayer');
+  const cerrarVideo = document.getElementById('cerrarVideo');
+  videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+  videoPlayer.load();
+  videoPlayer.play();
 
-    document.getElementById('modalPelicula').style.display = 'none';
-    const modalVideo = document.getElementById('modalVideo');
-    modalVideo.style.display = 'flex';
-    cerrarVideo.style.display = 'block';
+  document.getElementById('modalPelicula').style.display = 'none';
+  const modalVideo = document.getElementById('modalVideo');
+  modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
 
-    let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-    cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
+  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
 
-    window.addEventListener('keydown', e => {
-      if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
-        cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
-      }
-    });
+  // ✅ Dar foco directo a la X
+  setTimeout(() => cerrarVideo.focus(), 100);
 
-    setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
-  }
+  window.addEventListener('keydown', e => {
+    if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
+      cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+    }
+  });
+}
 
   function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
     clearTimeout(ocultarCerrar);
