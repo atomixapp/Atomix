@@ -182,8 +182,8 @@ function abrirModal(pelicula) {
   peliculaActiva = pelicula;
   const modal = document.getElementById('modalPelicula');
 
-ultimaTarjetaActiva = document.activeElement;
-  
+  ultimaTarjetaActiva = document.activeElement;
+
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
   document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
@@ -196,40 +196,46 @@ ultimaTarjetaActiva = document.activeElement;
   modal.style.display = 'flex';
 
   setTimeout(() => {
-    document.getElementById('btnVerAhora')?.focus(); // Primer foco
+    document.getElementById('btnVerAhora')?.focus();
   }, 100);
 
-  // Acciones de botones
   document.getElementById('cerrarModal').onclick = cerrarModal;
   document.getElementById('btnVerAhora').onclick = verVideo;
 
-  // 🔁 Navegación ordenada dentro del modal
   const modalContenido = modal.querySelector('.modal-contenido');
 
-  modalContenido.addEventListener('keydown', e => {
-    const botones = [
-      document.getElementById('cerrarModal'),
-      document.getElementById('btnVerAhora'),
-      document.getElementById('btnMostrarSinopsis')
-    ].filter(btn => btn && btn.offsetParent !== null); // Solo visibles
-
-    const i = botones.indexOf(document.activeElement);
-    if (i === -1) return;
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const next = i + 1 < botones.length ? i + 1 : i;
-      botones[next].focus();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const prev = i - 1 >= 0 ? i - 1 : i;
-      botones[prev].focus();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      botones[i].click();
-    }
-  }, { once: true }); // ✅ solo se añade una vez por apertura
+  // Limpiar cualquier listener previo y añadir limpio
+  modalContenido.removeEventListener('keydown', manejarNavegacionModal);
+  modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
+
+// 🔁 Navegación ordenada dentro del modal
+function manejarNavegacionModal(e) {
+  const botones = [
+    document.getElementById('cerrarModal'),
+    document.getElementById('btnVerAhora'),
+    document.getElementById('btnMostrarSinopsis')
+  ].filter(btn => btn && btn.offsetParent !== null); // solo los visibles
+
+  const i = botones.indexOf(document.activeElement);
+  if (i === -1) return;
+
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const next = i + 1 < botones.length ? i + 1 : 0;
+    botones[next].focus();
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const prev = i - 1 >= 0 ? i - 1 : botones.length - 1;
+    botones[prev].focus();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    botones[i].click();
+  }
+}
+
+// Y añadirlo limpio cada vez que abras el modal
+modalContenido.addEventListener('keydown', manejarNavegacionModal);
   
 function cerrarModal() {
   document.getElementById('modalPelicula').style.display = 'none';
