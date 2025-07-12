@@ -264,8 +264,18 @@ function mostrarSinopsis() {
 
   window.addEventListener('keydown', cerrarConEscape);
 
-  // Cerrar con la X
-  document.getElementById('cerrarSinopsis').onclick = () => {
+  const btnCerrarSinopsis = document.getElementById('cerrarSinopsis');
+
+  // Cerrar con Enter
+  btnCerrarSinopsis.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      cerrarOverlaySinopsis();
+      window.removeEventListener('keydown', cerrarConEscape);
+    }
+  });
+
+  // Cerrar con click
+  btnCerrarSinopsis.onclick = () => {
     cerrarOverlaySinopsis();
     window.removeEventListener('keydown', cerrarConEscape);
   };
