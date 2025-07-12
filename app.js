@@ -190,48 +190,50 @@ galeria.addEventListener('keydown', e => {
 
   let ultimaTarjetaActiva = null;
 
-  function abrirModal(pelicula) {
-    peliculaActiva = pelicula;
-    const modal = document.getElementById('modalPelicula');
+function abrirModal(pelicula) {
+  peliculaActiva = pelicula;
+  const modal = document.getElementById('modalPelicula');
 
-    ultimaTarjetaActiva = document.activeElement;
+  ultimaTarjetaActiva = document.activeElement;
 
-    document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-    document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
-    document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-    document.getElementById('modalExtraInfo').innerHTML = `
-      <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-      <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-    `;
+  document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+  document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
+  document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+  document.getElementById('modalExtraInfo').innerHTML = `
+    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+  `;
 
-    modal.style.display = 'flex';
-
-    setTimeout(() => {
-      document.getElementById('btnVerAhora')?.focus();
-    }, 100);
-
-    document.getElementById('cerrarModal').onclick = cerrarModal;
-    document.getElementById('btnVerAhora').onclick = verVideo;
-    document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
-
-    const modalContenido = modal.querySelector('.modal-contenido');
-    modalContenido.removeEventListener('keydown', manejarNavegacionModal);
-    modalContenido.addEventListener('keydown', manejarNavegacionModal);
+  // Mostrar u ocultar el botón "Ver trailer"
+  const btnTrailer = document.getElementById('btnVerTrailer');
+  if (pelicula.trailerUrl) {
+    btnTrailer.style.display = 'flex';
+    btnTrailer.onclick = verTrailer;
+  } else {
+    btnTrailer.style.display = 'none';
   }
 
-  function verTrailer() {
+  modal.style.display = 'flex';
+
+  setTimeout(() => {
+    document.getElementById('btnVerAhora')?.focus();
+  }, 100);
+
+  document.getElementById('cerrarModal').onclick = cerrarModal;
+  document.getElementById('btnVerAhora').onclick = verVideo;
+  document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
+
+  const modalContenido = modal.querySelector('.modal-contenido');
+  modalContenido.removeEventListener('keydown', manejarNavegacionModal);
+  modalContenido.addEventListener('keydown', manejarNavegacionModal);
+}
+
+function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
 
   const videoPlayer = document.getElementById('videoPlayer');
   const cerrarVideo = document.getElementById('cerrarVideo');
-  const btnTrailer = document.getElementById('btnVerTrailer');
-if (pelicula.trailerUrl) {
-  btnTrailer.style.display = 'flex';
-  btnTrailer.onclick = verTrailer;
-} else {
-  btnTrailer.style.display = 'none';
-}
 
   videoPlayer.querySelector('source').src = peliculaActiva.trailerUrl;
   videoPlayer.load();
