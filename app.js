@@ -228,11 +228,16 @@ function abrirModal(pelicula) {
   }, { once: true }); // ✅ solo se añade una vez por apertura
 }
 
+let ultimaTarjetaActiva = document.activeElement;
+  
+function cerrarModal() {
+  document.getElementById('modalPelicula').style.display = 'none';
 
-  function cerrarModal() {
-    document.getElementById('modalPelicula').style.display = 'none';
-    galeria.querySelector('.pelicula:focus')?.focus();
+  // ✅ Restaurar el foco en la tarjeta activa antes de abrir el modal
+  if (ultimaTarjetaActiva) {
+    ultimaTarjetaActiva.focus();
   }
+}
 
   function verVideo() {
     if (!peliculaActiva) return;
