@@ -232,22 +232,50 @@ function abrirModal(pelicula) {
 function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
 
-  const videoPlayer = document.getElementById('videoPlayer');
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  videoPlayer.querySelector('source').src = peliculaActiva.trailerUrl;
-  videoPlayer.load();
-  videoPlayer.play();
+  // Limpia contenido anterior
+  contenedorVideo.innerHTML = '';
+
+  const url = peliculaActiva.trailerUrl;
+
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    // Crear iframe para YouTube
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.frameBorder = 0;
+    contenedorVideo.appendChild(iframe);
+  } else {
+    // Crear video nativo
+    const video = document.createElement('video');
+    video.controls = true;
+    video.autoplay = true;
+    const source = document.createElement('source');
+    source.src = url;
+    video.appendChild(source);
+    contenedorVideo.appendChild(video);
+  }
 
   document.getElementById('modalPelicula').style.display = 'none';
-  const modalVideo = document.getElementById('modalVideo');
   modalVideo.style.display = 'flex';
-  cerrarVideo.style.display = 'block';
 
-  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+  cerrarVideo.style.display = 'block';
+  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
   setTimeout(() => cerrarVideo.focus(), 100);
+}
+
+function cerrarVideoFunc(contenedor, modal) {
+  // Limpia video o iframe
+  contenedor.innerHTML = '';
+  modal.style.display = 'none';
+  document.getElementById('modalPelicula').style.display = 'flex';
 }
 
   function manejarNavegacionModal(e) {
