@@ -209,7 +209,6 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-// 🔁 Navegación ordenada dentro del modal
 function manejarNavegacionModal(e) {
   const botones = [
     document.getElementById('cerrarModal'),
@@ -220,16 +219,19 @@ function manejarNavegacionModal(e) {
   const i = botones.indexOf(document.activeElement);
   if (i === -1) return;
 
-  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+  if (['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Enter'].includes(e.key)) {
     e.preventDefault();
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
+
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
     const next = i + 1 < botones.length ? i + 1 : 0;
     botones[next].focus();
   } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-    e.preventDefault();
     const prev = i - 1 >= 0 ? i - 1 : botones.length - 1;
     botones[prev].focus();
   } else if (e.key === 'Enter') {
-    e.preventDefault();
     botones[i].click();
   }
 }
