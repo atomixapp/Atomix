@@ -225,6 +225,14 @@ galeria.addEventListener('keydown', e => {
 
   const videoPlayer = document.getElementById('videoPlayer');
   const cerrarVideo = document.getElementById('cerrarVideo');
+  const btnTrailer = document.getElementById('btnVerTrailer');
+if (pelicula.trailerUrl) {
+  btnTrailer.style.display = 'flex';
+  btnTrailer.onclick = verTrailer;
+} else {
+  btnTrailer.style.display = 'none';
+}
+
   videoPlayer.querySelector('source').src = peliculaActiva.trailerUrl;
   videoPlayer.load();
   videoPlayer.play();
