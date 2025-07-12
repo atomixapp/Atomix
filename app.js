@@ -220,6 +220,26 @@ galeria.addEventListener('keydown', e => {
     modalContenido.addEventListener('keydown', manejarNavegacionModal);
   }
 
+  function verTrailer() {
+  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
+
+  const videoPlayer = document.getElementById('videoPlayer');
+  const cerrarVideo = document.getElementById('cerrarVideo');
+  videoPlayer.querySelector('source').src = peliculaActiva.trailerUrl;
+  videoPlayer.load();
+  videoPlayer.play();
+
+  document.getElementById('modalPelicula').style.display = 'none';
+  const modalVideo = document.getElementById('modalVideo');
+  modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
+
+  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
+  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+
+  setTimeout(() => cerrarVideo.focus(), 100);
+}
+
   function manejarNavegacionModal(e) {
     const botones = [
       document.getElementById('cerrarModal'),
