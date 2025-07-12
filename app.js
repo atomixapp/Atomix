@@ -254,9 +254,23 @@ galeria.addEventListener('keydown', e => {
 
 function mostrarSinopsis() {
   const overlay = document.getElementById('overlaySinopsis');
-  overlay.style.display = 'flex';
-  setTimeout(() => document.getElementById('cerrarSinopsis').focus(), 100);
+  const btnCerrarSinopsis = document.getElementById('cerrarSinopsis');
 
+  overlay.style.display = 'flex';
+  setTimeout(() => btnCerrarSinopsis.focus(), 100);
+
+  // Click en la X
+  btnCerrarSinopsis.onclick = cerrarOverlaySinopsis;
+
+  // Enter en la X
+  btnCerrarSinopsis.onkeydown = e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      cerrarOverlaySinopsis();
+    }
+  };
+
+  // Escape para cerrar
   window.addEventListener('keydown', cerrarConEscape);
 }
 
@@ -264,25 +278,20 @@ function cerrarOverlaySinopsis() {
   const overlay = document.getElementById('overlaySinopsis');
   overlay.style.display = 'none';
   document.getElementById('btnMostrarSinopsis').focus();
+
+  const btnCerrarSinopsis = document.getElementById('cerrarSinopsis');
+  btnCerrarSinopsis.onclick = null;
+  btnCerrarSinopsis.onkeydown = null;
+
   window.removeEventListener('keydown', cerrarConEscape);
 }
 
 function cerrarConEscape(e) {
-  if (e.key === 'Escape') cerrarOverlaySinopsis();
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    cerrarOverlaySinopsis();
+  }
 }
-
-// Al cargar la página añade los listeners al botón de la X una sola vez
-document.addEventListener('DOMContentLoaded', () => {
-  const btnCerrarSinopsis = document.getElementById('cerrarSinopsis');
-
-  btnCerrarSinopsis.addEventListener('click', cerrarOverlaySinopsis);
-
-  btnCerrarSinopsis.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      cerrarOverlaySinopsis();
-    }
-  });
-});
   
   function verVideo() {
     if (!peliculaActiva) return;
