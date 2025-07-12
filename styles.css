@@ -306,23 +306,14 @@ main {
   position: relative;
 }
 
-/* Botón Ver Trailer */
-.btn-trailer {
+/* Contenedor flex de botones */
+.botones-modal {
   position: absolute;
   bottom: 15px;
-  left: calc(50% + 130px);
+  left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 191, 255, 0.9);
-  border: none;
-  color: white;
-  padding: 10px 22px;
-  font-size: 16px;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  gap: 20px;
 }
 
 .btn-trailer svg {
@@ -347,19 +338,24 @@ main {
   border-radius: 10px;
 }
 
-.btn-ver-ahora {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 0, 0, 0.8);
-  border: none;
-  color: white;
-  padding: 10px 20px;
+/* Botones iguales */
+.btn-ver-ahora,
+.btn-trailer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
   font-size: 16px;
   border-radius: 25px;
+  border: none;
   cursor: pointer;
   transition: background 0.3s;
+}
+
+/* Colores individuales */
+.btn-ver-ahora {
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
 }
 
 .btn-ver-ahora:hover {
