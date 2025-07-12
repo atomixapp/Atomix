@@ -53,21 +53,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
     const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
 
-    asideItems.forEach((li, idx) => {
-      li.setAttribute('tabindex', '0');
-      li.addEventListener('keydown', e => {
-        if (e.key === 'Enter') li.click();
-        else if (e.key === 'ArrowDown') {
-          if (asideItems[idx + 1]) asideItems[idx + 1].focus();
-          else peliculas()[0]?.focus();
-        } else if (e.key === 'ArrowUp') {
-          if (asideItems[idx - 1]) asideItems[idx - 1].focus();
-          else navLinks[0]?.focus();
-        } else if (e.key === 'ArrowRight') {
-          peliculas()[0]?.focus();
-        }
-      });
-    });
+asideItems.forEach((li, idx) => {
+  li.setAttribute('tabindex', '0');
+  li.addEventListener('keydown', e => {
+    if (e.key === 'Enter') li.click();
+    else if (e.key === 'ArrowDown') {
+      if (idx < asideItems.length - 1) {
+        asideItems[idx + 1].focus();
+      }
+      // Si está en el último, no hace nada
+    } else if (e.key === 'ArrowUp') {
+      if (idx > 0) asideItems[idx - 1].focus();
+      else navLinks[0]?.focus();
+    } else if (e.key === 'ArrowRight') {
+      peliculas()[0]?.focus();
+    }
+
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  });
+});
 
     navLinks.forEach((link, i) => {
       link.setAttribute('tabindex', '0');
