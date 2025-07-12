@@ -306,6 +306,30 @@ main {
   position: relative;
 }
 
+/* Botón Trailer */
+.btn-trailer {
+  position: absolute;
+  bottom: 15px;
+  left: calc(50% + 110px);
+  transform: translateX(-50%);
+  background: rgba(0, 191, 255, 0.9);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-trailer:hover {
+  background: #00bfff;
+}
+
+#btnVerTrailer:focus {
+  outline: 2px solid #00ffcc;
+}
+
 .imagen-detalles {
   width: 100%;
   max-height: 300px;
