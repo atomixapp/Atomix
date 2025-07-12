@@ -240,37 +240,43 @@ function cerrarModal() {
   }
 }
 
-  function verVideo() {
-    if (!peliculaActiva) return;
+function verVideo() {
+  if (!peliculaActiva) return;
 
-    const videoPlayer = document.getElementById('videoPlayer');
-    const cerrarVideo = document.getElementById('cerrarVideo');
-    videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-    videoPlayer.load();
-    videoPlayer.play();
+  const videoPlayer = document.getElementById('videoPlayer');
+  const cerrarVideo = document.getElementById('cerrarVideo');
+  const modalVideo = document.getElementById('modalVideo');
 
-    document.getElementById('modalPelicula').style.display = 'none';
-    const modalVideo = document.getElementById('modalVideo');
-    modalVideo.style.display = 'flex';
-    cerrarVideo.style.display = 'block';
+  videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+  videoPlayer.load();
+  videoPlayer.play();
 
-    let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-    cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+  document.getElementById('modalPelicula').style.display = 'none';
+  modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
+  cerrarVideo.focus(); // ✅ Establece el foco inmediatamente
 
-    window.addEventListener('keydown', e => {
-      if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
+  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
+
+  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+
+  window.addEventListener('keydown', e => {
+    if (modalVideo.style.display === 'flex') {
+      if (e.key === 'Escape') {
         cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
       }
-    });
+      if (e.key === 'Enter' && document.activeElement === cerrarVideo) {
+        cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+      }
+    }
+  }, { once: true });
+}
 
-    setTimeout(() => document.querySelector('.video-contenido').focus(), 100);
-  }
-
-  function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
-    clearTimeout(ocultarCerrar);
-    videoPlayer.pause();
-    videoPlayer.currentTime = 0;
-    modalVideo.style.display = 'none';
+function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
+  clearTimeout(ocultarCerrar);
+  videoPlayer.pause();
+  videoPlayer.currentTime = 0;
+  modalVideo.style.display = 'none';
 
   if (ultimaTarjetaActiva) {
     ultimaTarjetaActiva.focus();
