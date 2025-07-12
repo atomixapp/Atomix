@@ -247,18 +247,14 @@ function verVideo() {
   const cerrarVideo = document.getElementById('cerrarVideo');
   const modalVideo = document.getElementById('modalVideo');
 
-  console.log('Video URL:', peliculaActiva.videoUrl);
-
-  const source = videoPlayer.querySelector('source');
-  source.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-
+  videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
   videoPlayer.load();
+  videoPlayer.play();
 
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
-  videoPlayer.style.display = 'block';
   cerrarVideo.style.display = 'block';
-  cerrarVideo.focus();
+  cerrarVideo.focus(); // ✅ Foco correcto
 
   let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
 
@@ -274,10 +270,6 @@ function verVideo() {
       }
     }
   }, { once: true });
-
-  videoPlayer.play().catch(err => {
-    console.error('Error al reproducir video:', err);
-  });
 }
 
 function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
