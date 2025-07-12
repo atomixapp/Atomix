@@ -414,6 +414,37 @@ main {
   outline: 2px solid #00ffcc;
 }
 
+/* Contenedor para los botones Ver ahora y Ver trailer */
+.botones-accion {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px; /* Espacio entre los botones */
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Estilo base para ambos botones */
+.btn-ver-ahora,
+.btn-ver-trailer {
+  background: rgba(255, 0, 0, 0.8);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* Hover para ambos botones */
+.btn-ver-ahora:hover,
+.btn-ver-trailer:hover {
+  background: red;
+}
+
 /* ✅ Modal de video en pantalla completa */
 #modalVideo .video-contenido {
   background-color: black;
