@@ -176,11 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+let ultimaTarjetaActiva = null;
+  
 function abrirModal(pelicula) {
   peliculaActiva = pelicula;
   const modal = document.getElementById('modalPelicula');
 
-  // Mostrar datos
+ultimaTarjetaActiva = document.activeElement;
+  
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
   document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
@@ -227,8 +230,6 @@ function abrirModal(pelicula) {
     }
   }, { once: true }); // ✅ solo se añade una vez por apertura
 }
-
-let ultimaTarjetaActiva = document.activeElement;
   
 function cerrarModal() {
   document.getElementById('modalPelicula').style.display = 'none';
