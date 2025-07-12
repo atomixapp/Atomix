@@ -411,9 +411,8 @@ main {
   justify-content: center;
 }
 
-/* Estilo base para ambos botones */
-.btn-ver-ahora,
-.btn-ver-trailer {
+/* Botón Ver Ahora - Rojo */
+.btn-ver-ahora {
   background: rgba(255, 0, 0, 0.8);
   border: none;
   color: white;
@@ -424,11 +423,26 @@ main {
   transition: background 0.3s;
 }
 
-/* Hover para ambos botones */
-.btn-ver-ahora:hover,
-.btn-ver-trailer:hover {
+.btn-ver-ahora:hover {
   background: red;
 }
+
+/* Botón Ver Trailer - Azul */
+.btn-ver-trailer {
+  background: rgba(0, 123, 255, 0.8);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-ver-trailer:hover {
+  background: #0056b3;
+}
+
 
 /* ✅ Modal de video en pantalla completa */
 #modalVideo .video-contenido {
