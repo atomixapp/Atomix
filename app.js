@@ -95,35 +95,45 @@ asideItems.forEach((li, idx) => {
       if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
     });
 
-    galeria.addEventListener('keydown', e => {
-      const cards = peliculas();
-      const columnas = 4;
-      const i = cards.indexOf(document.activeElement);
-      if (i === -1) return;
+galeria.addEventListener('keydown', e => {
+  const cards = peliculas();
+  const columnas = 4;
+  const i = cards.indexOf(document.activeElement);
+  if (i === -1) return;
 
-      switch (e.key) {
-        case 'ArrowRight':
-          cards[i + 1]?.focus();
-          break;
-        case 'ArrowLeft':
-          if (i % columnas === 0) {
-            document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
-          } else {
-            cards[i - 1]?.focus();
-          }
-          break;
-        case 'ArrowDown':
-          cards[i + columnas]?.focus();
-          break;
-        case 'ArrowUp':
-          if (i < columnas) buscador.focus();
-          else cards[i - columnas]?.focus();
-          break;
-        case 'Enter':
-          cards[i].click();
-          break;
+  switch (e.key) {
+    case 'ArrowRight':
+      cards[i + 1]?.focus();
+      break;
+
+    case 'ArrowLeft':
+      if (i === 0) {
+        // Solo desde la primera card se vuelve al aside
+        document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+      } else {
+        cards[i - 1]?.focus();
       }
-    });
+      break;
+
+    case 'ArrowDown':
+      cards[i + columnas]?.focus();
+      break;
+
+    case 'ArrowUp':
+      if (i < columnas) buscador.focus();
+      else cards[i - columnas]?.focus();
+      break;
+
+    case 'Enter':
+      cards[i].click();
+      break;
+  }
+
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
+});
 
     buscador.setAttribute('tabindex', '0');
     buscador.addEventListener('keydown', e => {
