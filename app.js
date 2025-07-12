@@ -257,35 +257,32 @@ function mostrarSinopsis() {
   overlay.style.display = 'flex';
   setTimeout(() => document.getElementById('cerrarSinopsis').focus(), 100);
 
-  // Tecla Escape para cerrar
-  const cerrarConEscape = e => {
-    if (e.key === 'Escape') cerrarOverlaySinopsis();
-  };
-
   window.addEventListener('keydown', cerrarConEscape);
+}
 
+function cerrarOverlaySinopsis() {
+  const overlay = document.getElementById('overlaySinopsis');
+  overlay.style.display = 'none';
+  document.getElementById('btnMostrarSinopsis').focus();
+  window.removeEventListener('keydown', cerrarConEscape);
+}
+
+function cerrarConEscape(e) {
+  if (e.key === 'Escape') cerrarOverlaySinopsis();
+}
+
+// Al cargar la página añade los listeners al botón de la X una sola vez
+document.addEventListener('DOMContentLoaded', () => {
   const btnCerrarSinopsis = document.getElementById('cerrarSinopsis');
 
-  // Cerrar con Enter
+  btnCerrarSinopsis.addEventListener('click', cerrarOverlaySinopsis);
+
   btnCerrarSinopsis.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       cerrarOverlaySinopsis();
-      window.removeEventListener('keydown', cerrarConEscape);
     }
   });
-
-  // Cerrar con click
-  btnCerrarSinopsis.onclick = () => {
-    cerrarOverlaySinopsis();
-    window.removeEventListener('keydown', cerrarConEscape);
-  };
-
-  function cerrarOverlaySinopsis() {
-    overlay.style.display = 'none';
-    // Devuelve el foco al modal principal
-    document.getElementById('btnMostrarSinopsis').focus();
-  }
-}
+});
   
   function verVideo() {
     if (!peliculaActiva) return;
