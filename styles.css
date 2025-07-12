@@ -306,28 +306,38 @@ main {
   position: relative;
 }
 
-/* Botón Trailer */
+/* Botón Ver Trailer */
 .btn-trailer {
   position: absolute;
   bottom: 15px;
-  left: calc(50% + 110px);
+  left: calc(50% + 130px);
   transform: translateX(-50%);
   background: rgba(0, 191, 255, 0.9);
   border: none;
   color: white;
-  padding: 10px 20px;
+  padding: 10px 22px;
   font-size: 16px;
   border-radius: 25px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-trailer svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+  transition: transform 0.3s;
 }
 
 .btn-trailer:hover {
   background: #00bfff;
 }
 
-#btnVerTrailer:focus {
-  outline: 2px solid #00ffcc;
+.btn-trailer:hover svg {
+  transform: scale(1.2);
 }
 
 .imagen-detalles {
