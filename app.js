@@ -213,6 +213,7 @@ galeria.addEventListener('keydown', e => {
 
     document.getElementById('cerrarModal').onclick = cerrarModal;
     document.getElementById('btnVerAhora').onclick = verVideo;
+    document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
 
     const modalContenido = modal.querySelector('.modal-contenido');
     modalContenido.removeEventListener('keydown', manejarNavegacionModal);
@@ -251,6 +252,31 @@ galeria.addEventListener('keydown', e => {
     if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
   }
 
+function mostrarSinopsis() {
+  const overlay = document.getElementById('overlaySinopsis');
+  overlay.style.display = 'flex';
+  setTimeout(() => document.getElementById('cerrarSinopsis').focus(), 100);
+
+  // Tecla Escape para cerrar
+  const cerrarConEscape = e => {
+    if (e.key === 'Escape') cerrarOverlaySinopsis();
+  };
+
+  window.addEventListener('keydown', cerrarConEscape);
+
+  // Cerrar con la X
+  document.getElementById('cerrarSinopsis').onclick = () => {
+    cerrarOverlaySinopsis();
+    window.removeEventListener('keydown', cerrarConEscape);
+  };
+
+  function cerrarOverlaySinopsis() {
+    overlay.style.display = 'none';
+    // Devuelve el foco al modal principal
+    document.getElementById('btnMostrarSinopsis').focus();
+  }
+}
+  
   function verVideo() {
     if (!peliculaActiva) return;
 
