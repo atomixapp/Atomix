@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (e.key === 'ArrowRight') {
           peliculas()[0]?.focus();
         }
-        if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
       });
     });
 
@@ -81,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (e.key === 'ArrowDown') {
           asideItems[0]?.focus();
         }
-        sonidoClick.play().catch(() => {});
       });
     });
 
@@ -118,8 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
           cards[i].click();
           break;
       }
-
-      if (e.key.startsWith('Arrow')) sonidoClick.play().catch(() => {});
     });
 
     buscador.setAttribute('tabindex', '0');
@@ -127,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'ArrowDown') {
         peliculas()[0]?.focus();
       }
-      sonidoClick.play().catch(() => {});
     });
   }
 
@@ -176,146 +171,104 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-let ultimaTarjetaActiva = null;
-  
-function abrirModal(pelicula) {
-  peliculaActiva = pelicula;
-  const modal = document.getElementById('modalPelicula');
+  let ultimaTarjetaActiva = null;
 
-  ultimaTarjetaActiva = document.activeElement;
+  function abrirModal(pelicula) {
+    peliculaActiva = pelicula;
+    const modal = document.getElementById('modalPelicula');
 
-  document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-  document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
-  document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-  document.getElementById('modalExtraInfo').innerHTML = `
-    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-  `;
+    ultimaTarjetaActiva = document.activeElement;
 
-  modal.style.display = 'flex';
+    document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+    document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
+    document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+    document.getElementById('modalExtraInfo').innerHTML = `
+      <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+      <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+    `;
 
-  setTimeout(() => {
-    document.getElementById('btnVerAhora')?.focus();
-  }, 100);
+    modal.style.display = 'flex';
 
-  document.getElementById('cerrarModal').onclick = cerrarModal;
-  document.getElementById('btnVerAhora').onclick = verVideo;
+    setTimeout(() => {
+      document.getElementById('btnVerAhora')?.focus();
+    }, 100);
 
-  const modalContenido = modal.querySelector('.modal-contenido');
+    document.getElementById('cerrarModal').onclick = cerrarModal;
+    document.getElementById('btnVerAhora').onclick = verVideo;
 
-  // Limpiar cualquier listener previo y añadir limpio
-  modalContenido.removeEventListener('keydown', manejarNavegacionModal);
-  modalContenido.addEventListener('keydown', manejarNavegacionModal);
-}
-
-function manejarNavegacionModal(e) {
-  const botones = [
-    document.getElementById('cerrarModal'),
-    document.getElementById('btnVerAhora'),
-    document.getElementById('btnMostrarSinopsis')
-  ].filter(btn => btn && btn.offsetParent !== null); // solo los visibles
-
-  const i = botones.indexOf(document.activeElement);
-  if (i === -1) return;
-
-  if (['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Enter'].includes(e.key)) {
-    e.preventDefault();
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
+    const modalContenido = modal.querySelector('.modal-contenido');
+    modalContenido.removeEventListener('keydown', manejarNavegacionModal);
+    modalContenido.addEventListener('keydown', manejarNavegacionModal);
   }
 
-  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-    const next = i + 1 < botones.length ? i + 1 : 0;
-    botones[next].focus();
-  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-    const prev = i - 1 >= 0 ? i - 1 : botones.length - 1;
-    botones[prev].focus();
-  } else if (e.key === 'Enter') {
-    botones[i].click();
-  }
-}
+  function manejarNavegacionModal(e) {
+    const botones = [
+      document.getElementById('cerrarModal'),
+      document.getElementById('btnVerAhora'),
+      document.getElementById('btnMostrarSinopsis')
+    ].filter(btn => btn && btn.offsetParent !== null);
 
-// Y añadirlo limpio cada vez que abras el modal
-modalContenido.addEventListener('keydown', manejarNavegacionModal);
-  
-function cerrarModal() {
-  document.getElementById('modalPelicula').style.display = 'none';
+    const i = botones.indexOf(document.activeElement);
+    if (i === -1) return;
 
-  // ✅ Restaurar el foco en la tarjeta activa antes de abrir el modal
-  if (ultimaTarjetaActiva) {
-    ultimaTarjetaActiva.focus();
-  }
-}
-
-function verVideo() {
-  if (!peliculaActiva) return;
-
-  const videoPlayer = document.getElementById('videoPlayer');
-  const cerrarVideo = document.getElementById('cerrarVideo');
-  videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-  videoPlayer.load();
-  videoPlayer.play();
-
-  document.getElementById('modalPelicula').style.display = 'none';
-  const modalVideo = document.getElementById('modalVideo');
-  modalVideo.style.display = 'flex';
-  cerrarVideo.style.display = 'block';
-
-  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
-
-  // ✅ Dar foco directo a la X
-  setTimeout(() => cerrarVideo.focus(), 100);
-
-  window.addEventListener('keydown', e => {
-    if (modalVideo.style.display === 'flex' && e.key === 'Escape') {
-      cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+    if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      e.preventDefault();
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
     }
-  });
-}
+
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      const next = i + 1 < botones.length ? i + 1 : 0;
+      botones[next].focus();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      const prev = i - 1 >= 0 ? i - 1 : botones.length - 1;
+      botones[prev].focus();
+    } else if (e.key === 'Enter') {
+      botones[i].click();
+    }
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalPelicula').style.display = 'none';
+    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+  }
+
+  function verVideo() {
+    if (!peliculaActiva) return;
+
+    const videoPlayer = document.getElementById('videoPlayer');
+    const cerrarVideo = document.getElementById('cerrarVideo');
+    videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+    videoPlayer.load();
+    videoPlayer.play();
+
+    document.getElementById('modalPelicula').style.display = 'none';
+    const modalVideo = document.getElementById('modalVideo');
+    modalVideo.style.display = 'flex';
+    cerrarVideo.style.display = 'block';
+
+    let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
+    cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+
+    setTimeout(() => cerrarVideo.focus(), 100);
+  }
 
   function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
     clearTimeout(ocultarCerrar);
     videoPlayer.pause();
     videoPlayer.currentTime = 0;
     modalVideo.style.display = 'none';
-
-  if (ultimaTarjetaActiva) {
-    ultimaTarjetaActiva.focus();
+    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
   }
-}
-    
-  window.filtrar = categoria => {
-    document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
-    document.getElementById(`nav${capitalize(categoria)}`)?.classList.add('activo');
-    tituloCategoria.textContent = categoria.toUpperCase();
 
-    const generos = ['accion', 'aventuras', 'animacion', 'comedia', 'suspense', 'cienciaficcion', 'terror', 'fantasia', 'romance', 'drama', 'artesmarciales'];
-    const normalizaGenero = g => g.replace('cienciaficcion', 'ciencia ficción').replace('artesmarciales', 'artes marciales');
-
-    let filtro;
-    if (categoria === 'favoritos') filtro = p => p.favoritos;
-    else if (categoria.startsWith('estrenos')) filtro = p => String(p.anio) === categoria.replace('estrenos', '');
-    else if (categoria === 'todos') filtro = () => true;
-    else if (generos.includes(categoria)) filtro = p => [].concat(p.genero || []).map(g => g.toLowerCase()).includes(normalizaGenero(categoria));
-    else filtro = p => p.categoria === categoria;
-
-    filtrarYPintar(filtro);
-  };
-
+  window.filtrar = categoria => { /* ... */ }
   window.cerrarSesion = () => auth.signOut().then(() => window.location.href = 'index.html');
 
-  function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-// Reproducir sonido al usar flechas o Enter en cualquier parte
-document.addEventListener('keydown', e => {
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-    sonidoClick.currentTime = 0; // Reinicia el audio si ya está sonando
-    sonidoClick.play().catch(() => {});
-  }
-});
-  
+  document.addEventListener('keydown', e => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  });
 });
