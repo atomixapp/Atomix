@@ -271,9 +271,12 @@ function cerrarModal() {
     videoPlayer.pause();
     videoPlayer.currentTime = 0;
     modalVideo.style.display = 'none';
-    galeria.querySelector('.pelicula:focus')?.focus();
-  }
 
+  if (ultimaTarjetaActiva) {
+    ultimaTarjetaActiva.focus();
+  }
+}
+    
   window.filtrar = categoria => {
     document.querySelectorAll('aside li').forEach(li => li.classList.remove('activo'));
     document.getElementById(`nav${capitalize(categoria)}`)?.classList.add('activo');
