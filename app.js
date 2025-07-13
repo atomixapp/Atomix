@@ -190,6 +190,7 @@ galeria.addEventListener('keydown', e => {
 
   let ultimaTarjetaActiva = null;
 
+// Función para abrir el modal de la película
 function abrirModal(pelicula) {
   peliculaActiva = pelicula;
   const modal = document.getElementById('modalPelicula');
@@ -229,6 +230,7 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
+// Función para ver el trailer
 function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) {
     console.log("No hay trailerUrl disponible.");
@@ -303,7 +305,7 @@ function verTrailer() {
   };
 }
 
-// Función de cierre de video, reutilizada en varios lugares
+// Función de cierre de video
 function cerrarVideoFunc(contenedor, modal) {
   // Limpiar el contenedor de video
   contenedor.innerHTML = '';
@@ -318,7 +320,7 @@ function cerrarVideoFunc(contenedor, modal) {
   if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
 
-// Función de cerrar Modal
+// Función de cierre del Modal
 function cerrarModal() {
   document.getElementById('modalPelicula').style.display = 'none';
   if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
@@ -338,20 +340,6 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
-
-function cerrarVideoFunc(contenedor, modal) {
-  // Limpiar el contenedor de video
-  contenedor.innerHTML = '';
-
-  // Ocultar el modal de video
-  modal.style.display = 'none';
-
-  // Mostrar el modal de la película
-  document.getElementById('modalPelicula').style.display = 'flex';
-
-  // Restaurar el enfoque en el último lugar activo (si es necesario)
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
-}
 
   function manejarNavegacionModal(e) {
     const botones = [
