@@ -231,7 +231,7 @@ function abrirModal(pelicula) {
 }
 
 function verTrailer() {
-  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
+  if (!peliculaActiva || (!peliculaActiva.trailerUrl && !peliculaActiva.videoUrl)) return;
 
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
@@ -240,10 +240,11 @@ function verTrailer() {
   // Limpia el contenido anterior
   contenedorVideo.innerHTML = '';
 
-  const url = peliculaActiva.trailerUrl;
+  // Verificar si es un trailer de YouTube o un video nativo
+  const url = peliculaActiva.trailerUrl || peliculaActiva.videoUrl;
 
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Crear iframe para YouTube
+    // Es un trailer de YouTube, crear un iframe
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.width = '100%';
@@ -251,17 +252,17 @@ function verTrailer() {
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.frameBorder = 0;
-    iframe.id = 'trailerIframe'; // Establecer un ID para el iframe
+    iframe.id = 'trailerIframe'; // Establecer ID para el iframe
     contenedorVideo.appendChild(iframe);
   } else {
-    // Crear video nativo
+    // Es un video nativo, crear una etiqueta de video
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
     const source = document.createElement('source');
     source.src = url;
     video.appendChild(source);
-    video.id = 'trailerVideo'; // Establecer un ID para el video
+    video.id = 'trailerVideo'; // Establecer ID para el video
     contenedorVideo.appendChild(video);
   }
 
@@ -292,12 +293,11 @@ function manejarCierreTrailer(e) {
 }
 
 function cerrarVideoFunc(contenedor, modal) {
-  // Verificar si el contenido es un iframe (YouTube) o un video nativo
   const iframe = document.getElementById('trailerIframe');
   const video = document.getElementById('trailerVideo');
 
+  // Si es un iframe de YouTube, eliminarlo del DOM y detener la reproducción
   if (iframe) {
-    // Si es un iframe de YouTube, eliminarlo del DOM y detener la reproducción
     iframe.src = '';  // Detener el video de YouTube cambiando la URL
     iframe.parentElement.removeChild(iframe);
   } else if (video) {
