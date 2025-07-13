@@ -255,7 +255,7 @@ function verTrailer() {
       const videoId = url.split('v=')[1]?.split('&')[0] || null; // Extraer el ID de video
       if (videoId) {
         // Añadir autoplay=1 y mute=1 a la URL
-        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1&mute=1`;  // Convertir a formato embed, añadir autoplay y mute
+        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1&mute=1&controls=0`;  // Convertir a formato embed, añadir autoplay, mute y controles desactivados
       }
     }
 
@@ -286,6 +286,11 @@ function verTrailer() {
     source.type = 'video/mp4'; // Asegúrate de que el tipo es correcto
     video.appendChild(source);
     contenedorVideo.appendChild(video);
+
+    // Intentar que el video se reproduzca automáticamente
+    video.oncanplaythrough = function() {
+      video.play().catch(err => console.log('No se pudo reproducir el video automáticamente: ', err));
+    };
   }
 
   // Mostrar el modal de video
