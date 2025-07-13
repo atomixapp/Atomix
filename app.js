@@ -230,51 +230,59 @@ function abrirModal(pelicula) {
 }
 
 function verTrailer() {
-  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
+  if (!peliculaActiva || !peliculaActiva.trailerUrl) {
+    console.log("No hay trailerUrl disponible.");
+    return;
+  }
 
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  // Limpia contenido anterior
-  contenedorVideo.innerHTML = ''; // Esto limpia el contenedor antes de agregar el nuevo contenido
+  // Limpiar el contenedor de video
+  contenedorVideo.innerHTML = ''; 
 
   const url = peliculaActiva.trailerUrl;
 
-  // Si el trailer es de YouTube
+  // Loguear la URL del trailer para verificar que es válida
+  console.log("Trailer URL: ", url);
+
+  // Si el trailer es de YouTube (verifica si contiene youtube.com o youtu.be)
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Crear iframe para YouTube
+    // Verificar si ya contiene 'fs=1', si no, añadirlo para pantalla completa
     if (!url.includes('fs=1')) {
-      url += (url.includes('?') ? '&' : '?') + 'fs=1'; // Añadir 'fs=1' para pantalla completa
+      url += (url.includes('?') ? '&' : '?') + 'fs=1';
     }
+
+    // Crear el iframe de YouTube
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.width = '100%';
     iframe.height = '100%';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
-    iframe.setAttribute('allowfullscreen', ''); // Importante para pantalla completa
+    iframe.setAttribute('allowfullscreen', ''); 
     iframe.setAttribute('mozallowfullscreen', '');
     iframe.setAttribute('webkitallowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
   } else {
-    // Si no es un video de YouTube, lo tratamos como un video nativo
+    // Si no es un video de YouTube, trata de cargarlo como un video nativo
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
     const source = document.createElement('source');
     source.src = url;
-    source.type = 'video/mp4';  // Asegúrate de que el tipo sea correcto
+    source.type = 'video/mp4'; // Asegúrate de que el tipo es correcto
     video.appendChild(source);
     contenedorVideo.appendChild(video);
   }
 
-  // Mostrar el modal del video
+  // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  // Función para cerrar el video
+  // Mostrar el botón de cerrar
   cerrarVideo.style.display = 'block';
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
