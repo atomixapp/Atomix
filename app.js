@@ -270,13 +270,21 @@ function verTrailer() {
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  // Cerrar el video cuando el usuario presione "Escape"
-  modalVideo.addEventListener('keydown', function(event) {
+  // Añadir el manejador de escape y cerrar
+  document.addEventListener('keydown', function cerrarConEscape(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
       detenerVideoYouTube();
       cerrarVideoFunc(modalVideo);
+      document.removeEventListener('keydown', cerrarConEscape); // Eliminar el listener después de usarlo
     }
+  });
+
+  // Cerrar el video cuando el usuario presione la "X"
+  const cerrarBoton = document.getElementById('cerrarVideo');
+  cerrarBoton.addEventListener('click', function () {
+    detenerVideoYouTube();
+    cerrarVideoFunc(modalVideo);
   });
 }
 
