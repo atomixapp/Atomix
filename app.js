@@ -303,6 +303,7 @@ function verTrailer() {
   };
 }
 
+// Función de cierre de video, reutilizada en varios lugares
 function cerrarVideoFunc(contenedor, modal) {
   // Limpiar el contenedor de video
   contenedor.innerHTML = '';
@@ -317,8 +318,28 @@ function cerrarVideoFunc(contenedor, modal) {
   if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
 
+// Función de cerrar Modal
+function cerrarModal() {
+  document.getElementById('modalPelicula').style.display = 'none';
+  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+}
+
+// Agregar un evento global para detectar la tecla Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modalPelicula = document.getElementById('modalPelicula');
+    const modalVideo = document.getElementById('modalVideo');
+
+    // Si el modal de la película o de video está abierto, cerramos
+    if (modalVideo.style.display === 'flex') {
+      cerrarVideoFunc(document.getElementById('contenedorVideo'), modalVideo);
+    } else if (modalPelicula.style.display === 'flex') {
+      cerrarModal();
+    }
+  }
+});
+
 function cerrarVideoFunc(contenedor, modal) {
-  console.log('Cerrando video y limpiando contenedor');
   // Limpiar el contenedor de video
   contenedor.innerHTML = '';
 
