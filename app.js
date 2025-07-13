@@ -322,6 +322,9 @@ function cerrarVideoFunc(contenedor, modal) {
   
   // Mostrar el modal de la película
   document.getElementById('modalPelicula').style.display = 'flex';
+  
+  // Restaurar el enfoque en el último lugar activo (si es necesario)
+  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
 
   function manejarNavegacionModal(e) {
