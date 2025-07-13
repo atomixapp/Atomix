@@ -237,7 +237,7 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  // Limpia contenido anterior
+  // Limpia el contenido anterior
   contenedorVideo.innerHTML = '';
 
   const url = peliculaActiva.trailerUrl;
@@ -297,8 +297,8 @@ function cerrarVideoFunc(contenedor, modal) {
   const video = document.getElementById('trailerVideo');
 
   if (iframe) {
-    // Si es un iframe (YouTube), detener la reproducción
-    iframe.src = '';  // Vaciar la URL del iframe para detener la reproducción
+    // Si es un iframe (YouTube), eliminarlo del DOM completamente
+    iframe.parentElement.removeChild(iframe);
   } else if (video) {
     // Si es un video nativo, pausarlo y restablecer su tiempo
     video.pause();
