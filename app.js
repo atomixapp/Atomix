@@ -304,6 +304,39 @@ function manejarCierreTrailer(e) {
 function cerrarVideoFunc(contenedor, modal, videoPlayer) {
   // Si es un iframe de YouTube, detenerlo
   if (videoPlayer && videoPlayer.tagName === 'IFRAME') {
+    // No podemos pausar un iframe, solo limpiamos el src
+    videoPlayer.src = '';  // Detener el video de YouTube cambiando la URL
+  } else if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
+    // Si es un video nativo, pausarlo y restablecer su tiempo
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
+  }
+
+  contenedor.innerHTML = '';  // Limpiar el contenido del video
+  modal.style.display = 'none';  // Ocultar el modal
+
+  // Vuelve a mostrar el modal de la película principal
+  document.getElementById('modalPelicula').style.display = 'flex';
+
+  // Eliminar el listener de 'keydown' después de cerrar
+  modal.removeEventListener('keydown', manejarCierreTrailer);
+}
+
+function manejarCierreTrailer(e) {
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
+  const videoPlayer = document.querySelector('#trailerVideo') || document.querySelector('#trailerIframe');
+
+  // Si la tecla presionada es "Enter" o "Escape", cerrar el modal
+  if (e.key === 'Enter' || e.key === 'Escape') {
+    e.preventDefault();
+    cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
+  }
+}
+
+function cerrarVideoFunc(contenedor, modal, videoPlayer) {
+  // Si es un iframe de YouTube, detenerlo
+  if (videoPlayer && videoPlayer.tagName === 'IFRAME') {
     videoPlayer.src = '';  // Detener el video de YouTube cambiando la URL
   } else if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
     // Si es un video nativo, pausarlo y restablecer su tiempo
