@@ -248,30 +248,32 @@ function verTrailer() {
   // Loguear la URL del trailer para verificar que es válida
   console.log("Trailer URL: ", url);
 
-  // Si el trailer es de YouTube
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Si es un enlace 'watch', transformarlo en un enlace 'embed'
-    if (url.includes('youtube.com/watch')) {
-      const videoId = url.split('v=')[1]?.split('&')[0]; // Extraer el ID de video
-      url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1`;  // Convertir a formato embed y añadir autoplay y fs (pantalla completa)
-    }
-    
-    // Crear iframe de YouTube
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.width = '100%';  // Ocupa todo el ancho
-    iframe.height = '100%'; // Ocupa toda la altura
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    iframe.allowFullscreen = true;
-    iframe.setAttribute('allowfullscreen', ''); 
-    iframe.setAttribute('mozallowfullscreen', '');
-    iframe.setAttribute('webkitallowfullscreen', '');
-    iframe.frameBorder = 0;
-    contenedorVideo.appendChild(iframe);
+// Si el trailer es de YouTube
+if (url.includes('youtube.com') || url.includes('youtu.be')) {
+  // Si es un enlace 'watch', transformarlo en un enlace 'embed'
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1]?.split('&')[0]; // Extraer el ID de video
+    // Añadir autoplay=1 y mute=1 a la URL
+    url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1&mute=1`;  // Convertir a formato embed, añadir autoplay y mute
+  }
+  
+  // Crear iframe de YouTube
+  const iframe = document.createElement('iframe');
+  iframe.src = url;
+  iframe.width = '100%';  // Ocupa todo el ancho
+  iframe.height = '100%'; // Ocupa toda la altura
+  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+  iframe.allowFullscreen = true;
+  iframe.setAttribute('allowfullscreen', ''); 
+  iframe.setAttribute('mozallowfullscreen', '');
+  iframe.setAttribute('webkitallowfullscreen', '');
+  iframe.frameBorder = 0;
+  contenedorVideo.appendChild(iframe);
 
-    // Forzar la pantalla completa
-    iframe.requestFullscreen = iframe.requestFullscreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullscreen || iframe.msRequestFullscreen;
-    iframe.requestFullscreen();  // Solicita la pantalla completa
+  // Forzar la pantalla completa
+  iframe.requestFullscreen = iframe.requestFullscreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullscreen || iframe.msRequestFullscreen;
+  iframe.requestFullscreen();  // Solicita la pantalla completa
+}
   } else {
     // Si no es un video de YouTube, trata de cargarlo como un video nativo
     const video = document.createElement('video');
