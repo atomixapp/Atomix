@@ -242,19 +242,21 @@ function verTrailer() {
   // Limpiar el contenedor de video
   contenedorVideo.innerHTML = ''; 
 
-  const url = peliculaActiva.trailerUrl;
+  // URL del trailer
+  let url = peliculaActiva.trailerUrl; // Usar 'let' si planeas modificar la variable
 
   // Loguear la URL del trailer para verificar que es válida
   console.log("Trailer URL: ", url);
 
-  // Si el trailer es de YouTube (verifica si contiene youtube.com o youtu.be)
+  // Si el trailer es de YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Verificar si ya contiene 'fs=1', si no, añadirlo para pantalla completa
-    if (!url.includes('fs=1')) {
-      url += (url.includes('?') ? '&' : '?') + 'fs=1';
+    // Si es un enlace 'watch', transformarlo en un enlace 'embed'
+    if (url.includes('youtube.com/watch')) {
+      const videoId = url.split('v=')[1]?.split('&')[0]; // Extraer el ID de video
+      url = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;  // Convertir a formato embed
     }
-
-    // Crear el iframe de YouTube
+    
+    // Crear iframe de YouTube
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.width = '100%';
