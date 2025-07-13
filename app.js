@@ -238,7 +238,6 @@ function verTrailer() {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
-  const botonReproducir = document.getElementById('botonReproducir');
   const btnTrailer = document.getElementById('btnVerTrailer');
 
   // Limpiar el contenedor de video
@@ -266,17 +265,6 @@ function verTrailer() {
     iframe.setAttribute('allowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
-
-    // Escuchar mensajes del iframe (postMessage)
-    window.addEventListener("message", function(event) {
-      // Asegúrate de que el origen del mensaje sea YouTube
-      if (event.origin !== "https://www.youtube.com") return;
-
-      // Si el mensaje es 'close', cerramos el modal
-      if (event.data === 'close') {
-        cerrarVideoFunc(contenedorVideo, modalVideo);
-      }
-    });
   } else {
     // Si no es un video de YouTube, crear un video nativo
     const video = document.createElement('video');
@@ -299,9 +287,6 @@ function verTrailer() {
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  // Enfocar el modalVideo para capturar las teclas correctamente
-  modalVideo.focus();
-
   // Mostrar u ocultar el botón "Ver trailer"
   if (pelicula.trailerUrl) {
     btnTrailer.style.display = 'flex';
@@ -310,32 +295,40 @@ function verTrailer() {
     btnTrailer.style.display = 'none';
   }
 
-  // Cerrar con el botón de "X"
-  cerrarVideo.onclick = function() {
-    cerrarVideoFunc(contenedorVideo, modalVideo);
-  };
+  // Enfocar el modalVideo para capturar las teclas correctamente
+  modalVideo.focus();
 
   // Escuchar las teclas Escape, Enter y X
   modalVideo.addEventListener('keydown', function(event) {
-    console.log(`Tecla presionada: ${event.key}`);  // Depuración
+    console.log(`Tecla presionada: ${event.key}`);  // Depuración para ver qué tecla se presionó
+
     if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
-      event.preventDefault();  // Prevenir cualquier otra acción
-      // Enviar el mensaje al iframe de YouTube para cerrarlo
+      event.preventDefault();  // Prevenir la acción por defecto (evitar el scroll)
+
+      console.log('Cerrando el modal...');  // Verificación de que el evento de cierre está siendo procesado
+
+      // Si el trailer es de YouTube, podemos enviar el mensaje de cierre al iframe
+      const iframe = contenedorVideo.querySelector('iframe');
       if (iframe) {
         iframe.contentWindow.postMessage('close', 'https://www.youtube.com');
+        console.log('Mensaje enviado a iframe para cerrar.');
       }
+
+      // Llamar a la función para cerrar el modal
       cerrarVideoFunc(contenedorVideo, modalVideo);
     }
   });
 
-  // Eliminar el setTimeout para el enfoque del botón "Ver ahora"
-  // El enfoque puede ir directamente al modal o al botón de cerrar
-  setTimeout(() => {
-    document.getElementById('cerrarModal').focus();
-  }, 100);
+  // Cerrar con el botón de "X"
+  cerrarVideo.onclick = function() {
+    console.log('Botón de cierre presionado');
+    cerrarVideoFunc(contenedorVideo, modalVideo);
+  };
+
 }
 
 function cerrarVideoFunc(contenedor, modal) {
+  console.log('Cerrando video y limpiando contenedor');
   // Limpiar el contenedor de video
   contenedor.innerHTML = '';
 
