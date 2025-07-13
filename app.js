@@ -269,7 +269,29 @@ function verTrailer() {
   cerrarVideo.style.display = 'block';
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
-  setTimeout(() => cerrarVideo.focus(), 100);
+  // Añadir la funcionalidad de "Enter" y "Escape" para cerrar el trailer
+  document.addEventListener('keydown', manejarCierreTrailer);
+}
+
+function manejarCierreTrailer(e) {
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
+
+  if (e.key === 'Enter' || e.key === 'Escape') {
+    e.preventDefault();
+    cerrarVideoFunc(contenedorVideo, modalVideo);
+  }
+}
+
+function cerrarVideoFunc(contenedor, modal) {
+  contenedor.innerHTML = '';  // Limpiar el contenido del video
+  modal.style.display = 'none';  // Ocultar el modal
+
+  // Vuelve a mostrar el modal de la película principal
+  document.getElementById('modalPelicula').style.display = 'flex';
+
+  // Eliminar el listener de 'keydown' después de cerrar
+  document.removeEventListener('keydown', manejarCierreTrailer);
 }
 
   function manejarNavegacionModal(e) {
