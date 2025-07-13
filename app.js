@@ -251,6 +251,7 @@ function verTrailer() {
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.frameBorder = 0;
+    iframe.id = 'trailerIframe'; // Establecer un ID para el iframe
     contenedorVideo.appendChild(iframe);
   } else {
     // Crear video nativo
@@ -260,6 +261,7 @@ function verTrailer() {
     const source = document.createElement('source');
     source.src = url;
     video.appendChild(source);
+    video.id = 'trailerVideo'; // Establecer un ID para el video
     contenedorVideo.appendChild(video);
   }
 
@@ -290,6 +292,19 @@ function manejarCierreTrailer(e) {
 }
 
 function cerrarVideoFunc(contenedor, modal) {
+  // Detener y limpiar el contenido dependiendo de si es un video o un iframe
+  const iframe = document.getElementById('trailerIframe');
+  const video = document.getElementById('trailerVideo');
+
+  if (iframe) {
+    // Si es un iframe (YouTube), detener la reproducción
+    iframe.src = '';  // Vaciar la URL del iframe para detener la reproducción
+  } else if (video) {
+    // Si es un video nativo, pausarlo y restablecer su tiempo
+    video.pause();
+    video.currentTime = 0;
+  }
+
   contenedor.innerHTML = '';  // Limpiar el contenido del video
   modal.style.display = 'none';  // Ocultar el modal
 
