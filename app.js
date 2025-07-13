@@ -272,13 +272,6 @@ function verTrailer() {
   setTimeout(() => cerrarVideo.focus(), 100);
 }
 
-function cerrarVideoFunc(contenedor, modal) {
-  // Limpia video o iframe
-  contenedor.innerHTML = '';
-  modal.style.display = 'none';
-  document.getElementById('modalPelicula').style.display = 'flex';
-}
-
   function manejarNavegacionModal(e) {
     const botones = [
       document.getElementById('cerrarModal'),
