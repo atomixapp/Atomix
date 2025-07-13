@@ -280,6 +280,7 @@ function verTrailer() {
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
+    video.muted = true; // Asegúrate de que el video se reproduce automáticamente sin ser bloqueado por el navegador
     const source = document.createElement('source');
     source.src = url;
     source.type = 'video/mp4'; // Asegúrate de que el tipo es correcto
