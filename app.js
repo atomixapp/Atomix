@@ -285,7 +285,6 @@ function verTrailer() {
     // Si no es un video de YouTube, trata de cargarlo como un video nativo
     const video = document.createElement('video');
     video.controls = true;
-    video.autoplay = true;
     video.muted = true; // Asegúrate de que el video se reproduce automáticamente sin ser bloqueado por el navegador
     const source = document.createElement('source');
     source.src = url;
@@ -295,10 +294,19 @@ function verTrailer() {
 
     // Intentar que el video se reproduzca automáticamente
     video.oncanplaythrough = function() {
-      video.play().catch(err => {
-        console.log('No se pudo reproducir el video automáticamente: ', err);
-        alert('No se pudo reproducir el video automáticamente. Intenta con otro navegador o dispositivo.');
-      });
+      // Solo reproducir en la app tras interacción del usuario
+      if (navigator.userAgent.includes("Android") || navigator.userAgent.includes("iPhone")) {
+        video.addEventListener('click', () => {
+          video.play().catch(err => {
+            console.log('No se pudo reproducir el video automáticamente en la app: ', err);
+          });
+        });
+      } else {
+        // Para la web, autoplay directamente
+        video.play().catch(err => {
+          console.log('No se pudo reproducir el video automáticamente en la web: ', err);
+        });
+      }
     };
 
     // Capturar cualquier error que impida la reproducción automática
