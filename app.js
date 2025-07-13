@@ -273,7 +273,8 @@ if (url.includes('youtube.com') || url.includes('youtu.be')) {
   // Forzar la pantalla completa
   iframe.requestFullscreen = iframe.requestFullscreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullscreen || iframe.msRequestFullscreen;
   iframe.requestFullscreen();  // Solicita la pantalla completa
-
+}
+  
   } else {
     // Si no es un video de YouTube, trata de cargarlo como un video nativo
     const video = document.createElement('video');
