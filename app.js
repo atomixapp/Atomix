@@ -263,20 +263,26 @@ function verTrailer() {
     contenedorVideo.appendChild(video);
   }
 
+  // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
+  // Mostrar el botón de cerrar
   cerrarVideo.style.display = 'block';
+
+  // Asignar evento de click para cerrar el video
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
   // Añadir la funcionalidad de "Enter" y "Escape" para cerrar el trailer
-  document.addEventListener('keydown', manejarCierreTrailer);
+  modalVideo.addEventListener('keydown', manejarCierreTrailer);
+  modalVideo.focus(); // Enfocar el modal para que reciba el evento de tecla
 }
 
 function manejarCierreTrailer(e) {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
 
+  // Si la tecla presionada es "Enter" o "Escape", cerrar el modal
   if (e.key === 'Enter' || e.key === 'Escape') {
     e.preventDefault();
     cerrarVideoFunc(contenedorVideo, modalVideo);
@@ -291,7 +297,7 @@ function cerrarVideoFunc(contenedor, modal) {
   document.getElementById('modalPelicula').style.display = 'flex';
 
   // Eliminar el listener de 'keydown' después de cerrar
-  document.removeEventListener('keydown', manejarCierreTrailer);
+  modal.removeEventListener('keydown', manejarCierreTrailer);
 }
 
   function manejarNavegacionModal(e) {
