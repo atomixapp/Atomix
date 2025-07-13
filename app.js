@@ -238,7 +238,6 @@ function verTrailer() {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
-  const btnTrailer = document.getElementById('btnVerTrailer');
 
   // Limpiar el contenedor de video
   contenedorVideo.innerHTML = '';
@@ -246,54 +245,25 @@ function verTrailer() {
   // URL del trailer
   let url = peliculaActiva.trailerUrl;
 
-  // Si el trailer es de YouTube
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    if (url.includes('youtube.com/watch')) {
-      const videoId = url.split('v=')[1]?.split('&')[0] || null;
-      if (videoId) {
-        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=0`;
-      }
-    }
+  // Crear un video nativo (MP4)
+  const video = document.createElement('video');
+  video.controls = true;
+  video.muted = true;
+  const source = document.createElement('source');
+  source.src = url;
+  source.type = 'video/mp4';
+  video.appendChild(source);
+  contenedorVideo.appendChild(video);
 
-    // Crear iframe de YouTube
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    iframe.allowFullscreen = true;
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.frameBorder = 0;
-    contenedorVideo.appendChild(iframe);
-  } else {
-    // Si no es un video de YouTube, crear un video nativo
-    const video = document.createElement('video');
-    video.controls = true;
-    video.muted = true;
-    const source = document.createElement('source');
-    source.src = url;
-    source.type = 'video/mp4';
-    video.appendChild(source);
-    contenedorVideo.appendChild(video);
-
-    video.oncanplaythrough = function() {
-      video.play().catch(err => {
-        console.log('No se pudo reproducir el video automáticamente: ', err);
-      });
-    };
-  }
+  video.oncanplaythrough = function() {
+    video.play().catch(err => {
+      console.log('No se pudo reproducir el video automáticamente: ', err);
+    });
+  };
 
   // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
-
-  // Mostrar u ocultar el botón "Ver trailer"
-  if (pelicula.trailerUrl) {
-    btnTrailer.style.display = 'flex';
-    btnTrailer.onclick = verTrailer;
-  } else {
-    btnTrailer.style.display = 'none';
-  }
 
   // Enfocar el modalVideo para capturar las teclas correctamente
   modalVideo.focus();
@@ -306,13 +276,6 @@ function verTrailer() {
       event.preventDefault();  // Prevenir la acción por defecto (evitar el scroll)
 
       console.log('Cerrando el modal...');  // Verificación de que el evento de cierre está siendo procesado
-
-      // Si el trailer es de YouTube, podemos enviar el mensaje de cierre al iframe
-      const iframe = contenedorVideo.querySelector('iframe');
-      if (iframe) {
-        iframe.contentWindow.postMessage('close', 'https://www.youtube.com');
-        console.log('Mensaje enviado a iframe para cerrar.');
-      }
 
       // Llamar a la función para cerrar el modal
       cerrarVideoFunc(contenedorVideo, modalVideo);
