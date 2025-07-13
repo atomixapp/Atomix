@@ -112,6 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Función para cerrar el modal de video
   function cerrarVideoFunc(modalVideo) {
+    const iframe = modalVideo.querySelector('iframe');
+    if (iframe) {
+      iframe.src = ''; // Detenemos el video
+    }
     modalVideo.style.display = 'none';
     document.getElementById('modalPelicula').style.display = 'flex';
     if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
@@ -136,5 +140,20 @@ document.addEventListener('DOMContentLoaded', () => {
         cerrarModal();
       }
     }
+  });
+
+  // Función para cerrar los modales de video y película al presionar "X"
+  document.querySelectorAll('.cerrar-modal').forEach(button => {
+    button.addEventListener('click', () => {
+      const modalPelicula = document.getElementById('modalPelicula');
+      const modalVideo = document.getElementById('modalVideo');
+
+      // Cerrar los modales
+      if (modalVideo.style.display === 'flex') {
+        cerrarVideoFunc(modalVideo);
+      } else if (modalPelicula.style.display === 'flex') {
+        cerrarModal();
+      }
+    });
   });
 });
