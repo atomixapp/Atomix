@@ -259,8 +259,6 @@ function abrirModal(pelicula) {
 
 let player = null; // Declaración global para el reproductor de YouTube
 
-let player = null; // Declaración global para el reproductor de YouTube
-
 // Función para abrir el modal de la película
 function abrirModal(pelicula) {
   peliculaActiva = pelicula;
@@ -345,6 +343,34 @@ function detenerVideoYouTube() {
   }
 }
 
+// Función para cerrar el modal de película
+function cerrarModal() {
+  document.getElementById('modalPelicula').style.display = 'none';
+  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+}
+
+// Función para cerrar el video y el modal del trailer
+function cerrarVideoFunc() {
+  const modalVideo = document.getElementById('modalVideo');
+  const iframe = modalVideo.querySelector('iframe');
+  if (iframe) {
+    iframe.src = '';  // Detenemos el video de YouTube
+  }
+  modalVideo.style.display = 'none';
+  document.getElementById('modalPelicula').style.display = 'flex';
+  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+}
+
+// Función de cerrar video con el botón X
+document.getElementById('cerrarVideo').addEventListener('click', function () {
+  cerrarVideoFunc();
+});
+
+// Función de cerrar modal con el botón X
+document.getElementById('cerrarModal').addEventListener('click', function () {
+  cerrarModal();
+});
+  
   function manejarNavegacionModal(e) {
     const botones = [
       document.getElementById('cerrarModal'),
