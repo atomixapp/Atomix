@@ -288,14 +288,6 @@ function verTrailer() {
   });
 }
 
-// Función para detener el video de YouTube
-function detenerVideoYouTube() {
-  if (player) {
-    player.stopVideo();  // Usamos la API de YouTube para detener el video
-    console.log('Video de YouTube detenido.');
-  }
-}
-
 // Función para cerrar el modal de video
 function cerrarVideoFunc(modalVideo) {
   const iframe = modalVideo.querySelector('iframe');
