@@ -243,6 +243,8 @@ function verTrailer() {
   // Verificar si es un trailer de YouTube o un video nativo
   const url = peliculaActiva.trailerUrl || peliculaActiva.videoUrl;
 
+  let videoPlayer = null; // Variable para manejar el video
+
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     // Es un trailer de YouTube, crear un iframe
     const iframe = document.createElement('iframe');
@@ -254,6 +256,9 @@ function verTrailer() {
     iframe.frameBorder = 0;
     iframe.id = 'trailerIframe'; // Establecer ID para el iframe
     contenedorVideo.appendChild(iframe);
+
+    // No necesitamos usar pause para iframe de YouTube
+    videoPlayer = iframe;
   } else {
     // Es un video nativo, crear una etiqueta de video
     const video = document.createElement('video');
@@ -264,6 +269,9 @@ function verTrailer() {
     video.appendChild(source);
     video.id = 'trailerVideo'; // Establecer ID para el video
     contenedorVideo.appendChild(video);
+
+    // Referencia al video nativo
+    videoPlayer = video;
   }
 
   // Mostrar el modal de video
@@ -274,7 +282,7 @@ function verTrailer() {
   cerrarVideo.style.display = 'block';
 
   // Asignar evento de click para cerrar el video
-  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
+  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
 
   // Añadir la funcionalidad de "Enter" y "Escape" para cerrar el trailer
   modalVideo.addEventListener('keydown', manejarCierreTrailer);
@@ -284,26 +292,23 @@ function verTrailer() {
 function manejarCierreTrailer(e) {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
+  const videoPlayer = document.querySelector('#trailerVideo') || document.querySelector('#trailerIframe');
 
   // Si la tecla presionada es "Enter" o "Escape", cerrar el modal
   if (e.key === 'Enter' || e.key === 'Escape') {
     e.preventDefault();
-    cerrarVideoFunc(contenedorVideo, modalVideo);
+    cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
   }
 }
 
-function cerrarVideoFunc(contenedor, modal) {
-  const iframe = document.getElementById('trailerIframe');
-  const video = document.getElementById('trailerVideo');
-
-  // Si es un iframe de YouTube, eliminarlo del DOM y detener la reproducción
-  if (iframe) {
-    iframe.src = '';  // Detener el video de YouTube cambiando la URL
-    iframe.parentElement.removeChild(iframe);
-  } else if (video) {
+function cerrarVideoFunc(contenedor, modal, videoPlayer) {
+  // Si es un iframe de YouTube, detenerlo
+  if (videoPlayer && videoPlayer.tagName === 'IFRAME') {
+    videoPlayer.src = '';  // Detener el video de YouTube cambiando la URL
+  } else if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
     // Si es un video nativo, pausarlo y restablecer su tiempo
-    video.pause();
-    video.currentTime = 0;
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
   }
 
   contenedor.innerHTML = '';  // Limpiar el contenido del video
