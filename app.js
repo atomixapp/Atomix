@@ -292,12 +292,12 @@ function manejarCierreTrailer(e) {
 }
 
 function cerrarVideoFunc(contenedor, modal) {
-  // Detener y limpiar el contenido dependiendo de si es un video o un iframe
+  // Verificar si el contenido es un iframe (YouTube) o un video nativo
   const iframe = document.getElementById('trailerIframe');
   const video = document.getElementById('trailerVideo');
 
   if (iframe) {
-    // Si es un iframe (YouTube), eliminarlo del DOM completamente
+    // Si es un iframe de YouTube, eliminarlo del DOM y detener la reproducción
     iframe.src = '';  // Detener el video de YouTube cambiando la URL
     iframe.parentElement.removeChild(iframe);
   } else if (video) {
