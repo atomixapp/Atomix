@@ -254,8 +254,8 @@ function verTrailer() {
     if (url.includes('youtube.com/watch')) {
       const videoId = url.split('v=')[1]?.split('&')[0] || null; // Extraer el ID de video
       if (videoId) {
-        // Añadir autoplay=1 y mute=1 a la URL
-        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1&mute=1&controls=0`;  // Convertir a formato embed, añadir autoplay, mute y controles desactivados
+        // Añadir autoplay=1, mute=1, y rel=0 para evitar los videos relacionados
+        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=0`;
       }
     }
 
@@ -272,9 +272,15 @@ function verTrailer() {
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
 
-    // Forzar la pantalla completa
-    iframe.requestFullscreen = iframe.requestFullscreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullscreen || iframe.msRequestFullscreen;
-    iframe.requestFullscreen();  // Solicita la pantalla completa
+    // Intentar forzar la reproducción en pantalla completa
+    iframe.onload = function() {
+      try {
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      } catch (e) {
+        console.log("Error al intentar enviar comando de reproducción:", e);
+      }
+    };
+
   } else {
     // Si no es un video de YouTube, trata de cargarlo como un video nativo
     const video = document.createElement('video');
@@ -289,7 +295,15 @@ function verTrailer() {
 
     // Intentar que el video se reproduzca automáticamente
     video.oncanplaythrough = function() {
-      video.play().catch(err => console.log('No se pudo reproducir el video automáticamente: ', err));
+      video.play().catch(err => {
+        console.log('No se pudo reproducir el video automáticamente: ', err);
+        alert('No se pudo reproducir el video automáticamente. Intenta con otro navegador o dispositivo.');
+      });
+    };
+
+    // Capturar cualquier error que impida la reproducción automática
+    video.onerror = function(e) {
+      console.log('Error al intentar reproducir el video:', e);
     };
   }
 
