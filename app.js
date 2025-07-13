@@ -298,6 +298,7 @@ function cerrarVideoFunc(contenedor, modal) {
 
   if (iframe) {
     // Si es un iframe (YouTube), eliminarlo del DOM completamente
+    iframe.src = '';  // Detener el video de YouTube cambiando la URL
     iframe.parentElement.removeChild(iframe);
   } else if (video) {
     // Si es un video nativo, pausarlo y restablecer su tiempo
