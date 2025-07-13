@@ -265,6 +265,17 @@ function verTrailer() {
     iframe.setAttribute('allowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
+
+    // Escuchar mensajes del iframe (postMessage)
+    window.addEventListener("message", function(event) {
+      // Asegúrate de que el origen del mensaje sea YouTube
+      if (event.origin !== "https://www.youtube.com") return;
+
+      // Si el mensaje es 'close', cerramos el modal
+      if (event.data === 'close') {
+        cerrarVideoFunc(contenedorVideo, modalVideo);
+      }
+    });
   } else {
     // Si no es un video de YouTube, crear un video nativo
     const video = document.createElement('video');
@@ -293,11 +304,15 @@ function verTrailer() {
   // Enfocar el modalVideo para capturar las teclas correctamente
   modalVideo.focus();
 
-  // Listener de teclado para cerrar el modal
+  // Escuchar las teclas Escape, Enter y X
   modalVideo.addEventListener('keydown', function(event) {
-    console.log(`Tecla presionada: ${event.key}`);  // Depuración: ver qué tecla se presiona
+    console.log(`Tecla presionada: ${event.key}`);  // Depuración
     if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
-      event.preventDefault();  // Prevenir cualquier otra acción por defecto
+      event.preventDefault();  // Prevenir cualquier otra acción
+      // Enviar el mensaje al iframe de YouTube para cerrarlo
+      if (iframe) {
+        iframe.contentWindow.postMessage('close', 'https://www.youtube.com');
+      }
       cerrarVideoFunc(contenedorVideo, modalVideo);
     }
   });
