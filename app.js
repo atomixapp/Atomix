@@ -290,18 +290,22 @@ function verTrailer() {
   // Mostrar el botón de cerrar
   cerrarVideo.style.display = 'block';
 
+  // Enfocar el modalVideo para capturar las teclas correctamente
+  modalVideo.focus();
+
+  // Listener de teclado para cerrar el modal
+  modalVideo.addEventListener('keydown', function(event) {
+    console.log(`Tecla presionada: ${event.key}`);  // Depuración: ver qué tecla se presiona
+    if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
+      event.preventDefault();  // Prevenir cualquier otra acción por defecto
+      cerrarVideoFunc(contenedorVideo, modalVideo);
+    }
+  });
+
   // Cerrar con el botón de "X"
   cerrarVideo.onclick = function() {
     cerrarVideoFunc(contenedorVideo, modalVideo);
   };
-
-  // Escuchar las teclas Escape, Enter y X para cerrar el modal
-  modalVideo.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
-      event.preventDefault();  // Prevenir la acción por defecto (como el scroll o el back)
-      cerrarVideoFunc(contenedorVideo, modalVideo);
-    }
-  });
 
   // Enfocar el botón de reproducción (opcional)
   setTimeout(() => {
@@ -311,7 +315,6 @@ function verTrailer() {
   }, 100);
 }
 
-// Función de cierre del video
 function cerrarVideoFunc(contenedor, modal) {
   // Limpiar el contenedor de video
   contenedor.innerHTML = '';
