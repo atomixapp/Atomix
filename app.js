@@ -237,13 +237,13 @@ function verTrailer() {
   const cerrarVideo = document.getElementById('cerrarVideo');
 
   // Limpia contenido anterior
-  contenedorVideo.innerHTML = '';
+  contenedorVideo.innerHTML = ''; // Esto limpia el contenedor antes de agregar el nuevo contenido
 
-  let url = peliculaActiva.trailerUrl;
+  const url = peliculaActiva.trailerUrl;
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Para YouTube, usamos un iframe
+    // Crear iframe para YouTube
     if (!url.includes('fs=1')) {
-      url += (url.includes('?') ? '&' : '?') + 'fs=1'; // Asegura que 'fs=1' esté en la URL para pantalla completa
+      url += (url.includes('?') ? '&' : '?') + 'fs=1'; // Añadir 'fs=1' para pantalla completa
     }
     const iframe = document.createElement('iframe');
     iframe.src = url;
@@ -251,13 +251,13 @@ function verTrailer() {
     iframe.height = '100%';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
-    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('allowfullscreen', ''); // Importante para pantalla completa
     iframe.setAttribute('mozallowfullscreen', '');
     iframe.setAttribute('webkitallowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
   } else {
-    // Para video local (mp4), usamos un elemento video
+    // Si no es un video de YouTube, lo tratamos como un video nativo
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
@@ -359,33 +359,42 @@ function cerrarConEscape(e) {
   }
 }
   
-  function verVideo() {
-    if (!peliculaActiva) return;
+function verVideo() {
+  if (!peliculaActiva) return;
 
-    const videoPlayer = document.getElementById('videoPlayer');
-    const cerrarVideo = document.getElementById('cerrarVideo');
-    videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-    videoPlayer.load();
-    videoPlayer.play();
+  const videoPlayer = document.getElementById('videoPlayer');
+  const cerrarVideo = document.getElementById('cerrarVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo'); // Contenedor del video
 
-    document.getElementById('modalPelicula').style.display = 'none';
-    const modalVideo = document.getElementById('modalVideo');
-    modalVideo.style.display = 'flex';
-    cerrarVideo.style.display = 'block';
+  // Limpia cualquier contenido previo
+  contenedorVideo.innerHTML = '';
 
-    let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-    cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+  // Asignar el video nativo
+  videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+  videoPlayer.load();
+  videoPlayer.play();
 
-    setTimeout(() => cerrarVideo.focus(), 100);
-  }
+  // Mostrar el modal
+  document.getElementById('modalPelicula').style.display = 'none';
+  const modalVideo = document.getElementById('modalVideo');
+  modalVideo.style.display = 'flex';
 
-  function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
-    clearTimeout(ocultarCerrar);
-    videoPlayer.pause();
-    videoPlayer.currentTime = 0;
-    modalVideo.style.display = 'none';
-    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
-  }
+  // Mostrar el botón de cerrar
+  cerrarVideo.style.display = 'block';
+
+  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
+  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+
+  setTimeout(() => cerrarVideo.focus(), 100);
+}
+
+function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
+  clearTimeout(ocultarCerrar);
+  videoPlayer.pause();
+  videoPlayer.currentTime = 0;
+  modalVideo.style.display = 'none';
+  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+}
 
   window.filtrar = categoria => { /* ... */ }
   window.cerrarSesion = () => auth.signOut().then(() => window.location.href = 'index.html');
