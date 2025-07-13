@@ -246,7 +246,6 @@ function verTrailer() {
   // URL del trailer
   let url = peliculaActiva.trailerUrl;
 
-  // Loguear la URL del trailer para verificar que es válida
   console.log("Trailer URL: ", url);
 
   // Si el trailer es de YouTube
@@ -266,21 +265,10 @@ function verTrailer() {
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.setAttribute('allowfullscreen', '');
-    iframe.setAttribute('mozallowfullscreen', '');
-    iframe.setAttribute('webkitallowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
-
-    // Intentar forzar la reproducción
-    iframe.onload = function() {
-      try {
-        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-      } catch (e) {
-        console.log("Error al intentar enviar comando de reproducción:", e);
-      }
-    };
   } else {
-    // Si no es un video de YouTube, trata de cargarlo como un video nativo
+    // Si no es un video de YouTube, crea un video nativo
     const video = document.createElement('video');
     video.controls = true;
     video.muted = true;
@@ -290,7 +278,6 @@ function verTrailer() {
     video.appendChild(source);
     contenedorVideo.appendChild(video);
 
-    // Intentar que el video se reproduzca automáticamente
     video.oncanplaythrough = function() {
       video.play().catch(err => {
         console.log('No se pudo reproducir el video automáticamente: ', err);
@@ -304,53 +291,36 @@ function verTrailer() {
 
   // Mostrar el botón de cerrar
   cerrarVideo.style.display = 'block';
-  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
+  
+  // Cerrar con el botón de "X"
+  cerrarVideo.onclick = function() {
+    cerrarVideoFunc(contenedorVideo, modalVideo);
+  };
 
-  // Enfocar el botón de "Reproducir" para permitir la interacción con teclado
+  // Enfocar el botón de reproducción (opcional)
   setTimeout(() => {
     if (botonReproducir) {
-      botonReproducir.focus();  // Enfocar el botón de reproducción
+      botonReproducir.focus();
     }
   }, 100);
 
-  // Manejo de eventos de teclado para cerrar el modal
-  document.addEventListener('keydown', (e) => {
-    switch (e.key) {
-      case 'Enter':
-      case 'OK':
-        // Si el botón "Reproducir" está enfocado, simular clic en él
-        if (document.activeElement === botonReproducir) {
-          e.preventDefault();  // Prevenir la acción por defecto
-          botonReproducir.click();  // Simular clic
-        }
-        break;
-
-      case 'Escape':
-      case 'x':
-      case 'X':
-        // Cerrar el modal con las teclas Escape o X
-        e.preventDefault();  // Prevenir la acción por defecto
-        cerrarVideoFunc(contenedorVideo, modalVideo);
-        break;
-
-      default:
-        break;
-    }
-  });
-
-  // Asegurarnos de que el cierre también se pueda hacer con la tecla 'X' del teclado
-  cerrarVideo.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' || e.key === 'x' || e.key === 'X') {
-      e.preventDefault();
+  // Escuchar la tecla Escape para cerrar el modal
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' || event.key.toLowerCase() === 'x') {
+      event.preventDefault();  // Prevenir la acción por defecto (para evitar el scroll o el back)
       cerrarVideoFunc(contenedorVideo, modalVideo);
     }
   });
 }
 
 function cerrarVideoFunc(contenedor, modal) {
-  // Limpia el video o iframe
+  // Limpiar el contenedor de video
   contenedor.innerHTML = '';
+  
+  // Ocultar el modal de video
   modal.style.display = 'none';
+  
+  // Mostrar el modal de la película
   document.getElementById('modalPelicula').style.display = 'flex';
 }
 
