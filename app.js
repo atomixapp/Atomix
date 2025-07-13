@@ -335,7 +335,9 @@ document.addEventListener('keydown', (e) => {
     // Si el modal de la película o de video está abierto, cerramos
     if (modalVideo.style.display === 'flex') {
       cerrarVideoFunc(document.getElementById('contenedorVideo'), modalVideo);
-    } else if (modalPelicula.style.display === 'flex') {
+    }
+    // Si el modal de película está abierto, cerramos
+    else if (modalPelicula.style.display === 'flex') {
       cerrarModal();
     }
   }
