@@ -239,6 +239,7 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
   const botonReproducir = document.getElementById('botonReproducir');
+  const btnTrailer = document.getElementById('btnVerTrailer');
 
   // Limpiar el contenedor de video
   contenedorVideo.innerHTML = '';
@@ -298,11 +299,21 @@ function verTrailer() {
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  // Mostrar el botón de cerrar
-  cerrarVideo.style.display = 'block';
-
   // Enfocar el modalVideo para capturar las teclas correctamente
   modalVideo.focus();
+
+  // Mostrar u ocultar el botón "Ver trailer"
+  if (pelicula.trailerUrl) {
+    btnTrailer.style.display = 'flex';
+    btnTrailer.onclick = verTrailer;
+  } else {
+    btnTrailer.style.display = 'none';
+  }
+
+  // Cerrar con el botón de "X"
+  cerrarVideo.onclick = function() {
+    cerrarVideoFunc(contenedorVideo, modalVideo);
+  };
 
   // Escuchar las teclas Escape, Enter y X
   modalVideo.addEventListener('keydown', function(event) {
@@ -317,16 +328,10 @@ function verTrailer() {
     }
   });
 
-  // Cerrar con el botón de "X"
-  cerrarVideo.onclick = function() {
-    cerrarVideoFunc(contenedorVideo, modalVideo);
-  };
-
-  // Enfocar el botón de reproducción (opcional)
+  // Eliminar el setTimeout para el enfoque del botón "Ver ahora"
+  // El enfoque puede ir directamente al modal o al botón de cerrar
   setTimeout(() => {
-    if (botonReproducir) {
-      botonReproducir.focus();
-    }
+    document.getElementById('cerrarModal').focus();
   }, 100);
 }
 
