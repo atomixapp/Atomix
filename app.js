@@ -238,7 +238,7 @@ function verTrailer() {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
-  const botonReproducir = document.getElementById('botonReproducir'); // Asegúrate de que este botón exista en tu HTML
+  const botonReproducir = document.getElementById('botonReproducir');
 
   // Limpiar el contenedor de video
   contenedorVideo.innerHTML = '';
@@ -307,9 +307,13 @@ function verTrailer() {
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
   // Enfocar el botón de "Reproducir" para permitir la interacción con teclado
-  setTimeout(() => botonReproducir.focus(), 100);
+  setTimeout(() => {
+    if (botonReproducir) {
+      botonReproducir.focus();  // Enfocar el botón de reproducción
+    }
+  }, 100);
 
-  // Manejo del foco y eventos de teclado
+  // Manejo del foco y eventos de teclado para cerrar el modal
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case 'Enter':
