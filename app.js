@@ -1,3 +1,26 @@
+// Declaración global de la variable para almacenar el reproductor de YouTube
+let player = null;  
+
+document.addEventListener('DOMContentLoaded', () => {
+  const galeria = document.getElementById('galeria');
+  const buscador = document.getElementById('buscadorPeliculas');
+  const botonCuenta = document.getElementById('botonCuenta');
+  const menuUsuario = document.getElementById('menuUsuario');
+  const tituloCategoria = document.getElementById('tituloCategoria');
+  const sonidoClick = new Audio('assets/sounds/click.mp3');
+
+  let todasPeliculas = [];
+  let peliculaActiva = null;
+
+  auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = 'index.html';
+    else inicializarPeliculas();
+  });
+
+  // Resto del código...
+});
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -230,8 +253,6 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-let player = null;  // Variable para almacenar el reproductor de YouTube
-
 // Función para ver el trailer
 function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
@@ -286,6 +307,14 @@ function verTrailer() {
     detenerVideoYouTube();
     cerrarVideoFunc(modalVideo);
   });
+}
+
+// Función para detener el video de YouTube
+function detenerVideoYouTube() {
+  if (player) {
+    player.stopVideo();  // Usamos la API de YouTube para detener el video
+    console.log('Video de YouTube detenido.');
+  }
 }
 
 // Función para cerrar el modal de video
