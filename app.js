@@ -1,6 +1,3 @@
-// Declaración global de la variable para almacenar el reproductor de YouTube
-let player = null;  
-
 document.addEventListener('DOMContentLoaded', () => {
   const galeria = document.getElementById('galeria');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -262,11 +259,14 @@ function abrirModal(pelicula) {
 
 let player = null; // Declaración global para el reproductor de YouTube
 
+let player = null; // Declaración global para el reproductor de YouTube
+
 // Función para abrir el modal de la película
 function abrirModal(pelicula) {
   peliculaActiva = pelicula;
   const modal = document.getElementById('modalPelicula');
-  ultimaTarjetaActiva = document.activeElement;
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
 
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
@@ -280,108 +280,69 @@ function abrirModal(pelicula) {
   // Mostrar u ocultar el botón "Ver trailer"
   const btnTrailer = document.getElementById('btnVerTrailer');
   if (pelicula.trailerUrl) {
-    btnTrailer.style.display = 'flex';
-    btnTrailer.onclick = verTrailer;
+    btnTrailer.style.display = 'block';
+    btnTrailer.onclick = function () {
+      verTrailer(pelicula.trailerUrl); // Llamar a verTrailer para mostrar el trailer
+      modal.style.display = 'none'; // Ocultar el modal de película
+    };
   } else {
     btnTrailer.style.display = 'none';
   }
 
   modal.style.display = 'flex';
 
-  setTimeout(() => {
-    document.getElementById('btnVerAhora')?.focus();
-  }, 100);
-
-  // Configurar el cierre del modal principal
-  document.getElementById('cerrarModal').onclick = cerrarModal;
-  document.getElementById('btnVerAhora').onclick = verVideo;
-  document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
-
-  const modalContenido = modal.querySelector('.modal-contenido');
-  modalContenido.removeEventListener('keydown', manejarNavegacionModal);
-  modalContenido.addEventListener('keydown', manejarNavegacionModal);
-}
-
-// Función para cerrar el modal de película
-function cerrarModal() {
-  const modal = document.getElementById('modalPelicula');
-  modal.style.display = 'none'; // Cierra el modal de la película
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus(); // Vuelve al último elemento activo
+  // Cerrar el modal principal
+  document.getElementById('cerrarModal').onclick = function () {
+    modal.style.display = 'none';
+  };
 }
 
 // Función para ver el trailer
-function verTrailer() {
-  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
-
+function verTrailer(trailerUrl) {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
 
-  // Limpiar el contenedor de video
+  // Limpiar cualquier video anterior
   contenedorVideo.innerHTML = '';
 
-  let url = peliculaActiva.trailerUrl;
+  // Obtener el ID del video de YouTube desde la URL
+  const videoId = trailerUrl.split('v=')[1]?.split('&')[0];
+  if (videoId) {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=1&enablejsapi=1`;
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.allowFullscreen = true;
+    contenedorVideo.appendChild(iframe);
 
-  // Si el trailer es de YouTube
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const videoId = url.split('v=')[1]?.split('&')[0];
-    if (videoId) {
-      url = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=0&enablejsapi=1`;
-    }
-  }
+    // Almacenar el iframe de YouTube en la variable `player`
+    player = new YT.Player(iframe);
 
-  // Crear iframe de YouTube
-  const iframe = document.createElement('iframe');
-  iframe.src = url;
-  iframe.width = '100%';
-  iframe.height = '100%';
-  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-  iframe.allowFullscreen = true;
-  iframe.setAttribute('allowfullscreen', '');
-  iframe.frameBorder = 0;
-  contenedorVideo.appendChild(iframe);
+    modalVideo.style.display = 'flex'; // Mostrar el modal del trailer
 
-  // Almacenar el iframe de YouTube en la variable `player`
-  player = new YT.Player(iframe);
+    // Cerrar el trailer cuando el usuario presione "Escape"
+    document.addEventListener('keydown', function cerrarConEscape(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        detenerVideoYouTube();
+        modalVideo.style.display = 'none'; // Cerrar el modal de video
+      }
+    });
 
-  // Ocultar el modal de película y mostrar el de video
-  document.getElementById('modalPelicula').style.display = 'none';
-  modalVideo.style.display = 'flex';
-
-  // Cerrar el video cuando el usuario presione "Escape"
-  document.addEventListener('keydown', function cerrarConEscape(event) {
-    if (event.key === 'Escape') {
-      event.preventDefault();
+    // Cerrar el trailer cuando el usuario presione la "X"
+    document.getElementById('cerrarVideo').onclick = function () {
       detenerVideoYouTube();
-      cerrarVideoFunc(modalVideo);
-      document.removeEventListener('keydown', cerrarConEscape); // Eliminar el listener después de usarlo
-    }
-  });
-
-  // Cerrar el video cuando el usuario presione la "X"
-  const cerrarBoton = document.getElementById('cerrarVideo');
-  cerrarBoton.addEventListener('click', function () {
-    detenerVideoYouTube();
-    cerrarVideoFunc(modalVideo);
-  });
+      modalVideo.style.display = 'none'; // Cerrar el modal de video
+    };
+  }
 }
 
 // Función para detener el video de YouTube
 function detenerVideoYouTube() {
   if (player) {
     player.stopVideo();  // Usamos la API de YouTube para detener el video
-    console.log('Video de YouTube detenido.');
+    console.log('Video detenido');
   }
-}
-
-// Función para cerrar el modal de video y volver al de película
-function cerrarVideoFunc(modalVideo) {
-  const iframe = modalVideo.querySelector('iframe');
-  if (iframe) {
-    iframe.src = '';  // Detenemos el video de YouTube
-  }
-  modalVideo.style.display = 'none';
-  document.getElementById('modalPelicula').style.display = 'flex';  // Asegura que el modal de película se muestre de nuevo
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
 
   function manejarNavegacionModal(e) {
