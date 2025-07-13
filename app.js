@@ -239,16 +239,20 @@ function verTrailer() {
   // Limpia contenido anterior
   contenedorVideo.innerHTML = '';
 
-  const url = peliculaActiva.trailerUrl;
-
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Crear iframe para YouTube
+    let url = peliculaActiva.trailerUrl;
+if (url.includes('youtube.com') || url.includes('youtu.be')) {
+  if (!url.includes('fs=1')) {
+    url += (url.includes('?') ? '&' : '?') + 'fs=1';
+  }
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.width = '100%';
     iframe.height = '100%';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
+    iframe.setAttribute('allowfullscreen', ''); // esto es importante
+    iframe.setAttribute('mozallowfullscreen', ''); // para compatibilidad con Firefox
+    iframe.setAttribute('webkitallowfullscreen', ''); // para Safari/antiguos navegadores
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
   } else {
