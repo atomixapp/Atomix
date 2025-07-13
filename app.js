@@ -229,7 +229,6 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-// Al abrir el trailer, agregar un listener para cerrar con 'Enter', 'Escape', o la 'X'
 function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) {
     console.log("No hay trailerUrl disponible.");
@@ -296,10 +295,10 @@ function verTrailer() {
     cerrarVideoFunc(contenedorVideo, modalVideo);
   };
 
-  // Escuchar las teclas Escape y Enter para cerrar el modal
-  document.addEventListener('keydown', function(event) {
+  // Escuchar las teclas Escape, Enter y X para cerrar el modal
+  modalVideo.addEventListener('keydown', function(event) {
     if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
-      event.preventDefault();  // Prevenir la acción por defecto
+      event.preventDefault();  // Prevenir la acción por defecto (como el scroll o el back)
       cerrarVideoFunc(contenedorVideo, modalVideo);
     }
   });
