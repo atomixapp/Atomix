@@ -313,7 +313,7 @@ function verTrailer() {
     }
   }, 100);
 
-  // Manejo del foco y eventos de teclado para cerrar el modal
+  // Manejo de eventos de teclado para cerrar el modal
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case 'Enter':
@@ -329,12 +329,20 @@ function verTrailer() {
       case 'x':
       case 'X':
         // Cerrar el modal con las teclas Escape o X
-        e.preventDefault();
+        e.preventDefault();  // Prevenir la acción por defecto
         cerrarVideoFunc(contenedorVideo, modalVideo);
         break;
 
       default:
         break;
+    }
+  });
+
+  // Asegurarnos de que el cierre también se pueda hacer con la tecla 'X' del teclado
+  cerrarVideo.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'x' || e.key === 'X') {
+      e.preventDefault();
+      cerrarVideoFunc(contenedorVideo, modalVideo);
     }
   });
 }
