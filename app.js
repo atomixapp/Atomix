@@ -341,6 +341,23 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// Asegurarse de que el botón "X" cierra ambos modales (película o video)
+document.querySelectorAll('.cerrar-modal').forEach(button => {
+  button.addEventListener('click', (e) => {
+    const modalVideo = document.getElementById('modalVideo');
+    const modalPelicula = document.getElementById('modalPelicula');
+    
+    // Si el modal de video está visible, se cierra
+    if (modalVideo.style.display === 'flex') {
+      cerrarVideoFunc(document.getElementById('contenedorVideo'), modalVideo);
+    }
+    // Si el modal de película está visible, se cierra
+    if (modalPelicula.style.display === 'flex') {
+      cerrarModal();
+    }
+  });
+});
+
   function manejarNavegacionModal(e) {
     const botones = [
       document.getElementById('cerrarModal'),
