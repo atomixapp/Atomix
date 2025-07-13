@@ -306,33 +306,29 @@ function verTrailer() {
   cerrarVideo.style.display = 'block';
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
-  setTimeout(() => cerrarVideo.focus(), 100);
-
   // Enfocar el botón de "Reproducir" para permitir la interacción con teclado
-  botonReproducir.focus();
+  setTimeout(() => botonReproducir.focus(), 100);
 
-  // Evento de teclado para el control remoto
+  // Manejo del foco y eventos de teclado
   document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case 'Enter':
       case 'OK':
-        // Simular clic en el botón de "Reproducir"
+        // Si el botón "Reproducir" está enfocado, simular clic en él
         if (document.activeElement === botonReproducir) {
-          e.preventDefault();  // Evitar que se haga otra acción por defecto
-          botonReproducir.click();
+          e.preventDefault();  // Prevenir la acción por defecto
+          botonReproducir.click();  // Simular clic
         }
         break;
+
       case 'Escape':
-        // Cerrar el modal con la tecla Escape
-        e.preventDefault();
-        cerrarVideoFunc(contenedorVideo, modalVideo);
-        break;
       case 'x':
       case 'X':
-        // Cerrar el modal con la tecla X
+        // Cerrar el modal con las teclas Escape o X
         e.preventDefault();
         cerrarVideoFunc(contenedorVideo, modalVideo);
         break;
+
       default:
         break;
     }
@@ -340,7 +336,7 @@ function verTrailer() {
 }
 
 function cerrarVideoFunc(contenedor, modal) {
-  // Limpia video o iframe
+  // Limpia el video o iframe
   contenedor.innerHTML = '';
   modal.style.display = 'none';
   document.getElementById('modalPelicula').style.display = 'flex';
