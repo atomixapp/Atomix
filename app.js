@@ -252,9 +252,11 @@ function verTrailer() {
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     // Si es un enlace 'watch', transformarlo en un enlace 'embed'
     if (url.includes('youtube.com/watch')) {
-      const videoId = url.split('v=')[1]?.split('&')[0]; // Extraer el ID de video
-      // Añadir autoplay=1 y mute=1 a la URL
-      url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1&mute=1`;  // Convertir a formato embed, añadir autoplay y mute
+      const videoId = url.split('v=')[1]?.split('&')[0] || null; // Extraer el ID de video
+      if (videoId) {
+        // Añadir autoplay=1 y mute=1 a la URL
+        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1&rel=0&showinfo=0&modestbranding=1&mute=1`;  // Convertir a formato embed, añadir autoplay y mute
+      }
     }
 
     // Crear iframe de YouTube
@@ -285,6 +287,7 @@ function verTrailer() {
     contenedorVideo.appendChild(video);
   }
 }
+
 
   // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
