@@ -239,36 +239,40 @@ function verTrailer() {
   // Limpia contenido anterior
   contenedorVideo.innerHTML = '';
 
-    let url = peliculaActiva.trailerUrl;
-if (url.includes('youtube.com') || url.includes('youtu.be')) {
-  if (!url.includes('fs=1')) {
-    url += (url.includes('?') ? '&' : '?') + 'fs=1';
-  }
+  let url = peliculaActiva.trailerUrl;
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    // Para YouTube, usamos un iframe
+    if (!url.includes('fs=1')) {
+      url += (url.includes('?') ? '&' : '?') + 'fs=1'; // Asegura que 'fs=1' esté en la URL para pantalla completa
+    }
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.width = '100%';
     iframe.height = '100%';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
-    iframe.setAttribute('allowfullscreen', ''); // esto es importante
-    iframe.setAttribute('mozallowfullscreen', ''); // para compatibilidad con Firefox
-    iframe.setAttribute('webkitallowfullscreen', ''); // para Safari/antiguos navegadores
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.setAttribute('mozallowfullscreen', '');
+    iframe.setAttribute('webkitallowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
   } else {
-    // Crear video nativo
+    // Para video local (mp4), usamos un elemento video
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
     const source = document.createElement('source');
     source.src = url;
+    source.type = 'video/mp4';  // Asegúrate de que el tipo sea correcto
     video.appendChild(source);
     contenedorVideo.appendChild(video);
   }
 
+  // Mostrar el modal del video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
+  // Función para cerrar el video
   cerrarVideo.style.display = 'block';
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
