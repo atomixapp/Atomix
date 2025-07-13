@@ -14,26 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else inicializarPeliculas();
   });
 
-  // Resto del código...
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const galeria = document.getElementById('galeria');
-  const buscador = document.getElementById('buscadorPeliculas');
-  const botonCuenta = document.getElementById('botonCuenta');
-  const menuUsuario = document.getElementById('menuUsuario');
-  const tituloCategoria = document.getElementById('tituloCategoria');
-  const sonidoClick = new Audio('assets/sounds/click.mp3');
-
-  let todasPeliculas = [];
-  let peliculaActiva = null;
-
-  auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = 'index.html';
-    else inicializarPeliculas();
-  });
-
   function inicializarPeliculas() {
     configurarBuscador();
     configurarCuenta();
@@ -210,19 +190,12 @@ galeria.addEventListener('keydown', e => {
 
   let ultimaTarjetaActiva = null;
 
-// Función para cerrar el modal de película
-function cerrarModal() {
-  document.getElementById('modalPelicula').style.display = 'none';  // Cierra el modal principal
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();  // Vuelve al último elemento activo
-}
-
-// Función para abrir el modal de la película
 function abrirModal(pelicula) {
   peliculaActiva = pelicula;
   const modal = document.getElementById('modalPelicula');
+
   ultimaTarjetaActiva = document.activeElement;
 
-  // Configurar los detalles del modal
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
   document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
@@ -232,7 +205,7 @@ function abrirModal(pelicula) {
     <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
   `;
 
-  // Mostrar el botón "Ver trailer"
+  // Mostrar u ocultar el botón "Ver trailer"
   const btnTrailer = document.getElementById('btnVerTrailer');
   if (pelicula.trailerUrl) {
     btnTrailer.style.display = 'flex';
@@ -247,7 +220,6 @@ function abrirModal(pelicula) {
     document.getElementById('btnVerAhora')?.focus();
   }, 100);
 
-  // Configurar el cierre del modal principal
   document.getElementById('cerrarModal').onclick = cerrarModal;
   document.getElementById('btnVerAhora').onclick = verVideo;
   document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
@@ -257,120 +229,55 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-let player = null; // Declaración global para el reproductor de YouTube
+function verTrailer() {
+  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
 
-// Función para abrir el modal de la película
-function abrirModal(pelicula) {
-  peliculaActiva = pelicula;
-  const modal = document.getElementById('modalPelicula');
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
+  const cerrarVideo = document.getElementById('cerrarVideo');
 
-  document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-  document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
-  document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-  document.getElementById('modalExtraInfo').innerHTML = `
-    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-  `;
-
-  // Mostrar u ocultar el botón "Ver trailer"
-  const btnTrailer = document.getElementById('btnVerTrailer');
-  if (pelicula.trailerUrl) {
-    btnTrailer.style.display = 'block';
-    btnTrailer.onclick = function () {
-      verTrailer(pelicula.trailerUrl); // Llamar a verTrailer para mostrar el trailer
-      modal.style.display = 'none'; // Ocultar el modal de película
-    };
-  } else {
-    btnTrailer.style.display = 'none';
-  }
-
-  modal.style.display = 'flex';
-
-  // Cerrar el modal principal
-  document.getElementById('cerrarModal').onclick = function () {
-    modal.style.display = 'none';
-  };
-}
-
-// Función para ver el trailer
-function verTrailer(trailerUrl) {
-  const modalVideo = document.getElementById('modalVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-
-  // Limpiar cualquier video anterior
+  // Limpia contenido anterior
   contenedorVideo.innerHTML = '';
 
-  // Obtener el ID del video de YouTube desde la URL
-  const videoId = trailerUrl.split('v=')[1]?.split('&')[0];
-  if (videoId) {
+  const url = peliculaActiva.trailerUrl;
+
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    // Crear iframe para YouTube
     const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=1&enablejsapi=1`;
+    iframe.src = url;
     iframe.width = '100%';
     iframe.height = '100%';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
+    iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
-
-    // Almacenar el iframe de YouTube en la variable `player`
-    player = new YT.Player(iframe);
-
-    modalVideo.style.display = 'flex'; // Mostrar el modal del trailer
-
-    // Cerrar el trailer cuando el usuario presione "Escape"
-    document.addEventListener('keydown', function cerrarConEscape(event) {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        detenerVideoYouTube();
-        modalVideo.style.display = 'none'; // Cerrar el modal de video
-      }
-    });
-
-    // Cerrar el trailer cuando el usuario presione la "X"
-    document.getElementById('cerrarVideo').onclick = function () {
-      detenerVideoYouTube();
-      modalVideo.style.display = 'none'; // Cerrar el modal de video
-    };
+  } else {
+    // Crear video nativo
+    const video = document.createElement('video');
+    video.controls = true;
+    video.autoplay = true;
+    const source = document.createElement('source');
+    source.src = url;
+    video.appendChild(source);
+    contenedorVideo.appendChild(video);
   }
-}
 
-// Función para detener el video de YouTube
-function detenerVideoYouTube() {
-  if (player) {
-    player.stopVideo();  // Usamos la API de YouTube para detener el video
-    console.log('Video detenido');
-  }
-}
-
-// Función para cerrar el modal de película
-function cerrarModal() {
   document.getElementById('modalPelicula').style.display = 'none';
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+  modalVideo.style.display = 'flex';
+
+  cerrarVideo.style.display = 'block';
+  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
+
+  setTimeout(() => cerrarVideo.focus(), 100);
 }
 
-// Función para cerrar el video y el modal del trailer
-function cerrarVideoFunc() {
-  const modalVideo = document.getElementById('modalVideo');
-  const iframe = modalVideo.querySelector('iframe');
-  if (iframe) {
-    iframe.src = '';  // Detenemos el video de YouTube
-  }
-  modalVideo.style.display = 'none';
+function cerrarVideoFunc(contenedor, modal) {
+  // Limpia video o iframe
+  contenedor.innerHTML = '';
+  modal.style.display = 'none';
   document.getElementById('modalPelicula').style.display = 'flex';
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
 
-// Función de cerrar video con el botón X
-document.getElementById('cerrarVideo').addEventListener('click', function () {
-  cerrarVideoFunc();
-});
-
-// Función de cerrar modal con el botón X
-document.getElementById('cerrarModal').addEventListener('click', function () {
-  cerrarModal();
-});
-  
   function manejarNavegacionModal(e) {
     const botones = [
       document.getElementById('cerrarModal'),
@@ -444,47 +351,33 @@ function cerrarConEscape(e) {
   }
 }
   
-function verVideo() {
-  if (!peliculaActiva || !peliculaActiva.videoUrl) return;
+  function verVideo() {
+    if (!peliculaActiva) return;
 
-  const videoPlayer = document.getElementById('videoPlayer');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-  const cerrarVideo = document.getElementById('cerrarVideo');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const cerrarVideo = document.getElementById('cerrarVideo');
+    videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+    videoPlayer.load();
+    videoPlayer.play();
 
-  // Limpia cualquier contenido previo en el contenedor
-  contenedorVideo.innerHTML = '';
+    document.getElementById('modalPelicula').style.display = 'none';
+    const modalVideo = document.getElementById('modalVideo');
+    modalVideo.style.display = 'flex';
+    cerrarVideo.style.display = 'block';
 
-  // Crear un nuevo video nativo (MP4) y asignar su URL
-  const video = document.createElement('video');
-  video.controls = true;
-  video.autoplay = true;
-  const source = document.createElement('source');
-  source.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-  source.type = 'video/mp4';  // Asegúrate de que el tipo sea correcto
-  video.appendChild(source);
-  contenedorVideo.appendChild(video);
+    let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
+    cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
 
-  // Mostrar el modal del video
-  document.getElementById('modalPelicula').style.display = 'none';
-  const modalVideo = document.getElementById('modalVideo');
-  modalVideo.style.display = 'flex';
+    setTimeout(() => cerrarVideo.focus(), 100);
+  }
 
-  // Mostrar el botón de cerrar
-  cerrarVideo.style.display = 'block';
-
-  let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-  cerrarVideo.onclick = () => cerrarVideoFunc(video, modalVideo, ocultarCerrar);
-
-  setTimeout(() => cerrarVideo.focus(), 100);
-}
-
-function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
-  clearTimeout(ocultarCerrar);
-  videoPlayer.pause();
-  videoPlayer.currentTime = 0;
-  modalVideo.style.display = 'none';
-  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
-}
+  function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
+    clearTimeout(ocultarCerrar);
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
+    modalVideo.style.display = 'none';
+    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+  }
 
   window.filtrar = categoria => { /* ... */ }
   window.cerrarSesion = () => auth.signOut().then(() => window.location.href = 'index.html');
