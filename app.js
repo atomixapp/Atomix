@@ -240,6 +240,8 @@ function verTrailer() {
   contenedorVideo.innerHTML = ''; // Esto limpia el contenedor antes de agregar el nuevo contenido
 
   const url = peliculaActiva.trailerUrl;
+
+  // Si el trailer es de YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     // Crear iframe para YouTube
     if (!url.includes('fs=1')) {
@@ -360,21 +362,26 @@ function cerrarConEscape(e) {
 }
   
 function verVideo() {
-  if (!peliculaActiva) return;
+  if (!peliculaActiva || !peliculaActiva.videoUrl) return;
 
   const videoPlayer = document.getElementById('videoPlayer');
+  const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo'); // Contenedor del video
 
-  // Limpia cualquier contenido previo
+  // Limpia cualquier contenido previo en el contenedor
   contenedorVideo.innerHTML = '';
 
-  // Asignar el video nativo
-  videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-  videoPlayer.load();
-  videoPlayer.play();
+  // Crear un nuevo video nativo (MP4) y asignar su URL
+  const video = document.createElement('video');
+  video.controls = true;
+  video.autoplay = true;
+  const source = document.createElement('source');
+  source.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+  source.type = 'video/mp4';  // Asegúrate de que el tipo sea correcto
+  video.appendChild(source);
+  contenedorVideo.appendChild(video);
 
-  // Mostrar el modal
+  // Mostrar el modal del video
   document.getElementById('modalPelicula').style.display = 'none';
   const modalVideo = document.getElementById('modalVideo');
   modalVideo.style.display = 'flex';
@@ -383,7 +390,7 @@ function verVideo() {
   cerrarVideo.style.display = 'block';
 
   let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-  cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+  cerrarVideo.onclick = () => cerrarVideoFunc(video, modalVideo, ocultarCerrar);
 
   setTimeout(() => cerrarVideo.focus(), 100);
 }
