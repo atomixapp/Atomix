@@ -286,8 +286,6 @@ function verTrailer() {
     video.appendChild(source);
     contenedorVideo.appendChild(video);
   }
-}
-
 
   // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
