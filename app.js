@@ -242,40 +242,47 @@ function verTrailer() {
   // Limpiar el contenedor de video
   contenedorVideo.innerHTML = '';
 
-  // URL del trailer
   let url = peliculaActiva.trailerUrl;
 
-  // Crear un video nativo (MP4)
-  const video = document.createElement('video');
-  video.controls = true;
-  video.muted = true;
-  const source = document.createElement('source');
-  source.src = url;
-  source.type = 'video/mp4';
-  video.appendChild(source);
-  contenedorVideo.appendChild(video);
+  // Si el trailer es de YouTube
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    if (url.includes('youtube.com/watch')) {
+      const videoId = url.split('v=')[1]?.split('&')[0] || null;
+      if (videoId) {
+        url = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=0`;
+      }
+    }
 
-  video.oncanplaythrough = function() {
-    video.play().catch(err => {
-      console.log('No se pudo reproducir el video automáticamente: ', err);
-    });
-  };
+    // Crear iframe de YouTube
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.frameBorder = 0;
+    contenedorVideo.appendChild(iframe);
+  }
 
   // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  // Enfocar el modalVideo para capturar las teclas correctamente
+  // Poner el foco en el modal para capturar las teclas
   modalVideo.focus();
 
-  // Escuchar las teclas Escape, Enter y X
+  // Escuchar las teclas Escape, Enter y X para cerrar el modal
   modalVideo.addEventListener('keydown', function(event) {
-    console.log(`Tecla presionada: ${event.key}`);  // Depuración para ver qué tecla se presionó
-
     if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
-      event.preventDefault();  // Prevenir la acción por defecto (evitar el scroll)
+      event.preventDefault();  // Evitar que se realicen otras acciones
 
-      console.log('Cerrando el modal...');  // Verificación de que el evento de cierre está siendo procesado
+      // Si el trailer es de YouTube, enviar mensaje para cerrar el iframe
+      const iframe = contenedorVideo.querySelector('iframe');
+      if (iframe) {
+        iframe.src = '';  // Vaciar el src del iframe para detener el video
+        console.log('Video de YouTube detenido.');
+      }
 
       // Llamar a la función para cerrar el modal
       cerrarVideoFunc(contenedorVideo, modalVideo);
@@ -284,10 +291,30 @@ function verTrailer() {
 
   // Cerrar con el botón de "X"
   cerrarVideo.onclick = function() {
-    console.log('Botón de cierre presionado');
+    // Vaciar el src del iframe de YouTube para detenerlo
+    const iframe = contenedorVideo.querySelector('iframe');
+    if (iframe) {
+      iframe.src = '';  // Vaciar el src para detener el video
+      console.log('Video de YouTube detenido por botón.');
+    }
+
+    // Cerrar el modal
     cerrarVideoFunc(contenedorVideo, modalVideo);
   };
+}
 
+function cerrarVideoFunc(contenedor, modal) {
+  // Limpiar el contenedor de video
+  contenedor.innerHTML = '';
+
+  // Ocultar el modal de video
+  modal.style.display = 'none';
+
+  // Mostrar el modal de la película
+  document.getElementById('modalPelicula').style.display = 'flex';
+
+  // Restaurar el enfoque en el último lugar activo (si es necesario)
+  if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
 
 function cerrarVideoFunc(contenedor, modal) {
