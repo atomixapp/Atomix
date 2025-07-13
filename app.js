@@ -270,7 +270,7 @@ function verTrailer() {
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
 
-  // Añadir el manejador de escape y cerrar
+  // Cerrar el video cuando el usuario presione "Escape"
   document.addEventListener('keydown', function cerrarConEscape(event) {
     if (event.key === 'Escape') {
       event.preventDefault();
