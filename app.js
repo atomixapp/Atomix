@@ -273,19 +273,17 @@ if (url.includes('youtube.com') || url.includes('youtu.be')) {
   // Forzar la pantalla completa
   iframe.requestFullscreen = iframe.requestFullscreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullscreen || iframe.msRequestFullscreen;
   iframe.requestFullscreen();  // Solicita la pantalla completa
+} else {
+  // Si no es un video de YouTube, trata de cargarlo como un video nativo
+  const video = document.createElement('video');
+  video.controls = true;
+  video.autoplay = true;
+  const source = document.createElement('source');
+  source.src = url;
+  source.type = 'video/mp4'; // Asegúrate de que el tipo es correcto
+  video.appendChild(source);
+  contenedorVideo.appendChild(video);
 }
-  
-  } else {
-    // Si no es un video de YouTube, trata de cargarlo como un video nativo
-    const video = document.createElement('video');
-    video.controls = true;
-    video.autoplay = true;
-    const source = document.createElement('source');
-    source.src = url;
-    source.type = 'video/mp4'; // Asegúrate de que el tipo es correcto
-    video.appendChild(source);
-    contenedorVideo.appendChild(video);
-  }
 
   // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
