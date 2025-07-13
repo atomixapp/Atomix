@@ -61,24 +61,20 @@
   </main>
 </div>
 
-<!-- Modal único para la película y el trailer -->
-<div id="modalPelicula" class="modal">
-  <div class="modal-contenido">
-    <button id="cerrarModal" class="cerrar">X</button>
-    <img id="modalImagen" src="" alt="Imagen de la película">
-    <h2 id="modalTitulo"></h2>
-    <p id="modalDescripcion"></p>
-    <div id="modalExtraInfo"></div>
-    <button id="btnVerTrailer">Ver trailer</button>
-    <button id="btnVerAhora">Ver ahora</button>
-  </div>
-</div>
-
-<!-- Modal para el trailer -->
-<div id="modalVideo" class="modal">
-  <div class="modal-contenido">
-    <button id="cerrarVideo" class="cerrar">X</button>
-    <div id="contenedorVideo"></div>
+<!-- Modal Película -->
+<div id="modalPelicula" class="modal" style="display: none;">
+  <div class="modal-contenido" tabindex="0">
+    <span id="cerrarModal" class="cerrar-modal" tabindex="0">&times;</span>
+    <div class="modal-imagen-contenedor">
+      <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
+      <div class="botones-accion">
+        <button id="btnVerAhora" class="btn-ver-ahora" tabindex="0">▶ Ver ahora</button>
+        <button id="btnVerTrailer" class="btn-ver-trailer" tabindex="0">▶ Ver trailer</button>
+      </div>
+    </div>
+    <h2 id="modalTitulo" class="titulo-modal"></h2>
+    <div class="modal-extra" id="modalExtraInfo"></div>
+    <button id="btnMostrarSinopsis" class="btn-sinopsis" tabindex="0">📖 Ver sinopsis</button>
   </div>
 </div>
 
@@ -88,6 +84,14 @@
     <span id="cerrarSinopsis" class="cerrar-modal" tabindex="0">&times;</span>
     <h3>Sinopsis</h3>
     <p id="modalDescripcion"></p>
+  </div>
+</div>
+
+<!-- Modal Video -->
+<div id="modalVideo" class="modal" style="display: none;">
+  <div class="video-contenido" tabindex="0">
+    <span id="cerrarVideo" class="cerrar-modal" tabindex="0">&times;</span>
+    <div id="contenedorVideo"></div> <!-- Contenedor donde se agregará el video o iframe -->
   </div>
 </div>
 
