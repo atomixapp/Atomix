@@ -229,6 +229,7 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
+// Al abrir el trailer, agregar un listener para cerrar con 'Enter', 'Escape', o la 'X'
 function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) {
     console.log("No hay trailerUrl disponible.");
@@ -245,8 +246,6 @@ function verTrailer() {
 
   // URL del trailer
   let url = peliculaActiva.trailerUrl;
-
-  console.log("Trailer URL: ", url);
 
   // Si el trailer es de YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -268,7 +267,7 @@ function verTrailer() {
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
   } else {
-    // Si no es un video de YouTube, crea un video nativo
+    // Si no es un video de YouTube, crear un video nativo
     const video = document.createElement('video');
     video.controls = true;
     video.muted = true;
@@ -291,11 +290,19 @@ function verTrailer() {
 
   // Mostrar el botón de cerrar
   cerrarVideo.style.display = 'block';
-  
+
   // Cerrar con el botón de "X"
   cerrarVideo.onclick = function() {
     cerrarVideoFunc(contenedorVideo, modalVideo);
   };
+
+  // Escuchar las teclas Escape y Enter para cerrar el modal
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' || event.key === 'Enter' || event.key.toLowerCase() === 'x') {
+      event.preventDefault();  // Prevenir la acción por defecto
+      cerrarVideoFunc(contenedorVideo, modalVideo);
+    }
+  });
 
   // Enfocar el botón de reproducción (opcional)
   setTimeout(() => {
@@ -303,26 +310,19 @@ function verTrailer() {
       botonReproducir.focus();
     }
   }, 100);
-
-  // Escuchar la tecla Escape para cerrar el modal
-  document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape' || event.key.toLowerCase() === 'x') {
-      event.preventDefault();  // Prevenir la acción por defecto (para evitar el scroll o el back)
-      cerrarVideoFunc(contenedorVideo, modalVideo);
-    }
-  });
 }
 
+// Función de cierre del video
 function cerrarVideoFunc(contenedor, modal) {
   // Limpiar el contenedor de video
   contenedor.innerHTML = '';
-  
+
   // Ocultar el modal de video
   modal.style.display = 'none';
-  
+
   // Mostrar el modal de la película
   document.getElementById('modalPelicula').style.display = 'flex';
-  
+
   // Restaurar el enfoque en el último lugar activo (si es necesario)
   if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
 }
