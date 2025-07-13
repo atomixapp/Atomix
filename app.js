@@ -238,23 +238,22 @@ function verTrailer() {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
+  const botonReproducir = document.getElementById('botonReproducir'); // Asegúrate de que este botón exista en tu HTML
 
   // Limpiar el contenedor de video
-  contenedorVideo.innerHTML = ''; 
+  contenedorVideo.innerHTML = '';
 
   // URL del trailer
-  let url = peliculaActiva.trailerUrl; 
+  let url = peliculaActiva.trailerUrl;
 
   // Loguear la URL del trailer para verificar que es válida
   console.log("Trailer URL: ", url);
 
   // Si el trailer es de YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Si es un enlace 'watch', transformarlo en un enlace 'embed'
     if (url.includes('youtube.com/watch')) {
-      const videoId = url.split('v=')[1]?.split('&')[0] || null; // Extraer el ID de video
+      const videoId = url.split('v=')[1]?.split('&')[0] || null;
       if (videoId) {
-        // Añadir autoplay=1, mute=1, y rel=0 para evitar los videos relacionados
         url = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&fs=1&rel=0&showinfo=0&modestbranding=1&controls=0`;
       }
     }
@@ -262,17 +261,17 @@ function verTrailer() {
     // Crear iframe de YouTube
     const iframe = document.createElement('iframe');
     iframe.src = url;
-    iframe.width = '100%';  // Ocupa todo el ancho
-    iframe.height = '100%'; // Ocupa toda la altura
+    iframe.width = '100%';
+    iframe.height = '100%';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
-    iframe.setAttribute('allowfullscreen', ''); 
+    iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('mozallowfullscreen', '');
     iframe.setAttribute('webkitallowfullscreen', '');
     iframe.frameBorder = 0;
     contenedorVideo.appendChild(iframe);
 
-    // Intentar forzar la reproducción en pantalla completa
+    // Intentar forzar la reproducción
     iframe.onload = function() {
       try {
         iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
@@ -280,38 +279,22 @@ function verTrailer() {
         console.log("Error al intentar enviar comando de reproducción:", e);
       }
     };
-
   } else {
     // Si no es un video de YouTube, trata de cargarlo como un video nativo
     const video = document.createElement('video');
     video.controls = true;
-    video.muted = true; // Asegúrate de que el video se reproduce automáticamente sin ser bloqueado por el navegador
+    video.muted = true;
     const source = document.createElement('source');
     source.src = url;
-    source.type = 'video/mp4'; // Asegúrate de que el tipo es correcto
+    source.type = 'video/mp4';
     video.appendChild(source);
     contenedorVideo.appendChild(video);
 
     // Intentar que el video se reproduzca automáticamente
     video.oncanplaythrough = function() {
-      // Solo reproducir en la app tras interacción del usuario
-      if (navigator.userAgent.includes("Android") || navigator.userAgent.includes("iPhone")) {
-        video.addEventListener('click', () => {
-          video.play().catch(err => {
-            console.log('No se pudo reproducir el video automáticamente en la app: ', err);
-          });
-        });
-      } else {
-        // Para la web, autoplay directamente
-        video.play().catch(err => {
-          console.log('No se pudo reproducir el video automáticamente en la web: ', err);
-        });
-      }
-    };
-
-    // Capturar cualquier error que impida la reproducción automática
-    video.onerror = function(e) {
-      console.log('Error al intentar reproducir el video:', e);
+      video.play().catch(err => {
+        console.log('No se pudo reproducir el video automáticamente: ', err);
+      });
     };
   }
 
@@ -324,6 +307,36 @@ function verTrailer() {
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo);
 
   setTimeout(() => cerrarVideo.focus(), 100);
+
+  // Enfocar el botón de "Reproducir" para permitir la interacción con teclado
+  botonReproducir.focus();
+
+  // Evento de teclado para el control remoto
+  document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+      case 'Enter':
+      case 'OK':
+        // Simular clic en el botón de "Reproducir"
+        if (document.activeElement === botonReproducir) {
+          e.preventDefault();  // Evitar que se haga otra acción por defecto
+          botonReproducir.click();
+        }
+        break;
+      case 'Escape':
+        // Cerrar el modal con la tecla Escape
+        e.preventDefault();
+        cerrarVideoFunc(contenedorVideo, modalVideo);
+        break;
+      case 'x':
+      case 'X':
+        // Cerrar el modal con la tecla X
+        e.preventDefault();
+        cerrarVideoFunc(contenedorVideo, modalVideo);
+        break;
+      default:
+        break;
+    }
+  });
 }
 
 function cerrarVideoFunc(contenedor, modal) {
