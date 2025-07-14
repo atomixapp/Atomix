@@ -237,13 +237,13 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  contenedorVideo.innerHTML = ''; // Limpiar video anterior
-
-  const url = peliculaActiva.trailerUrl;
+  contenedorVideo.innerHTML = ''; // Limpiar trailer anterior
   let videoPlayer = null;
 
+  const url = peliculaActiva.trailerUrl;
+
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Convertir a embed
+    // Convertir a URL de embed si es necesario
     let embedUrl = url;
     if (url.includes('watch')) {
       const videoId = new URL(url).searchParams.get('v');
@@ -264,41 +264,44 @@ function verTrailer() {
     contenedorVideo.appendChild(iframe);
     videoPlayer = iframe;
 
-    // Intentar pantalla completa
+    // Intentar pantalla completa automáticamente
     setTimeout(() => {
       if (iframe.requestFullscreen) iframe.requestFullscreen().catch(() => {});
     }, 500);
 
   } else {
-    // VIDEO local o archivo directo
+    // Reproducción de archivo de video directo
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
     video.tabIndex = 0;
+    video.id = 'trailerVideo';
+
     const source = document.createElement('source');
     source.src = url;
     video.appendChild(source);
-    video.id = 'trailerVideo';
     contenedorVideo.appendChild(video);
     videoPlayer = video;
 
+    // Intentar pantalla completa automáticamente
     setTimeout(() => {
       video.focus();
       if (video.requestFullscreen) video.requestFullscreen().catch(() => {});
     }, 500);
   }
 
-  // Mostrar modal y botón de cerrar
+  // Mostrar modal de video y ocultar el anterior
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
   cerrarVideo.style.display = 'block';
 
+  // Asignar función de cierre
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
 
-  // Resetear el listener de Escape
+  // Configurar tecla Escape
   modalVideo.removeEventListener('keydown', manejarCierreTrailer);
   modalVideo.addEventListener('keydown', manejarCierreTrailer);
-  modalVideo.setAttribute('tabindex', '-1'); // asegurar focus
+  modalVideo.setAttribute('tabindex', '-1'); // para recibir focus
   modalVideo.focus();
 }
 
@@ -323,15 +326,15 @@ function cerrarVideoFunc(contenedor, modal, videoPlayer) {
     try {
       videoPlayer.pause();
       videoPlayer.currentTime = 0;
-    } catch (e) {
-      console.error('No se pudo pausar el video:', e);
+    } catch (err) {
+      console.error('No se pudo pausar el video:', err);
     }
   }
 
   contenedor.innerHTML = '';
   modal.style.display = 'none';
 
-  // Restaurar modal anterior
+  // Volver al modal de película
   document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
