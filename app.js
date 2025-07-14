@@ -229,55 +229,80 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-let videoRef = null;
+  let videoRef = null;
 
-function verTrailer() {
-  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
+  const peliculaActiva = {
+    trailerUrl: "https://ia801206.us.archive.org/12/items/lpc_20250713/lpc.ia.mp4"
+  };
 
-  const modalVideo = document.getElementById('modalVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-  const cerrarVideo = document.getElementById('cerrarVideo');
+  document.getElementById('btnVerTrailer').addEventListener('click', verTrailer);
 
-  contenedorVideo.innerHTML = '';
+  function verTrailer() {
+    if (!peliculaActiva?.trailerUrl) return;
 
-  const url = peliculaActiva.trailerUrl;
-  const video = document.createElement('video');
+    const modalVideo = document.getElementById('modalVideo');
+    const contenedorVideo = document.getElementById('contenedorVideo');
+    const cerrarVideo = document.getElementById('cerrarVideo');
 
-  video.src = url;
-  video.controls = true;
-  video.autoplay = true;
-  video.id = 'trailerVideo';
-  video.style.width = '100%';
-  video.style.height = '100%';
+    contenedorVideo.innerHTML = '';
 
-  videoRef = video; // Guardamos referencia válida
+    const video = document.createElement('video');
+    video.src = peliculaActiva.trailerUrl;
+    video.controls = true;
+    video.autoplay = true;
+    video.id = 'trailerVideo';
 
-  contenedorVideo.appendChild(video);
+    videoRef = video;
 
-  document.getElementById('modalPelicula').style.display = 'none';
-  modalVideo.style.display = 'flex';
-  cerrarVideo.style.display = 'block';
+    contenedorVideo.appendChild(video);
 
-  // Intentar fullscreen
-  video.requestFullscreen?.().catch(() => {});
+    modalVideo.style.display = 'flex';
 
-  // Eventos de cierre
-  cerrarVideo.onclick = cerrarVideoManual;
-  cerrarVideo.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') cerrarVideoManual();
-  });
+    video.requestFullscreen?.().catch(() => {});
 
-  document.addEventListener('keydown', manejarCierreTrailer);
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
-}
+    cerrarVideo.onclick = cerrarVideoManual;
 
-function cerrarVideoManual() {
-  if (document.fullscreenElement) {
-    document.exitFullscreen?.();
-  } else {
-    cerrarVideoFunc();
+    document.addEventListener('keydown', manejarEscape);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
   }
-}
+
+  function manejarEscape(e) {
+    if (e.key === 'Escape' && !document.fullscreenElement) {
+      cerrarVideoFunc();
+    }
+  }
+
+  function handleFullscreenChange() {
+    if (!document.fullscreenElement) {
+      cerrarVideoFunc();
+    }
+  }
+
+  function cerrarVideoManual() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      cerrarVideoFunc();
+    }
+  }
+
+  function cerrarVideoFunc() {
+    const modal = document.getElementById('modalVideo');
+    const contenedor = document.getElementById('contenedorVideo');
+
+    if (videoRef instanceof HTMLVideoElement) {
+      videoRef.pause();
+      videoRef.currentTime = 0;
+    }
+
+    videoRef = null;
+
+    contenedor.innerHTML = '';
+    modal.style.display = 'none';
+
+    document.removeEventListener('keydown', manejarEscape);
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }
 
 function manejarCierreTrailer(e) {
   if (e.key === 'Escape' && !document.fullscreenElement) {
