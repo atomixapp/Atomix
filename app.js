@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuUsuario = document.getElementById('menuUsuario');
   const tituloCategoria = document.getElementById('tituloCategoria');
   const sonidoClick = new Audio('assets/sounds/click.mp3');
-
   
   let todasPeliculas = [];
   let peliculaActiva = null;
@@ -237,75 +236,71 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  // Limpiar contenido anterior
-  contenedorVideo.innerHTML = '';
+  contenedorVideo.innerHTML = ''; // Limpiar video anterior
 
-  // Crear el video
+  const url = peliculaActiva.trailerUrl;
   const video = document.createElement('video');
-  video.src = peliculaActiva.trailerUrl;
+
+  video.src = url;
   video.controls = true;
   video.autoplay = true;
   video.id = 'trailerVideo';
   video.style.width = '100%';
   video.style.height = '100%';
+  video.tabIndex = 0;
+
   contenedorVideo.appendChild(video);
 
-  // Mostrar modal
-  document.getElementById('modalPelicula')?.style.display = 'none';
+  // Mostrar el modal
+  document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
 
-  // Pantalla completa
+  // Pantalla completa automática
   video.requestFullscreen?.().catch(() => {});
 
-  // Asignar eventos de cierre
-  cerrarVideo.onclick = () => cerrarModalVideo();
-  document.addEventListener('keydown', manejarCierreConEscape);
+  // Asegurar que no haya múltiples listeners duplicados
+  cerrarVideo.removeEventListener('click', cerrarVideoClickHandler);
+  cerrarVideo.addEventListener('click', cerrarVideoClickHandler);
+
+  document.removeEventListener('keydown', manejarCierreTrailer);
+  document.addEventListener('keydown', manejarCierreTrailer);
 }
 
-function manejarCierreConEscape(e) {
-  if (e.key === 'Escape') {
-    cerrarModalVideo();
-  }
-}
-
-function cerrarModalVideo() {
+function cerrarVideoClickHandler() {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const video = document.querySelector('#trailerVideo');
+  cerrarVideoFunc(contenedorVideo, modalVideo, video);
+}
 
-  // Pausar y limpiar video
-  if (video) {
+function manejarCierreTrailer(e) {
+  if (e.key === 'Escape') {
+    const modalVideo = document.getElementById('modalVideo');
+    const contenedorVideo = document.getElementById('contenedorVideo');
+    const video = document.querySelector('#trailerVideo');
+
+    cerrarVideoFunc(contenedorVideo, modalVideo, video);
+  }
+}
+
+function cerrarVideoFunc(contenedor, modal, video) {
+  if (video?.tagName === 'VIDEO') {
     video.pause();
     video.currentTime = 0;
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {});
+    }
   }
 
-  // Salir de pantalla completa si está activa
-  if (document.fullscreenElement) {
-    document.exitFullscreen?.().catch(() => {});
-  }
+  contenedor.innerHTML = '';
+  modal.style.display = 'none';
 
-  // Ocultar modal de video
-  modalVideo.style.display = 'none';
-  contenedorVideo.innerHTML = '';
-
-  // Volver a mostrar el modal de película
-  const modalPelicula = document.getElementById('modalPelicula');
-  if (modalPelicula) {
-    modalPelicula.style.display = 'flex';
-    modalPelicula.focus(); // Para accesibilidad y navegación con teclado
-  }
-
-  // Volver a enfocar botón del trailer
+  // Volver al modal de película
+  document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
-  // Restaurar visibilidad de las tarjetas (por si se rompió)
-  document.getElementById('galeria')?.style.display = 'grid'; // O block, según CSS
-  document.querySelectorAll('.card').forEach(card => {
-    card.style.display = 'block'; // o 'inline-block' según tu estilo
-  });
-
-  // Eliminar escucha del ESC
-  document.removeEventListener('keydown', manejarCierreConEscape);
+  document.removeEventListener('keydown', manejarCierreTrailer);
 }
 
   function manejarNavegacionModal(e) {
