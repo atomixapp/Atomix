@@ -311,9 +311,9 @@ function manejarNavegacionModal(e) {
   const btnSinopsis = document.getElementById('btnMostrarSinopsis');
   const btnCerrar = document.getElementById('cerrarModal');
 
-  const grupoBotones = [btnVerAhora, btnVerTrailer, btnSinopsis];
+  const actual = document.activeElement;
 
-  if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(document.activeElement)) return;
+  if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(actual)) return;
 
   if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
     e.preventDefault();
@@ -321,27 +321,33 @@ function manejarNavegacionModal(e) {
     sonidoClick.play().catch(() => {});
   }
 
-  const actual = document.activeElement;
+  // Navegación horizontal entre "Ver ahora" y "Ver trailer"
+  if (actual === btnVerAhora && e.key === 'ArrowRight') {
+    btnVerTrailer.focus();
+  } else if (actual === btnVerTrailer && e.key === 'ArrowLeft') {
+    btnVerAhora.focus();
+  }
 
-  if (grupoBotones.includes(actual)) {
-    const i = grupoBotones.indexOf(actual);
+  // Vertical hacia sinopsis
+  else if (actual === btnVerTrailer && e.key === 'ArrowDown') {
+    btnSinopsis.focus();
+  } else if (actual === btnSinopsis && e.key === 'ArrowUp') {
+    btnVerTrailer.focus();
+  }
 
-    if (e.key === 'ArrowRight') {
-      grupoBotones[(i + 1) % grupoBotones.length].focus();
-    } else if (e.key === 'ArrowLeft') {
-      grupoBotones[(i - 1 + grupoBotones.length) % grupoBotones.length].focus();
-    } else if (e.key === 'ArrowUp') {
-      btnCerrar.focus();
-    } else if (e.key === 'Enter') {
-      actual.click();
-    }
+  // Subir desde ver ahora/trailer hacia la X
+  else if ((actual === btnVerAhora || actual === btnVerTrailer) && e.key === 'ArrowUp') {
+    btnCerrar.focus();
+  }
 
-  } else if (actual === btnCerrar) {
-    if (e.key === 'ArrowDown') {
-      btnVerAhora.focus(); // foco inicial al grupo
-    } else if (e.key === 'Enter') {
-      btnCerrar.click();
-    }
+  // Bajar desde la X hacia ver ahora
+  else if (actual === btnCerrar && e.key === 'ArrowDown') {
+    btnVerAhora.focus();
+  }
+
+  // Enter ejecuta acción
+  else if (e.key === 'Enter') {
+    actual.click();
   }
 }
 
