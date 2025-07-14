@@ -237,108 +237,64 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  contenedorVideo.innerHTML = ''; // Limpiar trailer anterior
-  let videoPlayer = null;
+  contenedorVideo.innerHTML = ''; // Limpiar anterior
 
   const url = peliculaActiva.trailerUrl;
+  const video = document.createElement('video');
 
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Convertir a URL de embed si es necesario
-    let embedUrl = url;
-    if (url.includes('watch')) {
-      const videoId = new URL(url).searchParams.get('v');
-      embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1`;
-    } else if (url.includes('youtu.be')) {
-      const videoId = url.split('/').pop();
-      embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&fs=1`;
-    }
+  video.src = url;
+  video.controls = true;
+  video.autoplay = true;
+  video.id = 'trailerVideo';
+  video.style.width = '100%';
+  video.style.height = '100%';
+  video.tabIndex = 0;
 
-    const iframe = document.createElement('iframe');
-    iframe.src = embedUrl;
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.allow = 'autoplay; encrypted-media; fullscreen';
-    iframe.allowFullscreen = true;
-    iframe.frameBorder = 0;
-    iframe.id = 'trailerIframe';
-    contenedorVideo.appendChild(iframe);
-    videoPlayer = iframe;
+  contenedorVideo.appendChild(video);
 
-    // Intentar pantalla completa automáticamente
-    setTimeout(() => {
-      if (iframe.requestFullscreen) iframe.requestFullscreen().catch(() => {});
-    }, 500);
-
-  } else {
-    // Reproducción de archivo de video directo
-    const video = document.createElement('video');
-    video.controls = true;
-    video.autoplay = true;
-    video.tabIndex = 0;
-    video.id = 'trailerVideo';
-
-    const source = document.createElement('source');
-    source.src = url;
-    video.appendChild(source);
-    contenedorVideo.appendChild(video);
-    videoPlayer = video;
-
-    // Intentar pantalla completa automáticamente
-    setTimeout(() => {
-      video.focus();
-      if (video.requestFullscreen) video.requestFullscreen().catch(() => {});
-    }, 500);
-  }
-
-  // Mostrar modal de video y ocultar el anterior
+  // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
   cerrarVideo.style.display = 'block';
 
-  // Asignar función de cierre
-  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
+  // Pantalla completa automática
+  video.requestFullscreen?.().catch(() => {}); // Evitar errores si ya está en pantalla completa
 
-  // Configurar tecla Escape
-  modalVideo.removeEventListener('keydown', manejarCierreTrailer);
-  modalVideo.addEventListener('keydown', manejarCierreTrailer);
-  modalVideo.setAttribute('tabindex', '-1'); // para recibir focus
-  modalVideo.focus();
+  // Botón X
+  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, video);
+
+  // Escape para cerrar
+  document.removeEventListener('keydown', manejarCierreTrailer);
+  document.addEventListener('keydown', manejarCierreTrailer);
 }
 
 function manejarCierreTrailer(e) {
   if (e.key === 'Escape') {
-    e.preventDefault();
     const modalVideo = document.getElementById('modalVideo');
     const contenedorVideo = document.getElementById('contenedorVideo');
-    const videoPlayer = document.querySelector('#trailerVideo') || document.querySelector('#trailerIframe');
-    cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
+    const video = document.querySelector('#trailerVideo');
+
+    cerrarVideoFunc(contenedorVideo, modalVideo, video);
   }
 }
 
-function cerrarVideoFunc(contenedor, modal, videoPlayer) {
-  if (!videoPlayer) return;
-
-  const tag = videoPlayer.tagName?.toUpperCase();
-
-  if (tag === 'IFRAME') {
-    videoPlayer.src = ''; // Detener YouTube
-  } else if (tag === 'VIDEO') {
-    try {
-      videoPlayer.pause();
-      videoPlayer.currentTime = 0;
-    } catch (err) {
-      console.error('No se pudo pausar el video:', err);
+function cerrarVideoFunc(contenedor, modal, video) {
+  if (video?.tagName === 'VIDEO') {
+    video.pause();
+    video.currentTime = 0;
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {});
     }
   }
 
   contenedor.innerHTML = '';
   modal.style.display = 'none';
 
-  // Volver al modal de película
+  // Mostrar modal anterior
   document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
-  modal.removeEventListener('keydown', manejarCierreTrailer);
+  document.removeEventListener('keydown', manejarCierreTrailer);
 }
 
   function manejarNavegacionModal(e) {
