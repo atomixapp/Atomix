@@ -30,10 +30,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let filtroActual = () => true;
 
-  function filtrarYPintar(filtro) {
-    filtroActual = filtro;
+function filtrarYPintar(filtro, categoriaNombre = '') {
+  filtroActual = filtro;
+  
+  // Ocultar ambas galerías
+  galeria.style.display = 'none';
+  galeriaPlataformas.style.display = 'none';
+
+  if (categoriaNombre === 'plataformas') {
+    tituloCategoria.textContent = 'PLATAFORMAS';
+    galeriaPlataformas.style.display = 'flex';
+
+    // Enfocar primer ítem de plataforma
+    const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
+    if (items.length > 0) {
+      setTimeout(() => items[0].focus(), 100);
+    }
+  } else {
+    tituloCategoria.textContent = categoriaNombre.toUpperCase();
+    galeria.style.display = 'flex';
     renderPeliculas(todasPeliculas.filter(filtro));
   }
+}
 
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
@@ -48,6 +66,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+// Navegación dentro de plataforma-item (galeriaPlataformas)
+document.addEventListener('keydown', e => {
+  const actual = document.activeElement;
+
+  if (actual.classList.contains('plataforma-item')) {
+    const items = Array.from(document.querySelectorAll('.plataforma-item'));
+    const i = items.indexOf(actual);
+
+    switch (e.key) {
+      case 'ArrowRight':
+        items[i + 1]?.focus();
+        break;
+      case 'ArrowLeft':
+        items[i - 1]?.focus();
+        break;
+      case 'ArrowDown':
+        buscador?.focus();
+        break;
+      case 'ArrowUp':
+        document.querySelector('#navPlataformas')?.focus();
+        break;
+      case 'Enter':
+        const plataforma = actual.getAttribute('aria-label');
+        alert(`Seleccionaste la plataforma: ${plataforma}`);
+        break;
+    }
+
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  }
+});
+  
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
     const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
