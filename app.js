@@ -54,6 +54,34 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
   }
 }
 
+window.filtrar = function (categoria) {
+  if (categoria === 'plataformas') {
+    filtrarYPintar(() => true, 'plataformas');
+    return;
+  }
+
+  const filtros = {
+    todos: () => true,
+    favoritos: p => p.favorito === true,
+    estrenos2025: p => p.anio === 2025,
+    estrenos2024: p => p.anio === 2024,
+    accion: p => p.genero?.toLowerCase().includes('acción'),
+    animacion: p => p.genero?.toLowerCase().includes('animación'),
+    artesmarciales: p => p.genero?.toLowerCase().includes('artes marciales'),
+    aventuras: p => p.genero?.toLowerCase().includes('aventura'),
+    cienciaficcion: p => p.genero?.toLowerCase().includes('ciencia ficción'),
+    comedia: p => p.genero?.toLowerCase().includes('comedia'),
+    drama: p => p.genero?.toLowerCase().includes('drama'),
+    fantasia: p => p.genero?.toLowerCase().includes('fantasía'),
+    romance: p => p.genero?.toLowerCase().includes('romance'),
+    suspense: p => p.genero?.toLowerCase().includes('suspense'),
+    terror: p => p.genero?.toLowerCase().includes('terror')
+  };
+
+  const filtro = filtros[categoria] || (() => true);
+  filtrarYPintar(filtro, categoria);
+};
+  
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
       e.stopPropagation();
