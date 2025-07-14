@@ -405,5 +405,4 @@ function cerrarConEscape(e) {
     modalVideo.style.display = 'none';
     if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
   }
-  });
 });
