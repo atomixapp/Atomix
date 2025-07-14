@@ -410,12 +410,4 @@ function verVideo() {
 
   setTimeout(() => cerrarVideo.focus(), 100);
 }
-
-  function cerrarVideoPrincipal(videoPlayer, modalVideo, ocultarCerrar) {
-    clearTimeout(ocultarCerrar);
-    videoPlayer.pause();
-    videoPlayer.currentTime = 0;
-    modalVideo.style.display = 'none';
-    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
-  }
 });
