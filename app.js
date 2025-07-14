@@ -65,17 +65,18 @@ const filtros = {
   favoritos: p => p.favorito === true,
   estrenos2025: p => p.anio === 2025,
   estrenos2024: p => p.anio === 2024,
-  accion: p => String(p.genero || '').toLowerCase().includes('acción'),
-  animacion: p => String(p.genero || '').toLowerCase().includes('animación'),
-  artesmarciales: p => String(p.genero || '').toLowerCase().includes('artes marciales'),
-  aventuras: p => String(p.genero || '').toLowerCase().includes('aventura'),
-  cienciaficcion: p => String(p.genero || '').toLowerCase().includes('ciencia ficción'),
-  comedia: p => String(p.genero || '').toLowerCase().includes('comedia'),
-  drama: p => String(p.genero || '').toLowerCase().includes('drama'),
-  fantasia: p => String(p.genero || '').toLowerCase().includes('fantasía'),
-  romance: p => String(p.genero || '').toLowerCase().includes('romance'),
-  suspense: p => String(p.genero || '').toLowerCase().includes('suspense'),
-  terror: p => String(p.genero || '').toLowerCase().includes('terror')
+
+  accion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('acción'),
+  animacion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('animación'),
+  artesmarciales: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('artes marciales'),
+  aventuras: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('aventura'),
+  cienciaficcion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('ciencia ficción'),
+  comedia: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('comedia'),
+  drama: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('drama'),
+  fantasia: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('fantasía'),
+  romance: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('romance'),
+  suspense: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('suspense'),
+  terror: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('terror')
 };
 
   const filtro = filtros[categoria] || (() => true);
