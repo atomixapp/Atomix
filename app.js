@@ -257,10 +257,18 @@ function verTrailer() {
   cerrarVideo.style.display = 'block';
 
   // Pantalla completa automática
-  video.requestFullscreen?.().catch(() => {}); // Evitar errores si ya está en pantalla completa
+  video.requestFullscreen?.().catch(() => {});
 
-  // Botón X
-  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, video);
+  // Escuchar salida de pantalla completa
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+  // Botón X: cerrar manualmente o salir de fullscreen primero
+  cerrarVideo.onclick = () => cerrarVideoManual(contenedorVideo, modalVideo, video);
+
+  // Accesibilidad: cerrar con Enter
+  cerrarVideo.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') cerrarVideo.click();
+  });
 
   // Escape para cerrar
   document.removeEventListener('keydown', manejarCierreTrailer);
@@ -269,11 +277,32 @@ function verTrailer() {
 
 function manejarCierreTrailer(e) {
   if (e.key === 'Escape') {
-    const modalVideo = document.getElementById('modalVideo');
-    const contenedorVideo = document.getElementById('contenedorVideo');
-    const video = document.querySelector('#trailerVideo');
+    // El navegador primero saldrá de fullscreen, luego se ejecuta handleFullscreenChange
+    if (!document.fullscreenElement) {
+      const modalVideo = document.getElementById('modalVideo');
+      const contenedorVideo = document.getElementById('contenedorVideo');
+      const video = document.querySelector('#trailerVideo');
+      cerrarVideoFunc(contenedorVideo, modalVideo, video);
+    }
+  }
+}
 
+function handleFullscreenChange() {
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
+  const video = document.querySelector('#trailerVideo');
+
+  if (!document.fullscreenElement) {
     cerrarVideoFunc(contenedorVideo, modalVideo, video);
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }
+}
+
+function cerrarVideoManual(contenedor, modal, video) {
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.();
+  } else {
+    cerrarVideoFunc(contenedor, modal, video);
   }
 }
 
@@ -294,7 +323,9 @@ function cerrarVideoFunc(contenedor, modal, video) {
   document.getElementById('btnVerTrailer')?.focus();
 
   document.removeEventListener('keydown', manejarCierreTrailer);
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
 }
+
 
   function manejarNavegacionModal(e) {
     const botones = [
