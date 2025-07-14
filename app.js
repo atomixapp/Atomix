@@ -229,7 +229,7 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-let videoPlayer = null; // Guardamos el video globalmente
+let videoRef = null;
 
 function verTrailer() {
   if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
@@ -238,7 +238,7 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  contenedorVideo.innerHTML = ''; // Limpiar anterior
+  contenedorVideo.innerHTML = '';
 
   const url = peliculaActiva.trailerUrl;
   const video = document.createElement('video');
@@ -249,9 +249,8 @@ function verTrailer() {
   video.id = 'trailerVideo';
   video.style.width = '100%';
   video.style.height = '100%';
-  video.tabIndex = 0;
 
-  videoPlayer = video; // Guardamos referencia global
+  videoRef = video; // Guardamos referencia válida
 
   contenedorVideo.appendChild(video);
 
@@ -259,33 +258,17 @@ function verTrailer() {
   modalVideo.style.display = 'flex';
   cerrarVideo.style.display = 'block';
 
+  // Intentar fullscreen
   video.requestFullscreen?.().catch(() => {});
 
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-  cerrarVideo.onclick = () => cerrarVideoManual();
-
+  // Eventos de cierre
+  cerrarVideo.onclick = cerrarVideoManual;
   cerrarVideo.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') cerrarVideo.click();
+    if (e.key === 'Enter') cerrarVideoManual();
   });
 
-  document.removeEventListener('keydown', manejarCierreTrailer);
   document.addEventListener('keydown', manejarCierreTrailer);
-}
-
-function manejarCierreTrailer(e) {
-  if (e.key === 'Escape') {
-    if (!document.fullscreenElement) {
-      cerrarVideoFunc();
-    }
-  }
-}
-
-function handleFullscreenChange() {
-  if (!document.fullscreenElement) {
-    cerrarVideoFunc();
-    document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
 }
 
 function cerrarVideoManual() {
@@ -296,15 +279,32 @@ function cerrarVideoManual() {
   }
 }
 
+function manejarCierreTrailer(e) {
+  if (e.key === 'Escape' && !document.fullscreenElement) {
+    cerrarVideoFunc();
+  }
+}
+
+function handleFullscreenChange() {
+  if (!document.fullscreenElement) {
+    cerrarVideoFunc();
+  }
+}
+
 function cerrarVideoFunc() {
   const modal = document.getElementById('modalVideo');
   const contenedor = document.getElementById('contenedorVideo');
 
-  if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
-    videoPlayer.pause();
-    videoPlayer.currentTime = 0;
-    videoPlayer = null;
+  if (videoRef && videoRef.tagName === 'VIDEO') {
+    try {
+      videoRef.pause();
+      videoRef.currentTime = 0;
+    } catch (err) {
+      console.warn('No se pudo pausar el video:', err);
+    }
   }
+
+  videoRef = null;
 
   contenedor.innerHTML = '';
   modal.style.display = 'none';
@@ -315,7 +315,6 @@ function cerrarVideoFunc() {
   document.removeEventListener('keydown', manejarCierreTrailer);
   document.removeEventListener('fullscreenchange', handleFullscreenChange);
 }
-
 
   function manejarNavegacionModal(e) {
     const botones = [
