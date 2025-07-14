@@ -229,87 +229,81 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-let videoRef = null;
+  let videoRef = null;
 
-function verTrailer() {
-  if (!peliculaActiva?.trailerUrl) return;
+  function verTrailer() {
+    if (!peliculaActiva?.trailerUrl) return;
 
-  const modalVideo = document.getElementById('modalVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-  const cerrarVideo = document.getElementById('cerrarVideo');
+    const modalVideo = document.getElementById('modalVideo');
+    const contenedorVideo = document.getElementById('contenedorVideo');
+    const cerrarVideo = document.getElementById('cerrarVideo');
 
-  // Limpiar el contenedor
-  contenedorVideo.innerHTML = '';
+    contenedorVideo.innerHTML = '';
 
-  // Crear video
-  const video = document.createElement('video');
-  video.src = peliculaActiva.trailerUrl;
-  video.controls = true;
-  video.autoplay = true;
-  video.id = 'trailerVideo';
-  video.style.width = '100%';
-  video.style.height = '100%';
+    const video = document.createElement('video');
+    video.src = peliculaActiva.trailerUrl;
+    video.controls = true;
+    video.autoplay = true;
+    video.id = 'trailerVideo';
+    video.style.width = '100%';
+    video.style.height = '100%';
 
-  contenedorVideo.appendChild(video);
-  videoRef = video; // Guardar referencia global
+    contenedorVideo.appendChild(video);
+    videoRef = video;
 
-  // Mostrar modal
-  document.getElementById('modalPelicula').style.display = 'none';
-  modalVideo.style.display = 'flex';
-  cerrarVideo.style.display = 'block';
+    document.getElementById('modalPelicula').style.display = 'none';
+    modalVideo.style.display = 'flex';
+    cerrarVideo.style.display = 'block';
 
-  // Pantalla completa automática
-  video.requestFullscreen?.().catch(() => {});
+    video.requestFullscreen?.().catch(() => {});
 
-  // Eventos
-  cerrarVideo.onclick = cerrarVideoManual;
-  document.addEventListener('keydown', manejarEscape);
-  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
-}
-
-function manejarEscape(e) {
-  if (e.key === 'Escape' && !document.fullscreenElement) {
-    cerrarVideoFunc();
+    cerrarVideo.onclick = cerrarVideoManual;
+    document.addEventListener('keydown', manejarEscape);
+    document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
   }
-}
 
-function manejarSalidaFullscreen() {
-  if (!document.fullscreenElement) {
-    cerrarVideoFunc();
-  }
-}
-
-function cerrarVideoManual() {
-  if (document.fullscreenElement) {
-    document.exitFullscreen?.().catch(() => {});
-  } else {
-    cerrarVideoFunc();
-  }
-}
-
-function cerrarVideoFunc() {
-  const modal = document.getElementById('modalVideo');
-  const contenedor = document.getElementById('contenedorVideo');
-
-  try {
-    if (videoRef instanceof HTMLVideoElement) {
-      videoRef.pause();
-      videoRef.currentTime = 0;
+  function manejarEscape(e) {
+    if (e.key === 'Escape' && !document.fullscreenElement) {
+      cerrarVideoTrailer();
     }
-  } catch (err) {
-    console.warn('Error al cerrar el video:', err);
   }
 
-  contenedor.innerHTML = '';
-  modal.style.display = 'none';
-  document.getElementById('modalPelicula').style.display = 'flex';
-  document.getElementById('btnVerTrailer')?.focus();
+  function manejarSalidaFullscreen() {
+    if (!document.fullscreenElement) {
+      cerrarVideoTrailer();
+    }
+  }
 
-  // Limpiar eventos
-  document.removeEventListener('keydown', manejarEscape);
-  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
-  videoRef = null;
-}
+  function cerrarVideoManual() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.().catch(() => {});
+    } else {
+      cerrarVideoTrailer();
+    }
+  }
+
+  function cerrarVideoTrailer() {
+    const modal = document.getElementById('modalVideo');
+    const contenedor = document.getElementById('contenedorVideo');
+
+    try {
+      if (videoRef instanceof HTMLVideoElement) {
+        videoRef.pause();
+        videoRef.currentTime = 0;
+      }
+    } catch (err) {
+      console.warn('Error al cerrar el video:', err);
+    }
+
+    contenedor.innerHTML = '';
+    modal.style.display = 'none';
+    document.getElementById('modalPelicula').style.display = 'flex';
+    document.getElementById('btnVerTrailer')?.focus();
+
+    document.removeEventListener('keydown', manejarEscape);
+    document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
+    videoRef = null;
+  }
 
   function manejarNavegacionModal(e) {
     const botones = [
@@ -399,26 +393,17 @@ function cerrarConEscape(e) {
     cerrarVideo.style.display = 'block';
 
     let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-    cerrarVideo.onclick = () => cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar);
+    cerrarVideo.onclick = () => cerrarVideoPrincipal(videoPlayer, modalVideo, ocultarCerrar);
 
     setTimeout(() => cerrarVideo.focus(), 100);
   }
 
-  function cerrarVideoFunc(videoPlayer, modalVideo, ocultarCerrar) {
+  function cerrarVideoPrincipal(videoPlayer, modalVideo, ocultarCerrar) {
     clearTimeout(ocultarCerrar);
     videoPlayer.pause();
     videoPlayer.currentTime = 0;
     modalVideo.style.display = 'none';
     if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
   }
-
-  window.filtrar = categoria => { /* ... */ }
-  window.cerrarSesion = () => auth.signOut().then(() => window.location.href = 'index.html');
-
-  document.addEventListener('keydown', e => {
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
-    }
   });
 });
