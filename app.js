@@ -229,10 +229,10 @@ function abrirModal(pelicula) {
   modalContenido.addEventListener('keydown', manejarNavegacionModal);
 }
 
-  let videoRef = null;
+let videoRef = null;
 
 function verTrailer() {
-  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
+  if (!peliculaActiva?.trailerUrl) return;
 
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
@@ -240,15 +240,11 @@ function verTrailer() {
 
   contenedorVideo.innerHTML = '';
 
-  const url = peliculaActiva.trailerUrl;
   const video = document.createElement('video');
-
-  video.src = url;
+  video.src = peliculaActiva.trailerUrl;
   video.controls = true;
   video.autoplay = true;
   video.id = 'trailerVideo';
-  video.style.width = '100%';
-  video.style.height = '100%';
 
   videoRef = video;
 
@@ -256,18 +252,28 @@ function verTrailer() {
 
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
-  cerrarVideo.style.display = 'block';
 
   video.requestFullscreen?.().catch(() => {});
 
   cerrarVideo.onclick = cerrarVideoManual;
 
-  document.removeEventListener('keydown', manejarCierreTrailer);
-  document.addEventListener('keydown', manejarCierreTrailer);
-  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
+  document.addEventListener('keydown', manejarEscape);
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
 }
 
-  function cerrarVideoManual() {
+function manejarEscape(e) {
+  if (e.key === 'Escape' && !document.fullscreenElement) {
+    cerrarVideoFunc();
+  }
+}
+
+function handleFullscreenChange() {
+  if (!document.fullscreenElement) {
+    cerrarVideoFunc();
+  }
+}
+
+function cerrarVideoManual() {
   if (document.fullscreenElement) {
     document.exitFullscreen?.();
   } else {
@@ -275,19 +281,7 @@ function verTrailer() {
   }
 }
 
-function manejarCierreTrailer(e) {
-  if (e.key === 'Escape' && !document.fullscreenElement) {
-    cerrarVideoFunc();
-  }
-}
-
-function manejarSalidaFullscreen() {
-  if (!document.fullscreenElement) {
-    cerrarVideoFunc();
-  }
-}
-
-  function cerrarVideoFunc() {
+function cerrarVideoFunc() {
   const modal = document.getElementById('modalVideo');
   const contenedor = document.getElementById('contenedorVideo');
 
@@ -304,8 +298,8 @@ function manejarSalidaFullscreen() {
   document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
-  document.removeEventListener('keydown', manejarCierreTrailer);
-  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
+  document.removeEventListener('keydown', manejarEscape);
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
 }
 
   function manejarNavegacionModal(e) {
