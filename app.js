@@ -231,78 +231,49 @@ function abrirModal(pelicula) {
 
   let videoRef = null;
 
-  const peliculaActiva = {
-    trailerUrl: "https://ia801206.us.archive.org/12/items/lpc_20250713/lpc.ia.mp4"
-  };
+function verTrailer() {
+  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
 
-  document.getElementById('btnVerTrailer').addEventListener('click', verTrailer);
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
+  const cerrarVideo = document.getElementById('cerrarVideo');
 
-  function verTrailer() {
-    if (!peliculaActiva?.trailerUrl) return;
+  contenedorVideo.innerHTML = '';
 
-    const modalVideo = document.getElementById('modalVideo');
-    const contenedorVideo = document.getElementById('contenedorVideo');
-    const cerrarVideo = document.getElementById('cerrarVideo');
+  const url = peliculaActiva.trailerUrl;
+  const video = document.createElement('video');
 
-    contenedorVideo.innerHTML = '';
+  video.src = url;
+  video.controls = true;
+  video.autoplay = true;
+  video.id = 'trailerVideo';
+  video.style.width = '100%';
+  video.style.height = '100%';
 
-    const video = document.createElement('video');
-    video.src = peliculaActiva.trailerUrl;
-    video.controls = true;
-    video.autoplay = true;
-    video.id = 'trailerVideo';
+  videoRef = video;
 
-    videoRef = video;
+  contenedorVideo.appendChild(video);
 
-    contenedorVideo.appendChild(video);
+  document.getElementById('modalPelicula').style.display = 'none';
+  modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
 
-    modalVideo.style.display = 'flex';
+  video.requestFullscreen?.().catch(() => {});
 
-    video.requestFullscreen?.().catch(() => {});
+  cerrarVideo.onclick = cerrarVideoManual;
 
-    cerrarVideo.onclick = cerrarVideoManual;
-
-    document.addEventListener('keydown', manejarEscape);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-  }
-
-  function manejarEscape(e) {
-    if (e.key === 'Escape' && !document.fullscreenElement) {
-      cerrarVideoFunc();
-    }
-  }
-
-  function handleFullscreenChange() {
-    if (!document.fullscreenElement) {
-      cerrarVideoFunc();
-    }
-  }
+  document.removeEventListener('keydown', manejarCierreTrailer);
+  document.addEventListener('keydown', manejarCierreTrailer);
+  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
+}
 
   function cerrarVideoManual() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen?.();
-    } else {
-      cerrarVideoFunc();
-    }
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.();
+  } else {
+    cerrarVideoFunc();
   }
-
-  function cerrarVideoFunc() {
-    const modal = document.getElementById('modalVideo');
-    const contenedor = document.getElementById('contenedorVideo');
-
-    if (videoRef instanceof HTMLVideoElement) {
-      videoRef.pause();
-      videoRef.currentTime = 0;
-    }
-
-    videoRef = null;
-
-    contenedor.innerHTML = '';
-    modal.style.display = 'none';
-
-    document.removeEventListener('keydown', manejarEscape);
-    document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }
+}
 
 function manejarCierreTrailer(e) {
   if (e.key === 'Escape' && !document.fullscreenElement) {
@@ -310,23 +281,19 @@ function manejarCierreTrailer(e) {
   }
 }
 
-function handleFullscreenChange() {
+function manejarSalidaFullscreen() {
   if (!document.fullscreenElement) {
     cerrarVideoFunc();
   }
 }
 
-function cerrarVideoFunc() {
+  function cerrarVideoFunc() {
   const modal = document.getElementById('modalVideo');
   const contenedor = document.getElementById('contenedorVideo');
 
-  if (videoRef && videoRef.tagName === 'VIDEO') {
-    try {
-      videoRef.pause();
-      videoRef.currentTime = 0;
-    } catch (err) {
-      console.warn('No se pudo pausar el video:', err);
-    }
+  if (videoRef instanceof HTMLVideoElement) {
+    videoRef.pause();
+    videoRef.currentTime = 0;
   }
 
   videoRef = null;
@@ -338,7 +305,7 @@ function cerrarVideoFunc() {
   document.getElementById('btnVerTrailer')?.focus();
 
   document.removeEventListener('keydown', manejarCierreTrailer);
-  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
 }
 
   function manejarNavegacionModal(e) {
