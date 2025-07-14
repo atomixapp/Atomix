@@ -273,21 +273,38 @@ function cerrarModalVideo() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const video = document.querySelector('#trailerVideo');
 
+  // Pausar y limpiar video
   if (video) {
     video.pause();
     video.currentTime = 0;
   }
 
+  // Salir de pantalla completa si está activa
   if (document.fullscreenElement) {
     document.exitFullscreen?.().catch(() => {});
   }
 
-  contenedorVideo.innerHTML = '';
+  // Ocultar modal de video
   modalVideo.style.display = 'none';
+  contenedorVideo.innerHTML = '';
 
-  document.getElementById('modalPelicula')?.style.display = 'flex';
+  // Volver a mostrar el modal de película
+  const modalPelicula = document.getElementById('modalPelicula');
+  if (modalPelicula) {
+    modalPelicula.style.display = 'flex';
+    modalPelicula.focus(); // Para accesibilidad y navegación con teclado
+  }
+
+  // Volver a enfocar botón del trailer
   document.getElementById('btnVerTrailer')?.focus();
 
+  // Restaurar visibilidad de las tarjetas (por si se rompió)
+  document.getElementById('galeria')?.style.display = 'grid'; // O block, según CSS
+  document.querySelectorAll('.card').forEach(card => {
+    card.style.display = 'block'; // o 'inline-block' según tu estilo
+  });
+
+  // Eliminar escucha del ESC
   document.removeEventListener('keydown', manejarCierreConEscape);
 }
 
