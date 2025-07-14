@@ -238,27 +238,33 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
+  // Limpiar el contenedor
   contenedorVideo.innerHTML = '';
 
+  // Crear video
   const video = document.createElement('video');
   video.src = peliculaActiva.trailerUrl;
   video.controls = true;
   video.autoplay = true;
   video.id = 'trailerVideo';
-
-  videoRef = video;
+  video.style.width = '100%';
+  video.style.height = '100%';
 
   contenedorVideo.appendChild(video);
+  videoRef = video; // Guardar referencia global
 
+  // Mostrar modal
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
 
+  // Pantalla completa automática
   video.requestFullscreen?.().catch(() => {});
 
+  // Eventos
   cerrarVideo.onclick = cerrarVideoManual;
-
   document.addEventListener('keydown', manejarEscape);
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
 }
 
 function manejarEscape(e) {
@@ -267,7 +273,7 @@ function manejarEscape(e) {
   }
 }
 
-function handleFullscreenChange() {
+function manejarSalidaFullscreen() {
   if (!document.fullscreenElement) {
     cerrarVideoFunc();
   }
@@ -275,7 +281,7 @@ function handleFullscreenChange() {
 
 function cerrarVideoManual() {
   if (document.fullscreenElement) {
-    document.exitFullscreen?.();
+    document.exitFullscreen?.().catch(() => {});
   } else {
     cerrarVideoFunc();
   }
@@ -285,26 +291,24 @@ function cerrarVideoFunc() {
   const modal = document.getElementById('modalVideo');
   const contenedor = document.getElementById('contenedorVideo');
 
-  // Solo si existe y es un VIDEO real
-  if (videoRef && videoRef.tagName === 'VIDEO') {
-    try {
+  try {
+    if (videoRef instanceof HTMLVideoElement) {
       videoRef.pause();
       videoRef.currentTime = 0;
-    } catch (error) {
-      console.warn("Error al pausar el video:", error);
     }
+  } catch (err) {
+    console.warn('Error al cerrar el video:', err);
   }
 
   contenedor.innerHTML = '';
   modal.style.display = 'none';
-
   document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
-  videoRef = null;
-
-  document.removeEventListener('keydown', manejarCierreTrailer);
+  // Limpiar eventos
+  document.removeEventListener('keydown', manejarEscape);
   document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
+  videoRef = null;
 }
 
   function manejarNavegacionModal(e) {
