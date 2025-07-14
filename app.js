@@ -231,128 +231,83 @@ function abrirModal(pelicula) {
 }
 
 function verTrailer() {
-  if (!peliculaActiva || (!peliculaActiva.trailerUrl && !peliculaActiva.videoUrl)) return;
+  if (!peliculaActiva || !peliculaActiva.trailerUrl) return;
 
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  // Limpia el contenido anterior
-  contenedorVideo.innerHTML = '';
+  contenedorVideo.innerHTML = ''; // Limpiar anterior
 
-  // Verificar si es un trailer de YouTube o un video nativo
-  const url = peliculaActiva.trailerUrl || peliculaActiva.videoUrl;
-
-  let videoPlayer = null; // Variable para manejar el video
+  const url = peliculaActiva.trailerUrl;
+  let videoPlayer = null;
 
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    // Es un trailer de YouTube, crear un iframe
     const iframe = document.createElement('iframe');
     iframe.src = url;
     iframe.width = '100%';
     iframe.height = '100%';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allow = 'autoplay; encrypted-media';
     iframe.allowFullscreen = true;
     iframe.frameBorder = 0;
-    iframe.id = 'trailerIframe'; // Establecer ID para el iframe
+    iframe.id = 'trailerIframe';
     contenedorVideo.appendChild(iframe);
-
-    // No necesitamos usar pause para iframe de YouTube
     videoPlayer = iframe;
   } else {
-    // Es un video nativo, crear una etiqueta de video
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
+    video.tabIndex = 0; // para que pueda recibir foco
     const source = document.createElement('source');
     source.src = url;
     video.appendChild(source);
-    video.id = 'trailerVideo'; // Establecer ID para el video
+    video.id = 'trailerVideo';
     contenedorVideo.appendChild(video);
-
-    // Referencia al video nativo
     videoPlayer = video;
+
+    setTimeout(() => video.focus(), 100); // para TV Box
   }
 
-  // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
-
-  // Mostrar el botón de cerrar
   cerrarVideo.style.display = 'block';
 
-  // Asignar evento de click para cerrar el video
   cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
 
-  // Añadir la funcionalidad de "Enter" y "Escape" para cerrar el trailer
+  // Quitar y volver a agregar el evento keydown
+  modalVideo.removeEventListener('keydown', manejarCierreTrailer);
   modalVideo.addEventListener('keydown', manejarCierreTrailer);
-  modalVideo.focus(); // Enfocar el modal para que reciba el evento de tecla
+  modalVideo.focus();
 }
 
-function manejarCierreTrailer(e) {
-  const modalVideo = document.getElementById('modalVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-  const videoPlayer = document.querySelector('#trailerVideo') || document.querySelector('#trailerIframe');
-
-  // Si la tecla presionada es "Enter" o "Escape", cerrar el modal
-  if (e.key === 'Enter' || e.key === 'Escape') {
+  function manejarCierreTrailer(e) {
+  if (e.key === 'Escape') {
     e.preventDefault();
+    const modalVideo = document.getElementById('modalVideo');
+    const contenedorVideo = document.getElementById('contenedorVideo');
+    const videoPlayer = document.querySelector('#trailerVideo') || document.querySelector('#trailerIframe');
     cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
   }
 }
 
-function cerrarVideoFunc(contenedor, modal, videoPlayer) {
-  // Si es un iframe de YouTube, detenerlo
-  if (videoPlayer && videoPlayer.tagName === 'IFRAME') {
-    // No podemos pausar un iframe, solo limpiamos el src
-    videoPlayer.src = '';  // Detener el video de YouTube cambiando la URL
-  } else if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
-    // Si es un video nativo, pausarlo y restablecer su tiempo
+  function cerrarVideoFunc(contenedor, modal, videoPlayer) {
+  if (videoPlayer?.tagName === 'IFRAME') {
+    videoPlayer.src = ''; // Detener iframe
+  } else if (videoPlayer?.tagName === 'VIDEO') {
     videoPlayer.pause();
     videoPlayer.currentTime = 0;
   }
 
-  contenedor.innerHTML = '';  // Limpiar el contenido del video
-  modal.style.display = 'none';  // Ocultar el modal
+  contenedor.innerHTML = '';
+  modal.style.display = 'none';
 
-  // Vuelve a mostrar el modal de la película principal
+  // Restaurar el modal anterior
   document.getElementById('modalPelicula').style.display = 'flex';
+  document.getElementById('btnVerTrailer')?.focus(); // devolver foco
 
-  // Eliminar el listener de 'keydown' después de cerrar
   modal.removeEventListener('keydown', manejarCierreTrailer);
 }
 
-function manejarCierreTrailer(e) {
-  const modalVideo = document.getElementById('modalVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-  const videoPlayer = document.querySelector('#trailerVideo') || document.querySelector('#trailerIframe');
-
-  // Si la tecla presionada es "Enter" o "Escape", cerrar el modal
-  if (e.key === 'Enter' || e.key === 'Escape') {
-    e.preventDefault();
-    cerrarVideoFunc(contenedorVideo, modalVideo, videoPlayer);
-  }
-}
-
-function cerrarVideoFunc(contenedor, modal, videoPlayer) {
-  // Si es un iframe de YouTube, detenerlo
-  if (videoPlayer && videoPlayer.tagName === 'IFRAME') {
-    videoPlayer.src = '';  // Detener el video de YouTube cambiando la URL
-  } else if (videoPlayer && videoPlayer.tagName === 'VIDEO') {
-    // Si es un video nativo, pausarlo y restablecer su tiempo
-    videoPlayer.pause();
-    videoPlayer.currentTime = 0;
-  }
-
-  contenedor.innerHTML = '';  // Limpiar el contenido del video
-  modal.style.display = 'none';  // Ocultar el modal
-
-  // Vuelve a mostrar el modal de la película principal
-  document.getElementById('modalPelicula').style.display = 'flex';
-
-  // Eliminar el listener de 'keydown' después de cerrar
-  modal.removeEventListener('keydown', manejarCierreTrailer);
-}
 
   function manejarNavegacionModal(e) {
     const botones = [
