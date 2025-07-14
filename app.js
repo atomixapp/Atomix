@@ -328,11 +328,14 @@ function manejarNavegacionModal(e) {
     btnVerAhora.focus();
   }
 
-  // Vertical hacia sinopsis
-  else if (actual === btnVerTrailer && e.key === 'ArrowDown') {
+  // Vertical hacia sinopsis desde "Ver ahora" o "Ver trailer"
+  else if ((actual === btnVerTrailer || actual === btnVerAhora) && e.key === 'ArrowDown') {
     btnSinopsis.focus();
-  } else if (actual === btnSinopsis && e.key === 'ArrowUp') {
-    btnVerTrailer.focus();
+  }
+
+  // Subir desde sinopsis
+  else if (actual === btnSinopsis && e.key === 'ArrowUp') {
+    btnVerTrailer.focus(); // Puedes cambiar a btnVerAhora si prefieres
   }
 
   // Subir desde ver ahora/trailer hacia la X
@@ -350,7 +353,7 @@ function manejarNavegacionModal(e) {
     actual.click();
   }
 }
-
+  
   function cerrarModal() {
     document.getElementById('modalPelicula').style.display = 'none';
     if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
