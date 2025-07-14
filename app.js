@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const galeria = document.getElementById('galeria');
+  const galeriaPlataformas = document.getElementById('galeriaPlataformas');
   const buscador = document.getElementById('buscadorPeliculas');
   const botonCuenta = document.getElementById('botonCuenta');
   const menuUsuario = document.getElementById('menuUsuario');
   const tituloCategoria = document.getElementById('tituloCategoria');
   const sonidoClick = new Audio('assets/sounds/click.mp3');
-
   
   let todasPeliculas = [];
   let peliculaActiva = null;
