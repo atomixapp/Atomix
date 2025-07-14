@@ -170,6 +170,55 @@ main {
   border: 2px solid #00bfff;
 }
 
+.plataformas {
+  margin-top: 2rem;
+}
+
+.plataformas h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #eee;
+  text-align: center;
+}
+
+.plataformas-lista {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.plataforma-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 120px;
+}
+
+.plataforma-item img {
+  width: 100px;
+  height: auto;
+  margin-bottom: 0.5rem;
+  object-fit: contain;
+}
+
+.plataforma-item span {
+  color: #ddd;
+  font-size: 1rem;
+}
+
+.plataforma-item:focus,
+.plataforma-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px #ff3d00;
+  border-radius: 8px;
+}
+
+
 /* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
