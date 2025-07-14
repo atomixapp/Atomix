@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuUsuario = document.getElementById('menuUsuario');
   const tituloCategoria = document.getElementById('tituloCategoria');
   const sonidoClick = new Audio('assets/sounds/click.mp3');
+
   
   let todasPeliculas = [];
   let peliculaActiva = null;
