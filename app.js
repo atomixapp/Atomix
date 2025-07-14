@@ -237,71 +237,58 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  contenedorVideo.innerHTML = ''; // Limpiar video anterior
+  // Limpiar contenido anterior
+  contenedorVideo.innerHTML = '';
 
-  const url = peliculaActiva.trailerUrl;
+  // Crear el video
   const video = document.createElement('video');
-
-  video.src = url;
+  video.src = peliculaActiva.trailerUrl;
   video.controls = true;
   video.autoplay = true;
   video.id = 'trailerVideo';
   video.style.width = '100%';
   video.style.height = '100%';
-  video.tabIndex = 0;
-
   contenedorVideo.appendChild(video);
 
-  // Mostrar el modal
-  document.getElementById('modalPelicula').style.display = 'none';
+  // Mostrar modal
+  document.getElementById('modalPelicula')?.style.display = 'none';
   modalVideo.style.display = 'flex';
-  cerrarVideo.style.display = 'block';
 
-  // Pantalla completa automática
+  // Pantalla completa
   video.requestFullscreen?.().catch(() => {});
 
-  // Asegurar que no haya múltiples listeners duplicados
-  cerrarVideo.removeEventListener('click', cerrarVideoClickHandler);
-  cerrarVideo.addEventListener('click', cerrarVideoClickHandler);
-
-  document.removeEventListener('keydown', manejarCierreTrailer);
-  document.addEventListener('keydown', manejarCierreTrailer);
+  // Asignar eventos de cierre
+  cerrarVideo.onclick = () => cerrarModalVideo();
+  document.addEventListener('keydown', manejarCierreConEscape);
 }
 
-function cerrarVideoClickHandler() {
+function manejarCierreConEscape(e) {
+  if (e.key === 'Escape') {
+    cerrarModalVideo();
+  }
+}
+
+function cerrarModalVideo() {
   const modalVideo = document.getElementById('modalVideo');
   const contenedorVideo = document.getElementById('contenedorVideo');
   const video = document.querySelector('#trailerVideo');
-  cerrarVideoFunc(contenedorVideo, modalVideo, video);
-}
 
-function manejarCierreTrailer(e) {
-  if (e.key === 'Escape') {
-    const modalVideo = document.getElementById('modalVideo');
-    const contenedorVideo = document.getElementById('contenedorVideo');
-    const video = document.querySelector('#trailerVideo');
-
-    cerrarVideoFunc(contenedorVideo, modalVideo, video);
-  }
-}
-
-function cerrarVideoFunc(contenedor, modal, video) {
-  if (video?.tagName === 'VIDEO') {
+  if (video) {
     video.pause();
     video.currentTime = 0;
-    if (document.fullscreenElement) {
-      document.exitFullscreen?.().catch(() => {});
-    }
   }
 
-  contenedor.innerHTML = '';
-  modal.style.display = 'none';
+  if (document.fullscreenElement) {
+    document.exitFullscreen?.().catch(() => {});
+  }
 
-  // Volver al modal de película
-  document.getElementById('modalPelicula').style.display = 'flex';
+  contenedorVideo.innerHTML = '';
+  modalVideo.style.display = 'none';
+
+  document.getElementById('modalPelicula')?.style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
-  document.removeEventListener('keydown', manejarCierreTrailer);
+  document.removeEventListener('keydown', manejarCierreConEscape);
 }
 
   function manejarNavegacionModal(e) {
