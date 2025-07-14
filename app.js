@@ -236,7 +236,7 @@ function verTrailer() {
   const contenedorVideo = document.getElementById('contenedorVideo');
   const cerrarVideo = document.getElementById('cerrarVideo');
 
-  contenedorVideo.innerHTML = ''; // Limpiar video anterior
+  contenedorVideo.innerHTML = ''; // Limpiar anterior
 
   const url = peliculaActiva.trailerUrl;
   const video = document.createElement('video');
@@ -251,27 +251,20 @@ function verTrailer() {
 
   contenedorVideo.appendChild(video);
 
-  // Mostrar el modal
+  // Mostrar el modal de video
   document.getElementById('modalPelicula').style.display = 'none';
   modalVideo.style.display = 'flex';
   cerrarVideo.style.display = 'block';
 
   // Pantalla completa automática
-  video.requestFullscreen?.().catch(() => {});
+  video.requestFullscreen?.().catch(() => {}); // Evitar errores si ya está en pantalla completa
 
-  // Asegurar que no haya múltiples listeners duplicados
-  cerrarVideo.removeEventListener('click', cerrarVideoClickHandler);
-  cerrarVideo.addEventListener('click', cerrarVideoClickHandler);
+  // Botón X
+  cerrarVideo.onclick = () => cerrarVideoFunc(contenedorVideo, modalVideo, video);
 
+  // Escape para cerrar
   document.removeEventListener('keydown', manejarCierreTrailer);
   document.addEventListener('keydown', manejarCierreTrailer);
-}
-
-function cerrarVideoClickHandler() {
-  const modalVideo = document.getElementById('modalVideo');
-  const contenedorVideo = document.getElementById('contenedorVideo');
-  const video = document.querySelector('#trailerVideo');
-  cerrarVideoFunc(contenedorVideo, modalVideo, video);
 }
 
 function manejarCierreTrailer(e) {
@@ -296,7 +289,7 @@ function cerrarVideoFunc(contenedor, modal, video) {
   contenedor.innerHTML = '';
   modal.style.display = 'none';
 
-  // Volver al modal de película
+  // Mostrar modal anterior
   document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
