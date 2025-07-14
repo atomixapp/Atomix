@@ -378,25 +378,38 @@ function cerrarConEscape(e) {
   }
 }
   
-  function verVideo() {
-    if (!peliculaActiva) return;
+function verVideo() {
+  if (!peliculaActiva?.videoUrl) return;
 
-    const videoPlayer = document.getElementById('videoPlayer');
-    const cerrarVideo = document.getElementById('cerrarVideo');
-    videoPlayer.querySelector('source').src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
-    videoPlayer.load();
-    videoPlayer.play();
+  const modalVideo = document.getElementById('modalVideo');
+  const contenedorVideo = document.getElementById('contenedorVideo');
+  const cerrarVideo = document.getElementById('cerrarVideo');
 
-    document.getElementById('modalPelicula').style.display = 'none';
-    const modalVideo = document.getElementById('modalVideo');
-    modalVideo.style.display = 'flex';
-    cerrarVideo.style.display = 'block';
+  contenedorVideo.innerHTML = '';
 
-    let ocultarCerrar = setTimeout(() => cerrarVideo.style.display = 'none', 5000);
-    cerrarVideo.onclick = () => cerrarVideoPrincipal(videoPlayer, modalVideo, ocultarCerrar);
+  const video = document.createElement('video');
+  video.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
+  video.controls = true;
+  video.autoplay = true;
+  video.id = 'videoPrincipal';
+  video.style.width = '100%';
+  video.style.height = '100%';
 
-    setTimeout(() => cerrarVideo.focus(), 100);
-  }
+  contenedorVideo.appendChild(video);
+  videoRef = video;
+
+  document.getElementById('modalPelicula').style.display = 'none';
+  modalVideo.style.display = 'flex';
+  cerrarVideo.style.display = 'block';
+
+  video.requestFullscreen?.().catch(() => {});
+
+  cerrarVideo.onclick = cerrarVideoManual;
+  document.addEventListener('keydown', manejarEscape);
+  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
+
+  setTimeout(() => cerrarVideo.focus(), 100);
+}
 
   function cerrarVideoPrincipal(videoPlayer, modalVideo, ocultarCerrar) {
     clearTimeout(ocultarCerrar);
