@@ -60,23 +60,23 @@ window.filtrar = function (categoria) {
     return;
   }
 
-  const filtros = {
-    todos: () => true,
-    favoritos: p => p.favorito === true,
-    estrenos2025: p => p.anio === 2025,
-    estrenos2024: p => p.anio === 2024,
-    accion: p => p.genero?.toLowerCase().includes('acción'),
-    animacion: p => p.genero?.toLowerCase().includes('animación'),
-    artesmarciales: p => p.genero?.toLowerCase().includes('artes marciales'),
-    aventuras: p => p.genero?.toLowerCase().includes('aventura'),
-    cienciaficcion: p => p.genero?.toLowerCase().includes('ciencia ficción'),
-    comedia: p => p.genero?.toLowerCase().includes('comedia'),
-    drama: p => p.genero?.toLowerCase().includes('drama'),
-    fantasia: p => p.genero?.toLowerCase().includes('fantasía'),
-    romance: p => p.genero?.toLowerCase().includes('romance'),
-    suspense: p => p.genero?.toLowerCase().includes('suspense'),
-    terror: p => p.genero?.toLowerCase().includes('terror')
-  };
+const filtros = {
+  todos: () => true,
+  favoritos: p => p.favorito === true,
+  estrenos2025: p => p.anio === 2025,
+  estrenos2024: p => p.anio === 2024,
+  accion: p => String(p.genero || '').toLowerCase().includes('acción'),
+  animacion: p => String(p.genero || '').toLowerCase().includes('animación'),
+  artesmarciales: p => String(p.genero || '').toLowerCase().includes('artes marciales'),
+  aventuras: p => String(p.genero || '').toLowerCase().includes('aventura'),
+  cienciaficcion: p => String(p.genero || '').toLowerCase().includes('ciencia ficción'),
+  comedia: p => String(p.genero || '').toLowerCase().includes('comedia'),
+  drama: p => String(p.genero || '').toLowerCase().includes('drama'),
+  fantasia: p => String(p.genero || '').toLowerCase().includes('fantasía'),
+  romance: p => String(p.genero || '').toLowerCase().includes('romance'),
+  suspense: p => String(p.genero || '').toLowerCase().includes('suspense'),
+  terror: p => String(p.genero || '').toLowerCase().includes('terror')
+};
 
   const filtro = filtros[categoria] || (() => true);
   filtrarYPintar(filtro, categoria);
