@@ -285,12 +285,15 @@ function cerrarVideoFunc() {
   const modal = document.getElementById('modalVideo');
   const contenedor = document.getElementById('contenedorVideo');
 
-  if (videoRef instanceof HTMLVideoElement) {
-    videoRef.pause();
-    videoRef.currentTime = 0;
+  // Solo si existe y es un VIDEO real
+  if (videoRef && videoRef.tagName === 'VIDEO') {
+    try {
+      videoRef.pause();
+      videoRef.currentTime = 0;
+    } catch (error) {
+      console.warn("Error al pausar el video:", error);
+    }
   }
-
-  videoRef = null;
 
   contenedor.innerHTML = '';
   modal.style.display = 'none';
@@ -298,8 +301,10 @@ function cerrarVideoFunc() {
   document.getElementById('modalPelicula').style.display = 'flex';
   document.getElementById('btnVerTrailer')?.focus();
 
-  document.removeEventListener('keydown', manejarEscape);
-  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  videoRef = null;
+
+  document.removeEventListener('keydown', manejarCierreTrailer);
+  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
 }
 
   function manejarNavegacionModal(e) {
