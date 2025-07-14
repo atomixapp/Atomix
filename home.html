@@ -33,6 +33,7 @@
 <div class="app-container">
   <aside>
     <h2>Categorías</h2>
+    <h2 style="margin-top: 2rem;">Plataformas</h2>
   <ul>
     <li id="navFavoritos" tabindex="0" onclick="filtrar('favoritos')">❤️ Favoritos</li>
     <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
@@ -50,27 +51,6 @@
     <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
     <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
   </ul>
-    <section class="plataformas">
-  <h2>Plataformas</h2>
-  <div class="plataformas-lista">
-    <div class="plataforma-item" tabindex="0" aria-label="Netflix">
-      <img src="ruta/a/netflix.png" alt="Netflix" />
-      <span>Netflix</span>
-    </div>
-    <div class="plataforma-item" tabindex="0" aria-label="Amazon">
-      <img src="ruta/a/amazon.png" alt="Amazon" />
-      <span>Amazon</span>
-    </div>
-    <div class="plataforma-item" tabindex="0" aria-label="Disney+">
-      <img src="ruta/a/disneyplus.png" alt="Disney+" />
-      <span>Disney+</span>
-    </div>
-    <div class="plataforma-item" tabindex="0" aria-label="Movistar+">
-      <img src="ruta/a/movistar.png" alt="Movistar+" />
-      <span>Movistar+</span>
-    </div>
-  </div>
-</section>
 </aside>
   
   <main>
@@ -79,6 +59,22 @@
       <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
     </div>
     <div id="galeria" class="galeria"></div>
+    
+    <div id="galeriaPlataformas" class="galeria-plataformas">
+  <div class="plataforma-item" tabindex="0" aria-label="Netflix">
+    <img src="ruta/a/netflix.png" alt="Netflix" />
+  </div>
+  <div class="plataforma-item" tabindex="0" aria-label="Amazon">
+    <img src="ruta/a/amazon.png" alt="Amazon" />
+  </div>
+  <div class="plataforma-item" tabindex="0" aria-label="Disney+">
+    <img src="ruta/a/disneyplus.png" alt="Disney+" />
+  </div>
+  <div class="plataforma-item" tabindex="0" aria-label="Movistar+">
+    <img src="ruta/a/movistar.png" alt="Movistar+" />
+  </div>
+</div>
+
   </main>
 </div>
 
