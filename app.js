@@ -306,15 +306,14 @@ function abrirModal(pelicula) {
   }
 
 function manejarNavegacionModal(e) {
-  const botones = [
-    document.getElementById('btnVerAhora'),
-    document.getElementById('btnVerTrailer'),
-    document.getElementById('btnMostrarSinopsis'),
-    document.getElementById('cerrarModal'),
-  ].filter(btn => btn && btn.offsetParent !== null);
+  const btnVerAhora = document.getElementById('btnVerAhora');
+  const btnVerTrailer = document.getElementById('btnVerTrailer');
+  const btnSinopsis = document.getElementById('btnMostrarSinopsis');
+  const btnCerrar = document.getElementById('cerrarModal');
 
-  const i = botones.indexOf(document.activeElement);
-  if (i === -1) return;
+  const grupoBotones = [btnVerAhora, btnVerTrailer, btnSinopsis];
+
+  if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(document.activeElement)) return;
 
   if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
     e.preventDefault();
@@ -322,14 +321,27 @@ function manejarNavegacionModal(e) {
     sonidoClick.play().catch(() => {});
   }
 
-  if (e.key === 'ArrowRight') {
-    const next = (i + 1) % botones.length;
-    botones[next].focus();
-  } else if (e.key === 'ArrowLeft') {
-    const prev = (i - 1 + botones.length) % botones.length;
-    botones[prev].focus();
-  } else if (e.key === 'Enter') {
-    botones[i].click();
+  const actual = document.activeElement;
+
+  if (grupoBotones.includes(actual)) {
+    const i = grupoBotones.indexOf(actual);
+
+    if (e.key === 'ArrowRight') {
+      grupoBotones[(i + 1) % grupoBotones.length].focus();
+    } else if (e.key === 'ArrowLeft') {
+      grupoBotones[(i - 1 + grupoBotones.length) % grupoBotones.length].focus();
+    } else if (e.key === 'ArrowUp') {
+      btnCerrar.focus();
+    } else if (e.key === 'Enter') {
+      actual.click();
+    }
+
+  } else if (actual === btnCerrar) {
+    if (e.key === 'ArrowDown') {
+      btnVerAhora.focus(); // foco inicial al grupo
+    } else if (e.key === 'Enter') {
+      btnCerrar.click();
+    }
   }
 }
 
