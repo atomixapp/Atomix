@@ -33,24 +33,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function filtrarYPintar(filtro, categoriaNombre = '') {
   filtroActual = filtro;
-  
+
   // Ocultar ambas galerías
   galeria.style.display = 'none';
   galeriaPlataformas.style.display = 'none';
 
+  // Cambiar la categoría a mostrar según la selección
   if (categoriaNombre === 'plataformas') {
     tituloCategoria.textContent = 'PLATAFORMAS';
     galeriaPlataformas.style.display = 'flex';
 
-    // Enfocar primer ítem de plataforma
+    // Enfocar primer ítem de plataforma (si hay items)
     const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
     if (items.length > 0) {
-      setTimeout(() => items[0].focus(), 100);
+      setTimeout(() => items[0].focus(), 100);  // Enfocar primer ítem
     }
+
+    // Asegurarse de que la navegación con las teclas funciona para las plataformas
+    document.addEventListener('keydown', manejarNavegacionPlataformas);
   } else {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
     renderPeliculas(todasPeliculas.filter(filtro));
+  }
+}
+
+// Manejo de la navegación en las plataformas
+function manejarNavegacionPlataformas(e) {
+  const actual = document.activeElement;
+  
+  if (actual.classList.contains('plataforma-item')) {
+    const items = Array.from(galeriaPlataformas.querySelectorAll('.plataforma-item'));
+    const i = items.indexOf(actual);
+
+    switch (e.key) {
+      case 'ArrowRight':
+        items[i + 1]?.focus();
+        break;
+      case 'ArrowLeft':
+        items[i - 1]?.focus();
+        break;
+      case 'ArrowDown':
+        buscador?.focus();  // Llevar el foco al buscador si se presiona 'ArrowDown'
+        break;
+      case 'ArrowUp':
+        document.querySelector('#navPlataformas')?.focus();  // Llevar el foco a la categoría de Plataformas
+        break;
+      case 'Enter':
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+        }
+        break;
+    }
+
+    // Reproducir sonido al mover el foco
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
   }
 }
 
