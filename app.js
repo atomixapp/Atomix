@@ -136,10 +136,10 @@ document.addEventListener('keydown', e => {
         break;
 
       case 'Enter':
-        // Si se presiona Enter, aplicar filtro según la plataforma seleccionada
-        const plataforma = actual.getAttribute('aria-label');
-        if (plataforma && typeof filtrar === 'function') {
-          filtrar(plataforma.toLowerCase());
+        // Si se presiona Enter, ir a la sección de películas
+        const plataformaSeleccionada = actual.getAttribute('aria-label');
+        if (plataformaSeleccionada && typeof mostrarPeliculas === 'function') {
+          mostrarPeliculas(plataformaSeleccionada.toLowerCase());
         }
         break;
     }
@@ -169,7 +169,62 @@ document.addEventListener('keydown', e => {
         break;
     }
   }
+
+  // Si estamos en la sección de películas
+  if (actual.classList.contains('pelicula-item')) {
+    const items = Array.from(document.querySelectorAll('.pelicula-item'));
+    const i = items.indexOf(actual);
+
+    switch (e.key) {
+      case 'ArrowRight':
+        // Mover el foco a la siguiente película, si existe
+        if (i + 1 < items.length) items[i + 1].focus();
+        break;
+
+      case 'ArrowLeft':
+        // Volver a la sección de plataformas (de películas a plataformas)
+        const plataformas = Array.from(document.querySelectorAll('.plataforma-item'));
+        plataformas[0]?.focus(); // Volver a la primera plataforma
+        break;
+
+      case 'ArrowDown':
+        // Mover el foco a la siguiente película, si existe
+        if (i + 1 < items.length) items[i + 1].focus();
+        break;
+
+      case 'ArrowUp':
+        // Mover el foco al buscador
+        buscador?.focus();
+        break;
+
+      case 'Enter':
+        // Acción cuando se selecciona una película
+        const pelicula = actual.getAttribute('aria-label');
+        if (pelicula && typeof verPelicula === 'function') {
+          verPelicula(pelicula.toLowerCase());
+        }
+        break;
+    }
+
+    // Reproducir sonido de clic para las teclas
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  }
 });
+
+// Función para mostrar las películas de una plataforma seleccionada
+function mostrarPeliculas(plataforma) {
+  // Lógica para mostrar las películas según la plataforma
+  const seccionPeliculas = document.querySelector(`#peliculas-${plataforma}`);
+  if (seccionPeliculas) {
+    seccionPeliculas.style.display = 'block'; // Mostrar la sección de películas
+    // Enfocar la primera película
+    const primeraPelicula = seccionPeliculas.querySelector('.pelicula-item');
+    if (primeraPelicula) primeraPelicula.focus();
+  }
+}
   
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
