@@ -103,35 +103,64 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
+  // ✅ Si estamos en el input del buscador, salir
+  if (
+    actual.tagName === 'INPUT' ||
+    actual.tagName === 'TEXTAREA' ||
+    actual.isContentEditable
+  ) {
+    return;
+  }
+
+  // Solo activar si estamos en un ítem de plataforma
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
 
     switch (e.key) {
       case 'ArrowRight':
+        // Mover al siguiente item
         items[i + 1]?.focus();
         break;
+
       case 'ArrowLeft':
+        // Mover al item anterior
         items[i - 1]?.focus();
         break;
+
       case 'ArrowDown':
-        buscador?.focus();
+        // Aquí no queremos que el foco baje al buscador, solo a las películas de la galería
+        const primeraPelicula = document.querySelector('.pelicula');
+        primeraPelicula?.focus();
         break;
+
       case 'ArrowUp':
+        // Foco hacia el nav de plataformas
         document.querySelector('#navPlataformas')?.focus();
         break;
-case 'Enter':
-  const plataforma = actual.getAttribute('aria-label');
-  if (plataforma && typeof filtrar === 'function') {
-    filtrar(plataforma.toLowerCase());
-  }
-  break;
+
+      case 'Enter':
+        // Ejecutar la función de filtro si se presiona Enter
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+        }
+        break;
     }
 
+    // Sonido de click
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
+  }
+});
+
+// Inicializar el foco en la primera plataforma cuando se entra en la sección
+document.addEventListener('DOMContentLoaded', () => {
+  const primeraPlataforma = document.querySelector('.plataforma-item');
+  if (primeraPlataforma) {
+    setTimeout(() => primeraPlataforma.focus(), 100);  // Esperar para asegurar que se cargue
   }
 });
   
