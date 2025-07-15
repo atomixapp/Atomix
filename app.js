@@ -160,13 +160,17 @@ document.addEventListener('keydown', e => {
       case 'ArrowDown':
         // Foco a la primera película de la galería
         const primeraPelicula = document.querySelector('.pelicula');
-        primeraPelicula?.focus();
+        if (primeraPelicula) {
+          primeraPelicula.focus();
+        }
         break;
 
       case 'ArrowUp':
         // Foco hacia el primer item de plataforma
         const primeraPlataforma = document.querySelector('.plataforma-item');
-        primeraPlataforma?.focus();
+        if (primeraPlataforma) {
+          primeraPlataforma.focus();
+        }
         break;
     }
 
