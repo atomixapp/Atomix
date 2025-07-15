@@ -122,24 +122,38 @@ document.addEventListener('keydown', e => {
       case 'ArrowLeft':
         items[i - 1]?.focus();
         break;
-      case 'ArrowDown':
-        buscador?.focus();
-        break;
       case 'ArrowUp':
-        document.querySelector('#navPlataformas')?.focus();
+        buscador?.focus();  // AHORA sube al buscador
         break;
-case 'Enter':
-  const plataforma = actual.getAttribute('aria-label');
-  if (plataforma && typeof filtrar === 'function') {
-    filtrar(plataforma.toLowerCase());
-  }
-  break;
+      case 'ArrowDown':
+        // Aquí puedes decidir si quieres que baje a otro lugar o no haga nada
+        // Por ejemplo: nada para que no salga del área
+        break;
+      case 'Enter':
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+        }
+        break;
     }
 
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
+  }
+});
+
+// Navegación del buscador
+buscador.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') {
+    // Al bajar desde buscador, enfoca la primera plataforma
+    const primeraPlataforma = document.querySelector('.plataforma-item');
+    primeraPlataforma?.focus();
+  }
+  if (e.key === 'ArrowUp') {
+    // Aquí puedes agregar foco a otro elemento si quieres o dejar vacío
+    // Por ejemplo, dejar vacío para que no suba más
   }
 });
   
