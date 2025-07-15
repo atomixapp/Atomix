@@ -110,9 +110,16 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
-if (actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable) return;
+  // ✅ Si estamos escribiendo en un input (como el buscador), salir
+  if (
+    actual.tagName === 'INPUT' ||
+    actual.tagName === 'TEXTAREA' ||
+    actual.isContentEditable
+  ) {
+    return;
+  }
 
-  // Solo activar si estás en un ítem de plataforma
+  // ✅ Si estamos en un ítem de plataforma, aplicar navegación
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -131,11 +138,7 @@ if (actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isCont
         break;
 
       case 'ArrowUp':
-        buscador?.focus();
-        break;
-
-      case 'ArrowDown':
-        // No hacer nada o implementar navegación a otra sección
+        document.getElementById('buscadorPeliculas')?.focus();
         break;
 
       case 'Enter':
@@ -154,15 +157,15 @@ if (actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isCont
 });
 
 buscador.addEventListener('keydown', e => {
+  e.stopPropagation(); // 🔒 importante: evita interferencias globales
+
   if (e.key === 'ArrowDown') {
-    e.preventDefault(); // Opcional: evita que el cursor baje
+    e.preventDefault();
     const primeraPlataforma = document.querySelector('.plataforma-item');
     primeraPlataforma?.focus();
   }
-  if (e.key === 'ArrowUp') {
-    // Aquí puedes agregar foco a otro elemento si quieres o dejar vacío
-    // Por ejemplo, dejar vacío para que no suba más
-  }
+
+  // ArrowUp opcional
 });
   
   function configurarNavegacionLateral() {
