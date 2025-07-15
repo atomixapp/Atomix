@@ -124,16 +124,15 @@ document.addEventListener('keydown', e => {
         }
         break;
 
-      case 'ArrowDown':
-        // Mover el foco al buscador
+      case 'ArrowUp':
+        // Mover el foco al buscador cuando estamos en la galería (plataforma)
         if (buscador) buscador.focus();
         break;
 
-      case 'ArrowUp':
-        // Mover el foco hacia el título de plataformas (la primera plataforma)
-        if (document.querySelector('.plataforma-item')) {
-          document.querySelector('.plataforma-item').focus();
-        }
+      case 'ArrowDown':
+        // Mover el foco al primer item de la galería
+        const firstItem = document.querySelector('.plataforma-item');
+        if (firstItem) firstItem.focus();
         break;
 
       case 'Enter':
