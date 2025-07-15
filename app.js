@@ -120,10 +120,12 @@ document.addEventListener('keydown', e => {
       case 'ArrowUp':
         document.querySelector('#navPlataformas')?.focus();
         break;
-      case 'Enter':
-        const plataforma = actual.getAttribute('aria-label');
-        alert(`Seleccionaste la plataforma: ${plataforma}`);
-        break;
+case 'Enter':
+  const plataforma = actual.getAttribute('aria-label');
+  if (plataforma && typeof filtrar === 'function') {
+    filtrar(plataforma.toLowerCase());
+  }
+  break;
     }
 
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
