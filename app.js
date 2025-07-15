@@ -219,7 +219,12 @@ function mostrarPeliculas(plataforma) {
   // Lógica para mostrar las películas según la plataforma
   const seccionPeliculas = document.querySelector(`#peliculas-${plataforma}`);
   if (seccionPeliculas) {
-    seccionPeliculas.style.display = 'block'; // Mostrar la sección de películas
+    // Ocultar todas las secciones de películas primero
+    document.querySelectorAll('.seccion-peliculas').forEach(seccion => {
+      seccion.style.display = 'none';
+    });
+    // Mostrar la sección de películas correspondiente
+    seccionPeliculas.style.display = 'block';
     // Enfocar la primera película
     const primeraPelicula = seccionPeliculas.querySelector('.pelicula-item');
     if (primeraPelicula) primeraPelicula.focus();
