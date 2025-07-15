@@ -102,7 +102,7 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
-  // Si el foco está en una plataforma (elemento de la galería)
+  // Si el foco está en una plataforma (card de galería)
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -114,32 +114,29 @@ document.addEventListener('keydown', e => {
         break;
 
       case 'ArrowLeft':
-        // Mover el foco a la plataforma anterior o al aside (si estamos en el primero)
-        if (i - 1 >= 0) {
-          items[i - 1].focus();
-        } else {
+        // Mover el foco a la plataforma anterior, si existe
+        if (i - 1 >= 0) items[i - 1].focus();
+        else {
           // Si estamos en la primera plataforma, ir al aside
-          const asideItems = Array.from(document.querySelectorAll('aside li'));
-          asideItems[0]?.focus(); // Enfocar el primer item del aside
+          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
         }
         break;
 
       case 'ArrowUp':
-        // Mover el foco al buscador cuando estamos en la galería (plataforma)
+        // Mover el foco al buscador
         if (buscador) buscador.focus();
         break;
 
       case 'ArrowDown':
-        // Mover el foco al primer item de la galería
-        const firstItem = document.querySelector('.plataforma-item');
-        if (firstItem) firstItem.focus();
+        // Mover el foco al primer ítem de la galería
+        document.querySelector('.plataforma-item')?.focus();
         break;
 
       case 'Enter':
-        // Si se presiona Enter, ir a la sección de películas
-        const plataformaSeleccionada = actual.getAttribute('aria-label');
-        if (plataformaSeleccionada && typeof mostrarPeliculas === 'function') {
-          mostrarPeliculas(plataformaSeleccionada.toLowerCase());
+        // Al presionar Enter, abrir la plataforma como lo hacíamos antes
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase()); // Llamar a la función para abrir o filtrar la plataforma
         }
         break;
     }
@@ -155,81 +152,28 @@ document.addEventListener('keydown', e => {
   if (actual === buscador) {
     switch (e.key) {
       case 'ArrowUp':
-        // Subir al primer ítem de la galería (la primera plataforma)
-        const firstItem = document.querySelector('.plataforma-item');
-        if (firstItem) firstItem.focus();
+        // Subir al primer ítem de la galería
+        document.querySelector('.plataforma-item')?.focus();
         break;
-
       case 'ArrowDown':
-        // Mover el foco a la primera plataforma si el foco está en el buscador
+        // Mover al primer item si el foco está en el buscador
         const items = Array.from(document.querySelectorAll('.plataforma-item'));
-        if (items.length > 0) {
-          items[0].focus(); // Mover al primer item de la galería
-        }
+        items[0]?.focus(); // Mover al primer item de la galería
         break;
-    }
-  }
-
-  // Si estamos en la sección de películas
-  if (actual.classList.contains('pelicula-item')) {
-    const items = Array.from(document.querySelectorAll('.pelicula-item'));
-    const i = items.indexOf(actual);
-
-    switch (e.key) {
-      case 'ArrowRight':
-        // Mover el foco a la siguiente película, si existe
-        if (i + 1 < items.length) items[i + 1].focus();
-        break;
-
-      case 'ArrowLeft':
-        // Volver a la sección de plataformas (de películas a plataformas)
-        const plataformas = Array.from(document.querySelectorAll('.plataforma-item'));
-        plataformas[0]?.focus(); // Volver a la primera plataforma
-        break;
-
-      case 'ArrowDown':
-        // Mover el foco a la siguiente película, si existe
-        if (i + 1 < items.length) items[i + 1].focus();
-        break;
-
-      case 'ArrowUp':
-        // Mover el foco al buscador
-        buscador?.focus();
-        break;
-
-      case 'Enter':
-        // Acción cuando se selecciona una película
-        const pelicula = actual.getAttribute('aria-label');
-        if (pelicula && typeof verPelicula === 'function') {
-          verPelicula(pelicula.toLowerCase());
-        }
-        break;
-    }
-
-    // Reproducir sonido de clic para las teclas
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
     }
   }
 });
 
-// Función para mostrar las películas de una plataforma seleccionada
-function mostrarPeliculas(plataforma) {
-  // Lógica para mostrar las películas según la plataforma
-  const seccionPeliculas = document.querySelector(`#peliculas-${plataforma}`);
-  if (seccionPeliculas) {
-    // Ocultar todas las secciones de películas primero
-    document.querySelectorAll('.seccion-peliculas').forEach(seccion => {
-      seccion.style.display = 'none';
-    });
-    // Mostrar la sección de películas correspondiente
-    seccionPeliculas.style.display = 'block';
-    // Enfocar la primera película
-    const primeraPelicula = seccionPeliculas.querySelector('.pelicula-item');
-    if (primeraPelicula) primeraPelicula.focus();
-  }
-}
+// Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
+document.querySelectorAll('.plataforma-item').forEach(card => {
+  card.addEventListener('click', e => {
+    // Al hacer clic, obtener el aria-label de la card y aplicar la acción deseada
+    const plataforma = card.getAttribute('aria-label');
+    if (plataforma && typeof filtrar === 'function') {
+      filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
+    }
+  });
+});
   
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
