@@ -102,7 +102,7 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
-  // Si el foco está en una plataforma
+  // Si el foco está en una plataforma (elemento de la galería)
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -114,22 +114,26 @@ document.addEventListener('keydown', e => {
         break;
 
       case 'ArrowLeft':
-        // Mover el foco a la plataforma anterior, si existe
-        if (i - 1 >= 0) items[i - 1].focus();
-        else {
+        // Mover el foco a la plataforma anterior o al aside (si estamos en el primero)
+        if (i - 1 >= 0) {
+          items[i - 1].focus();
+        } else {
           // Si estamos en la primera plataforma, ir al aside
-          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+          const asideItems = Array.from(document.querySelectorAll('aside li'));
+          asideItems[0]?.focus(); // Enfocar el primer item del aside
         }
         break;
 
       case 'ArrowDown':
         // Mover el foco al buscador
-        buscador?.focus();
+        if (buscador) buscador.focus();
         break;
 
       case 'ArrowUp':
-        // Mover el foco hacia el título de plataformas
-        document.querySelector('#navPlataformas')?.focus();
+        // Mover el foco hacia el título de plataformas (la primera plataforma)
+        if (document.querySelector('.plataforma-item')) {
+          document.querySelector('.plataforma-item').focus();
+        }
         break;
 
       case 'Enter':
@@ -147,18 +151,22 @@ document.addEventListener('keydown', e => {
       sonidoClick.play().catch(() => {});
     }
   }
-  
-  // Foco en el buscador (subir y bajar entre la galería y el buscador)
+
+  // Foco en el buscador
   if (actual === buscador) {
     switch (e.key) {
       case 'ArrowUp':
-        // Subir al primer ítem de la galería
-        document.querySelector('.plataforma-item')?.focus();
+        // Subir al primer ítem de la galería (la primera plataforma)
+        const firstItem = document.querySelector('.plataforma-item');
+        if (firstItem) firstItem.focus();
         break;
+
       case 'ArrowDown':
-        // Mover al primer item si el foco está en el buscador
+        // Mover el foco a la primera plataforma si el foco está en el buscador
         const items = Array.from(document.querySelectorAll('.plataforma-item'));
-        items[0]?.focus(); // Mover al primer item de la galería
+        if (items.length > 0) {
+          items[0].focus(); // Mover al primer item de la galería
+        }
         break;
     }
   }
