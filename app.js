@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function filtrarYPintar(filtro, categoriaNombre = '') {
   filtroActual = filtro;
   
+  // Ocultar ambas galerías
   galeria.style.display = 'none';
   galeriaPlataformas.style.display = 'none';
 
@@ -49,16 +50,7 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
   } else {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
-    const peliculasFiltradas = todasPeliculas.filter(filtro);
-    renderPeliculas(peliculasFiltradas);
-    
-    // Aquí aseguramos que el foco vaya a la primera película si existe
-    if (peliculasFiltradas.length > 0) {
-      setTimeout(() => {
-        const primeraCard = galeria.querySelector('.pelicula');
-        primeraCard?.focus();
-      }, 100);
-    }
+    renderPeliculas(todasPeliculas.filter(filtro));
   }
 }
 
@@ -107,19 +99,10 @@ const filtros = {
     });
   }
 
+// Navegación dentro de plataforma-item (galeriaPlataformas)
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
-  // ✅ Si estamos escribiendo en un input (como el buscador), salir
-  if (
-    actual.tagName === 'INPUT' ||
-    actual.tagName === 'TEXTAREA' ||
-    actual.isContentEditable
-  ) {
-    return;
-  }
-
-  // ✅ Si estamos en un ítem de plataforma, aplicar navegación
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -128,40 +111,27 @@ document.addEventListener('keydown', e => {
       case 'ArrowRight':
         items[i + 1]?.focus();
         break;
-
       case 'ArrowLeft':
-        if (i === 0) {
-          document.querySelector('aside li.activo')?.focus() || document.querySelector('aside li')?.focus();
-        } else {
-          items[i - 1]?.focus();
-        }
+        items[i - 1]?.focus();
         break;
-
+      case 'ArrowDown':
+        buscador?.focus();
+        break;
       case 'ArrowUp':
-        document.getElementById('buscadorPeliculas')?.focus();
+        document.querySelector('#navPlataformas')?.focus();
         break;
-
-      case 'Enter':
-        const plataforma = actual.getAttribute('aria-label');
-        if (plataforma && typeof filtrar === 'function') {
-          filtrar(plataforma.toLowerCase());
-        }
-        break;
+case 'Enter':
+  const plataforma = actual.getAttribute('aria-label');
+  if (plataforma && typeof filtrar === 'function') {
+    filtrar(plataforma.toLowerCase());
+  }
+  break;
     }
 
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
-  }
-});
-
-buscador.addEventListener('keydown', e => {
-  // Solo reaccionar si es ArrowDown
-  if (e.key === 'ArrowDown') {
-    e.preventDefault(); // evitar que baje línea
-    const primeraPlataforma = document.querySelector('.plataforma-item') || peliculas()[0];
-    primeraPlataforma?.focus();
   }
 });
   
