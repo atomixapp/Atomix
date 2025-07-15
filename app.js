@@ -102,6 +102,7 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
+  // ✅ Si estamos en el input del buscador, salir
   if (
     actual.tagName === 'INPUT' ||
     actual.tagName === 'TEXTAREA' ||
@@ -110,6 +111,7 @@ document.addEventListener('keydown', e => {
     return;
   }
 
+  // Solo activar si estamos en un ítem de plataforma
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -153,23 +155,26 @@ document.addEventListener('keydown', e => {
   }
 
   // Si estamos en el buscador, manejar la navegación hacia abajo
-  if (actual === buscador && e.key === 'ArrowDown') {
-    // Foco a la primera película de la galería
-    const primeraPelicula = document.querySelector('.pelicula');
-    primeraPelicula?.focus();
-  }
+  if (actual === buscador) {
+    switch (e.key) {
+      case 'ArrowDown':
+        // Foco a la primera película de la galería
+        const primeraPelicula = document.querySelector('.pelicula');
+        primeraPelicula?.focus();
+        break;
 
-  // Si estamos en el buscador, manejar la navegación hacia arriba
-  if (actual === buscador && e.key === 'ArrowUp') {
-    // Foco hacia el primer item de plataforma
-    const primeraPlataforma = document.querySelector('.plataforma-item');
-    primeraPlataforma?.focus();
-  }
+      case 'ArrowUp':
+        // Foco hacia el primer item de plataforma
+        const primeraPlataforma = document.querySelector('.plataforma-item');
+        primeraPlataforma?.focus();
+        break;
+    }
 
-  // Sonido de click para el buscador
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
+    // Sonido de click para el buscador
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
   }
 });
 
