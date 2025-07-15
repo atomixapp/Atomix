@@ -110,8 +110,10 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
-  if (actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA') return;
+  // 🛑 Si estás en el input del buscador, no hagas nada aquí
+  if (actual === buscador) return;
 
+  // Solo activar si estás en un ítem de plataforma
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -120,6 +122,7 @@ document.addEventListener('keydown', e => {
       case 'ArrowRight':
         items[i + 1]?.focus();
         break;
+
       case 'ArrowLeft':
         if (i === 0) {
           document.querySelector('aside li.activo')?.focus() || document.querySelector('aside li')?.focus();
@@ -127,11 +130,15 @@ document.addEventListener('keydown', e => {
           items[i - 1]?.focus();
         }
         break;
+
       case 'ArrowUp':
         buscador?.focus();
         break;
+
       case 'ArrowDown':
+        // No hacer nada o implementar navegación a otra sección
         break;
+
       case 'Enter':
         const plataforma = actual.getAttribute('aria-label');
         if (plataforma && typeof filtrar === 'function') {
