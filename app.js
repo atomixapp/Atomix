@@ -110,8 +110,7 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
-  // 🛑 Si estás en el input del buscador, no hagas nada aquí
-  if (actual === buscador) return;
+if (actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable) return;
 
   // Solo activar si estás en un ítem de plataforma
   if (actual.classList.contains('plataforma-item')) {
@@ -154,10 +153,9 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// Navegación del buscador
 buscador.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') {
-    // Al bajar desde buscador, enfoca la primera plataforma
+    e.preventDefault(); // Opcional: evita que el cursor baje
     const primeraPlataforma = document.querySelector('.plataforma-item');
     primeraPlataforma?.focus();
   }
