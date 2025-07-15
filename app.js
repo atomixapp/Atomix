@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function filtrarYPintar(filtro, categoriaNombre = '') {
   filtroActual = filtro;
   
-  // Ocultar ambas galerías
   galeria.style.display = 'none';
   galeriaPlataformas.style.display = 'none';
 
@@ -50,7 +49,16 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
   } else {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
-    renderPeliculas(todasPeliculas.filter(filtro));
+    const peliculasFiltradas = todasPeliculas.filter(filtro);
+    renderPeliculas(peliculasFiltradas);
+    
+    // Aquí aseguramos que el foco vaya a la primera película si existe
+    if (peliculasFiltradas.length > 0) {
+      setTimeout(() => {
+        const primeraCard = galeria.querySelector('.pelicula');
+        primeraCard?.focus();
+      }, 100);
+    }
   }
 }
 
