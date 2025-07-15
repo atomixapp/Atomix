@@ -99,38 +99,67 @@ const filtros = {
     });
   }
 
-// Navegación dentro de plataforma-item (galeriaPlataformas)
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
+  // Si el foco está en una plataforma
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
 
     switch (e.key) {
       case 'ArrowRight':
-        items[i + 1]?.focus();
+        // Mover el foco a la siguiente plataforma, si existe
+        if (i + 1 < items.length) items[i + 1].focus();
         break;
+
       case 'ArrowLeft':
-        items[i - 1]?.focus();
+        // Mover el foco a la plataforma anterior, si existe
+        if (i - 1 >= 0) items[i - 1].focus();
+        else {
+          // Si estamos en la primera plataforma, ir al aside
+          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+        }
         break;
+
       case 'ArrowDown':
+        // Mover el foco al buscador
         buscador?.focus();
         break;
+
       case 'ArrowUp':
+        // Mover el foco hacia el título de plataformas
         document.querySelector('#navPlataformas')?.focus();
         break;
-case 'Enter':
-  const plataforma = actual.getAttribute('aria-label');
-  if (plataforma && typeof filtrar === 'function') {
-    filtrar(plataforma.toLowerCase());
-  }
-  break;
+
+      case 'Enter':
+        // Si se presiona Enter, aplicar filtro según la plataforma seleccionada
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+        }
+        break;
     }
 
+    // Reproducir sonido de clic para las teclas
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
+    }
+  }
+  
+  // Foco en el buscador (subir y bajar entre la galería y el buscador)
+  if (actual === buscador) {
+    switch (e.key) {
+      case 'ArrowUp':
+        // Subir al primer ítem de la galería
+        document.querySelector('.plataforma-item')?.focus();
+        break;
+      case 'ArrowDown':
+        // Mover al primer item si el foco está en el buscador
+        const items = Array.from(document.querySelectorAll('.plataforma-item'));
+        items[0]?.focus(); // Mover al primer item de la galería
+        break;
     }
   }
 });
