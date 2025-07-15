@@ -107,9 +107,10 @@ const filtros = {
     });
   }
 
-// Navegación dentro de plataforma-item (galeriaPlataformas)
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
+
+  if (actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA') return;
 
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
@@ -119,20 +120,17 @@ document.addEventListener('keydown', e => {
       case 'ArrowRight':
         items[i + 1]?.focus();
         break;
-case 'ArrowLeft':
-  if (i === 0) {
-    // Si es el primer item de plataformas, mover el foco al aside
-    document.querySelector('aside li.activo')?.focus() || document.querySelector('aside li')?.focus();
-  } else {
-    items[i - 1]?.focus();
-  }
-  break;
+      case 'ArrowLeft':
+        if (i === 0) {
+          document.querySelector('aside li.activo')?.focus() || document.querySelector('aside li')?.focus();
+        } else {
+          items[i - 1]?.focus();
+        }
+        break;
       case 'ArrowUp':
-        buscador?.focus();  // AHORA sube al buscador
+        buscador?.focus();
         break;
       case 'ArrowDown':
-        // Aquí puedes decidir si quieres que baje a otro lugar o no haga nada
-        // Por ejemplo: nada para que no salga del área
         break;
       case 'Enter':
         const plataforma = actual.getAttribute('aria-label');
