@@ -79,6 +79,7 @@ const filtros = {
   terror: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('terror')
   netflix: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('netflix'),
   amazon: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('amazon'),
+  disney: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('disney'),
 };
 
   const filtro = filtros[categoria] || (() => true);
