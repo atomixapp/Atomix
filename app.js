@@ -119,9 +119,14 @@ document.addEventListener('keydown', e => {
       case 'ArrowRight':
         items[i + 1]?.focus();
         break;
-      case 'ArrowLeft':
-        items[i - 1]?.focus();
-        break;
+case 'ArrowLeft':
+  if (i === 0) {
+    // Si es el primer item de plataformas, mover el foco al aside
+    document.querySelector('aside li.activo')?.focus() || document.querySelector('aside li')?.focus();
+  } else {
+    items[i - 1]?.focus();
+  }
+  break;
       case 'ArrowUp':
         buscador?.focus();  // AHORA sube al buscador
         break;
