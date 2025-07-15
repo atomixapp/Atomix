@@ -31,11 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let filtroActual = () => true;
 
-  // Reemplazar la función de filtrado y renderizado con lógica adicional para plataformas
   function filtrarYPintar(filtro, categoriaNombre = '') {
     filtroActual = filtro;
-
-    // Ocultar ambas galerías
     galeria.style.display = 'none';
     galeriaPlataformas.style.display = 'none';
 
@@ -43,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tituloCategoria.textContent = 'PLATAFORMAS';
       galeriaPlataformas.style.display = 'flex';
 
-      // Enfocar primer ítem de plataforma
       const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
       if (items.length > 0) {
         setTimeout(() => items[0].focus(), 100);
@@ -55,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Filtrador de categorías como lo tenías originalmente
   window.filtrar = function (categoria) {
     if (categoria === 'plataformas') {
       filtrarYPintar(() => true, 'plataformas');
@@ -66,14 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
       todos: () => true,
       estrenos2025: p => p.anio === 2025,
       estrenos2024: p => p.anio === 2024,
-      // ... tus demás filtros
     };
 
     const filtro = filtros[categoria] || (() => true);
     filtrarYPintar(filtro, categoria);
   };
 
-  // Configuración de la cuenta (sin cambios)
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
       e.stopPropagation();
@@ -87,11 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Navegación con teclas (principalmente para plataformas y buscador)
   document.addEventListener('keydown', e => {
     const actual = document.activeElement;
 
-    // ✅ Si estamos en el input del buscador, salir
     if (
       actual.tagName === 'INPUT' ||
       actual.tagName === 'TEXTAREA' ||
@@ -100,28 +91,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Si estamos en un ítem de plataforma
     if (actual.classList.contains('plataforma-item')) {
       const items = Array.from(document.querySelectorAll('.plataforma-item'));
       const i = items.indexOf(actual);
 
       switch (e.key) {
         case 'ArrowRight':
-          items[i + 1]?.focus(); // Mover al siguiente ítem
+          items[i + 1]?.focus();
           break;
         case 'ArrowLeft':
-          items[i - 1]?.focus(); // Mover al anterior
+          items[i - 1]?.focus();
           break;
         case 'ArrowDown':
-          // Foco hacia el primer item de la galería de películas
           document.querySelector('.pelicula')?.focus();
           break;
         case 'ArrowUp':
-          // Foco hacia el buscador
           buscador?.focus();
           break;
         case 'Enter':
-          // Ejecutar la función de filtro al presionar Enter
           const plataforma = actual.getAttribute('aria-label');
           if (plataforma && typeof filtrar === 'function') {
             filtrar(plataforma.toLowerCase());
@@ -132,21 +119,19 @@ document.addEventListener('DOMContentLoaded', () => {
       sonidoClick.play();
     }
 
-    // Si estamos en el buscador, manejar la navegación hacia abajo
     if (actual === buscador) {
       switch (e.key) {
         case 'ArrowDown':
-          document.querySelector('.pelicula')?.focus(); // Foco hacia la primera película
+          document.querySelector('.pelicula')?.focus();
           break;
         case 'ArrowUp':
-          document.querySelector('.plataforma-item')?.focus(); // Foco hacia la primera plataforma
+          document.querySelector('.plataforma-item')?.focus();
           break;
       }
       sonidoClick.play();
     }
   });
 
-  // Foco inicial al cargar la página (primer ítem de plataforma)
   document.addEventListener('DOMContentLoaded', () => {
     const primeraPlataforma = document.querySelector('.plataforma-item');
     if (primeraPlataforma) {
@@ -154,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Configuración de la navegación lateral (sin cambios importantes)
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
     asideItems.forEach((li, idx) => {
@@ -216,46 +200,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let ultimaTarjetaActiva = null;
 
-function abrirModal(pelicula) {
-  peliculaActiva = pelicula;
-  const modal = document.getElementById('modalPelicula');
+  function abrirModal(pelicula) {
+    peliculaActiva = pelicula;
+    const modal = document.getElementById('modalPelicula');
 
-  ultimaTarjetaActiva = document.activeElement;
+    ultimaTarjetaActiva = document.activeElement;
 
-  document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-  document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
-  document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-  document.getElementById('modalExtraInfo').innerHTML = `
-    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-  `;
+    document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+    document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
+    document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+    document.getElementById('modalExtraInfo').innerHTML = `
+      <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+      <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+    `;
 
-  // Mostrar u ocultar el botón "Ver trailer"
-  const btnTrailer = document.getElementById('btnVerTrailer');
-  if (pelicula.trailerUrl) {
-    btnTrailer.style.display = 'flex';
-    btnTrailer.onclick = verTrailer;
-  } else {
-    btnTrailer.style.display = 'none';
+    const btnTrailer = document.getElementById('btnVerTrailer');
+    if (pelicula.trailerUrl) {
+      btnTrailer.style.display = 'flex';
+      btnTrailer.onclick = verTrailer;
+    } else {
+      btnTrailer.style.display = 'none';
+    }
+
+    modal.style.display = 'flex';
+
+    setTimeout(() => {
+      document.getElementById('btnVerAhora')?.focus();
+    }, 100);
+
+    document.getElementById('cerrarModal').onclick = cerrarModal;
+    document.getElementById('btnVerAhora').onclick = verVideo;
+    document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
+
+    const modalContenido = modal.querySelector('.modal-contenido');
+    modalContenido.removeEventListener('keydown', manejarNavegacionModal);
+    modalContenido.addEventListener('keydown', manejarNavegacionModal);
   }
 
-  modal.style.display = 'flex';
-
-  setTimeout(() => {
-    document.getElementById('btnVerAhora')?.focus();
-  }, 100);
-
-  document.getElementById('cerrarModal').onclick = cerrarModal;
-  document.getElementById('btnVerAhora').onclick = verVideo;
-  document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
-
-  const modalContenido = modal.querySelector('.modal-contenido');
-  modalContenido.removeEventListener('keydown', manejarNavegacionModal);
-  modalContenido.addEventListener('keydown', manejarNavegacionModal);
-}
-
-  let videoRef = null;
+  function cerrarModal() {
+    document.getElementById('modalPelicula').style.display = 'none';
+    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
+  }
 
   function verTrailer() {
     if (!peliculaActiva?.trailerUrl) return;
@@ -275,7 +261,6 @@ function abrirModal(pelicula) {
     video.style.height = '100%';
 
     contenedorVideo.appendChild(video);
-    videoRef = video;
 
     document.getElementById('modalPelicula').style.display = 'none';
     modalVideo.style.display = 'flex';
@@ -313,6 +298,7 @@ function abrirModal(pelicula) {
     const contenedor = document.getElementById('contenedorVideo');
 
     try {
+      const videoRef = document.getElementById('trailerVideo');
       if (videoRef instanceof HTMLVideoElement) {
         videoRef.pause();
         videoRef.currentTime = 0;
@@ -328,57 +314,52 @@ function abrirModal(pelicula) {
 
     document.removeEventListener('keydown', manejarEscape);
     document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
-    videoRef = null;
   }
 
-function manejarNavegacionModal(e) {
-  const btnVerAhora = document.getElementById('btnVerAhora');
-  const btnVerTrailer = document.getElementById('btnVerTrailer');
-  const btnSinopsis = document.getElementById('btnMostrarSinopsis');
-  const btnCerrar = document.getElementById('cerrarModal');
+  function manejarNavegacionModal(e) {
+    const btnVerAhora = document.getElementById('btnVerAhora');
+    const btnVerTrailer = document.getElementById('btnVerTrailer');
+    const btnSinopsis = document.getElementById('btnMostrarSinopsis');
+    const btnCerrar = document.getElementById('cerrarModal');
 
-  const actual = document.activeElement;
+    const actual = document.activeElement;
 
-  if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(actual)) return;
+    if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(actual)) return;
 
-  if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-    e.preventDefault();
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
+    if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      e.preventDefault();
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+
+    if (actual === btnVerAhora && e.key === 'ArrowRight') {
+      btnVerTrailer.focus();
+    } else if (actual === btnVerTrailer && e.key === 'ArrowLeft') {
+      btnVerAhora.focus();
+    }
+
+    else if ((actual === btnVerTrailer || actual === btnVerAhora) && e.key === 'ArrowDown') {
+      btnSinopsis.focus();
+    }
+
+    else if (actual === btnSinopsis && e.key === 'ArrowUp') {
+      btnVerTrailer.focus();
+    }
+
+    else if ((actual === btnVerAhora || actual === btnVerTrailer) && e.key === 'ArrowUp') {
+      btnCerrar.focus();
+    }
+
+    else if (actual === btnCerrar && e.key === 'ArrowDown') {
+      btnVerAhora.focus();
+    }
+
+    else if (e.key === 'Enter') {
+      actual.click();
+    }
   }
+});
 
-  // Navegación horizontal entre "Ver ahora" y "Ver trailer"
-  if (actual === btnVerAhora && e.key === 'ArrowRight') {
-    btnVerTrailer.focus();
-  } else if (actual === btnVerTrailer && e.key === 'ArrowLeft') {
-    btnVerAhora.focus();
-  }
-
-  // Vertical hacia sinopsis desde "Ver ahora" o "Ver trailer"
-  else if ((actual === btnVerTrailer || actual === btnVerAhora) && e.key === 'ArrowDown') {
-    btnSinopsis.focus();
-  }
-
-  // Subir desde sinopsis
-  else if (actual === btnSinopsis && e.key === 'ArrowUp') {
-    btnVerTrailer.focus(); // Puedes cambiar a btnVerAhora si prefieres
-  }
-
-  // Subir desde ver ahora/trailer hacia la X
-  else if ((actual === btnVerAhora || actual === btnVerTrailer) && e.key === 'ArrowUp') {
-    btnCerrar.focus();
-  }
-
-  // Bajar desde la X hacia ver ahora
-  else if (actual === btnCerrar && e.key === 'ArrowDown') {
-    btnVerAhora.focus();
-  }
-
-  // Enter ejecuta acción
-  else if (e.key === 'Enter') {
-    actual.click();
-  }
-}
   
   function cerrarModal() {
     document.getElementById('modalPelicula').style.display = 'none';
