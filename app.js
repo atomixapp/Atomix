@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => { 
+document.addEventListener('DOMContentLoaded', () => {
   const galeria = document.getElementById('galeria');
   const galeriaPlataformas = document.getElementById('galeriaPlataformas');
   const buscador = document.getElementById('buscadorPeliculas');
@@ -31,42 +31,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let filtroActual = () => true;
 
-  function filtrarYPintar(filtro, categoriaNombre = '') {
-    filtroActual = filtro;
-    galeria.style.display = 'none';
-    galeriaPlataformas.style.display = 'none';
+function filtrarYPintar(filtro, categoriaNombre = '') {
+  filtroActual = filtro;
+  
+  // Ocultar ambas galerías
+  galeria.style.display = 'none';
+  galeriaPlataformas.style.display = 'none';
 
-    if (categoriaNombre === 'plataformas') {
-      tituloCategoria.textContent = 'PLATAFORMAS';
-      galeriaPlataformas.style.display = 'flex';
+  if (categoriaNombre === 'plataformas') {
+    tituloCategoria.textContent = 'PLATAFORMAS';
+    galeriaPlataformas.style.display = 'flex';
 
-      const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
-      if (items.length > 0) {
-        setTimeout(() => items[0].focus(), 100);
-      }
-    } else {
-      tituloCategoria.textContent = categoriaNombre.toUpperCase();
-      galeria.style.display = 'flex';
-      renderPeliculas(todasPeliculas.filter(filtro));
+    // Enfocar primer ítem de plataforma
+    const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
+    if (items.length > 0) {
+      setTimeout(() => items[0].focus(), 100);
     }
+  } else {
+    tituloCategoria.textContent = categoriaNombre.toUpperCase();
+    galeria.style.display = 'flex';
+    renderPeliculas(todasPeliculas.filter(filtro));
+  }
+}
+
+window.filtrar = function (categoria) {
+  if (categoria === 'plataformas') {
+    filtrarYPintar(() => true, 'plataformas');
+    return;
   }
 
-  window.filtrar = function (categoria) {
-    if (categoria === 'plataformas') {
-      filtrarYPintar(() => true, 'plataformas');
-      return;
-    }
+const filtros = {
+  todos: () => true,
+  estrenos2025: p => p.anio === 2025,
+  estrenos2024: p => p.anio === 2024,
 
-    const filtros = {
-      todos: () => true,
-      estrenos2025: p => p.anio === 2025,
-      estrenos2024: p => p.anio === 2024,
-    };
+  accion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('acción'),
+  animacion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('animación'),
+  artesmarciales: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('artes marciales'),
+  aventuras: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('aventura'),
+  cienciaficcion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('ciencia ficción'),
+  comedia: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('comedia'),
+  drama: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('drama'),
+  fantasia: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('fantasía'),
+  romance: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('romance'),
+  suspense: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('suspense'),
+  terror: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('terror'),
+  netflix: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('netflix'),
+  amazon: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('amazon'),
+  disney: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('disney'),
+  2025: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('2025'),
+};
 
-    const filtro = filtros[categoria] || (() => true);
-    filtrarYPintar(filtro, categoria);
-  };
-
+  const filtro = filtros[categoria] || (() => true);
+  filtrarYPintar(filtro, categoria);
+};
+  
   function configurarCuenta() {
     botonCuenta.addEventListener('click', e => {
       e.stopPropagation();
@@ -80,77 +99,134 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  document.addEventListener('keydown', e => {
-    const actual = document.activeElement;
+// Navegación dentro de plataforma-item (galeriaPlataformas)
+document.addEventListener('keydown', e => {
+  const actual = document.activeElement;
 
-    if (
-      actual.tagName === 'INPUT' ||
-      actual.tagName === 'TEXTAREA' ||
-      actual.isContentEditable
-    ) {
-      return;
+  if (actual.classList.contains('plataforma-item')) {
+    const items = Array.from(document.querySelectorAll('.plataforma-item'));
+    const i = items.indexOf(actual);
+
+    switch (e.key) {
+      case 'ArrowRight':
+        items[i + 1]?.focus();
+        break;
+      case 'ArrowLeft':
+        items[i - 1]?.focus();
+        break;
+      case 'ArrowDown':
+        buscador?.focus();
+        break;
+      case 'ArrowUp':
+        document.querySelector('#navPlataformas')?.focus();
+        break;
+case 'Enter':
+  const plataforma = actual.getAttribute('aria-label');
+  if (plataforma && typeof filtrar === 'function') {
+    filtrar(plataforma.toLowerCase());
+  }
+  break;
     }
 
-    if (actual.classList.contains('plataforma-item')) {
-      const items = Array.from(document.querySelectorAll('.plataforma-item'));
-      const i = items.indexOf(actual);
-
-      switch (e.key) {
-        case 'ArrowRight':
-          items[i + 1]?.focus();
-          break;
-        case 'ArrowLeft':
-          items[i - 1]?.focus();
-          break;
-        case 'ArrowDown':
-          document.querySelector('.pelicula')?.focus();
-          break;
-        case 'ArrowUp':
-          buscador?.focus();
-          break;
-        case 'Enter':
-          const plataforma = actual.getAttribute('aria-label');
-          if (plataforma && typeof filtrar === 'function') {
-            filtrar(plataforma.toLowerCase());
-          }
-          break;
-      }
-
-      sonidoClick.play();
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
     }
-
-    if (actual === buscador) {
-      switch (e.key) {
-        case 'ArrowDown':
-          document.querySelector('.pelicula')?.focus();
-          break;
-        case 'ArrowUp':
-          document.querySelector('.plataforma-item')?.focus();
-          break;
-      }
-      sonidoClick.play();
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const primeraPlataforma = document.querySelector('.plataforma-item');
-    if (primeraPlataforma) {
-      setTimeout(() => primeraPlataforma.focus(), 100);
-    }
-  });
-
+  }
+});
+  
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
-    asideItems.forEach((li, idx) => {
-      li.setAttribute('tabindex', '0');
-      li.addEventListener('keydown', e => {
-        if (e.key === 'Enter') li.click();
-        else if (e.key === 'ArrowDown') {
-          if (idx < asideItems.length - 1) asideItems[idx + 1].focus();
-        } else if (e.key === 'ArrowUp') {
-          if (idx > 0) asideItems[idx - 1].focus();
+    const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
+    const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
+
+asideItems.forEach((li, idx) => {
+  li.setAttribute('tabindex', '0');
+  li.addEventListener('keydown', e => {
+    if (e.key === 'Enter') li.click();
+    else if (e.key === 'ArrowDown') {
+      if (idx < asideItems.length - 1) {
+        asideItems[idx + 1].focus();
+      }
+      // Si está en el último, no hace nada
+    } else if (e.key === 'ArrowUp') {
+      if (idx > 0) asideItems[idx - 1].focus();
+      else navLinks[0]?.focus();
+    } else if (e.key === 'ArrowRight') {
+      peliculas()[0]?.focus();
+    }
+
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  });
+});
+
+    navLinks.forEach((link, i) => {
+      link.setAttribute('tabindex', '0');
+      link.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') {
+          if (i < navLinks.length - 1) navLinks[i + 1].focus();
+          else botonCuenta.focus();
+        } else if (e.key === 'ArrowLeft') {
+          if (i > 0) navLinks[i - 1].focus();
+        } else if (e.key === 'ArrowDown') {
+          asideItems[0]?.focus();
         }
       });
+    });
+
+    botonCuenta.setAttribute('tabindex', '0');
+    botonCuenta.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
+    });
+
+galeria.addEventListener('keydown', e => {
+  const cards = peliculas();
+  const columnas = 4;
+  const i = cards.indexOf(document.activeElement);
+  if (i === -1) return;
+
+  switch (e.key) {
+    case 'ArrowRight':
+      cards[i + 1]?.focus();
+      break;
+
+    case 'ArrowLeft':
+      if (i === 0) {
+        // Solo desde la primera card se vuelve al aside
+        document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+      } else {
+        cards[i - 1]?.focus();
+      }
+      break;
+
+    case 'ArrowDown':
+      cards[i + columnas]?.focus();
+      break;
+
+    case 'ArrowUp':
+      if (i < columnas) buscador.focus();
+      else cards[i - columnas]?.focus();
+      break;
+
+    case 'Enter':
+      cards[i].click();
+      break;
+  }
+
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
+});
+
+    buscador.setAttribute('tabindex', '0');
+    buscador.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') {
+        peliculas()[0]?.focus();
+      }
     });
   }
 
@@ -158,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
       todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderPeliculas(todasPeliculas);
+      establecerFocoInicial();
     });
   }
 
@@ -200,48 +277,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let ultimaTarjetaActiva = null;
 
-  function abrirModal(pelicula) {
-    peliculaActiva = pelicula;
-    const modal = document.getElementById('modalPelicula');
+function abrirModal(pelicula) {
+  peliculaActiva = pelicula;
+  const modal = document.getElementById('modalPelicula');
 
-    ultimaTarjetaActiva = document.activeElement;
+  ultimaTarjetaActiva = document.activeElement;
 
-    document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
-    document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
-    document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-    document.getElementById('modalExtraInfo').innerHTML = `
-      <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-      <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-      <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-    `;
+  document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
+  document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
+  document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+  document.getElementById('modalExtraInfo').innerHTML = `
+    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+  `;
 
-    const btnTrailer = document.getElementById('btnVerTrailer');
-    if (pelicula.trailerUrl) {
-      btnTrailer.style.display = 'flex';
-      btnTrailer.onclick = verTrailer;
-    } else {
-      btnTrailer.style.display = 'none';
-    }
-
-    modal.style.display = 'flex';
-
-    setTimeout(() => {
-      document.getElementById('btnVerAhora')?.focus();
-    }, 100);
-
-    document.getElementById('cerrarModal').onclick = cerrarModal;
-    document.getElementById('btnVerAhora').onclick = verVideo;
-    document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
-
-    const modalContenido = modal.querySelector('.modal-contenido');
-    modalContenido.removeEventListener('keydown', manejarNavegacionModal);
-    modalContenido.addEventListener('keydown', manejarNavegacionModal);
+  // Mostrar u ocultar el botón "Ver trailer"
+  const btnTrailer = document.getElementById('btnVerTrailer');
+  if (pelicula.trailerUrl) {
+    btnTrailer.style.display = 'flex';
+    btnTrailer.onclick = verTrailer;
+  } else {
+    btnTrailer.style.display = 'none';
   }
 
-  function cerrarModal() {
-    document.getElementById('modalPelicula').style.display = 'none';
-    if (ultimaTarjetaActiva) ultimaTarjetaActiva.focus();
-  }
+  modal.style.display = 'flex';
+
+  setTimeout(() => {
+    document.getElementById('btnVerAhora')?.focus();
+  }, 100);
+
+  document.getElementById('cerrarModal').onclick = cerrarModal;
+  document.getElementById('btnVerAhora').onclick = verVideo;
+  document.getElementById('btnMostrarSinopsis').onclick = mostrarSinopsis;
+
+  const modalContenido = modal.querySelector('.modal-contenido');
+  modalContenido.removeEventListener('keydown', manejarNavegacionModal);
+  modalContenido.addEventListener('keydown', manejarNavegacionModal);
+}
+
+  let videoRef = null;
 
   function verTrailer() {
     if (!peliculaActiva?.trailerUrl) return;
@@ -261,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
     video.style.height = '100%';
 
     contenedorVideo.appendChild(video);
+    videoRef = video;
 
     document.getElementById('modalPelicula').style.display = 'none';
     modalVideo.style.display = 'flex';
@@ -298,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const contenedor = document.getElementById('contenedorVideo');
 
     try {
-      const videoRef = document.getElementById('trailerVideo');
       if (videoRef instanceof HTMLVideoElement) {
         videoRef.pause();
         videoRef.currentTime = 0;
@@ -314,52 +389,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.removeEventListener('keydown', manejarEscape);
     document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
+    videoRef = null;
   }
 
-  function manejarNavegacionModal(e) {
-    const btnVerAhora = document.getElementById('btnVerAhora');
-    const btnVerTrailer = document.getElementById('btnVerTrailer');
-    const btnSinopsis = document.getElementById('btnMostrarSinopsis');
-    const btnCerrar = document.getElementById('cerrarModal');
+function manejarNavegacionModal(e) {
+  const btnVerAhora = document.getElementById('btnVerAhora');
+  const btnVerTrailer = document.getElementById('btnVerTrailer');
+  const btnSinopsis = document.getElementById('btnMostrarSinopsis');
+  const btnCerrar = document.getElementById('cerrarModal');
 
-    const actual = document.activeElement;
+  const actual = document.activeElement;
 
-    if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(actual)) return;
+  if (![btnVerAhora, btnVerTrailer, btnSinopsis, btnCerrar].includes(actual)) return;
 
-    if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-      e.preventDefault();
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
-    }
-
-    if (actual === btnVerAhora && e.key === 'ArrowRight') {
-      btnVerTrailer.focus();
-    } else if (actual === btnVerTrailer && e.key === 'ArrowLeft') {
-      btnVerAhora.focus();
-    }
-
-    else if ((actual === btnVerTrailer || actual === btnVerAhora) && e.key === 'ArrowDown') {
-      btnSinopsis.focus();
-    }
-
-    else if (actual === btnSinopsis && e.key === 'ArrowUp') {
-      btnVerTrailer.focus();
-    }
-
-    else if ((actual === btnVerAhora || actual === btnVerTrailer) && e.key === 'ArrowUp') {
-      btnCerrar.focus();
-    }
-
-    else if (actual === btnCerrar && e.key === 'ArrowDown') {
-      btnVerAhora.focus();
-    }
-
-    else if (e.key === 'Enter') {
-      actual.click();
-    }
+  if (['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    e.preventDefault();
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
   }
-});
 
+  // Navegación horizontal entre "Ver ahora" y "Ver trailer"
+  if (actual === btnVerAhora && e.key === 'ArrowRight') {
+    btnVerTrailer.focus();
+  } else if (actual === btnVerTrailer && e.key === 'ArrowLeft') {
+    btnVerAhora.focus();
+  }
+
+  // Vertical hacia sinopsis desde "Ver ahora" o "Ver trailer"
+  else if ((actual === btnVerTrailer || actual === btnVerAhora) && e.key === 'ArrowDown') {
+    btnSinopsis.focus();
+  }
+
+  // Subir desde sinopsis
+  else if (actual === btnSinopsis && e.key === 'ArrowUp') {
+    btnVerTrailer.focus(); // Puedes cambiar a btnVerAhora si prefieres
+  }
+
+  // Subir desde ver ahora/trailer hacia la X
+  else if ((actual === btnVerAhora || actual === btnVerTrailer) && e.key === 'ArrowUp') {
+    btnCerrar.focus();
+  }
+
+  // Bajar desde la X hacia ver ahora
+  else if (actual === btnCerrar && e.key === 'ArrowDown') {
+    btnVerAhora.focus();
+  }
+
+  // Enter ejecuta acción
+  else if (e.key === 'Enter') {
+    actual.click();
+  }
+}
   
   function cerrarModal() {
     document.getElementById('modalPelicula').style.display = 'none';
