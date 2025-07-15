@@ -157,15 +157,12 @@ document.addEventListener('keydown', e => {
 });
 
 buscador.addEventListener('keydown', e => {
-  e.stopPropagation(); // 🔒 importante: evita interferencias globales
-
+  // Solo reaccionar si es ArrowDown
   if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    const primeraPlataforma = document.querySelector('.plataforma-item');
+    e.preventDefault(); // evitar que baje línea
+    const primeraPlataforma = document.querySelector('.plataforma-item') || peliculas()[0];
     primeraPlataforma?.focus();
   }
-
-  // ArrowUp opcional
 });
   
   function configurarNavegacionLateral() {
