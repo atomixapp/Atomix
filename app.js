@@ -99,12 +99,12 @@ const filtros = {
     });
   }
 
-// Navegación dentro de plataforma-item (galeriaPlataformas)
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-
+  
+  // Si el foco está en una plataforma
   if (actual.classList.contains('plataforma-item')) {
-    const items = Array.from(document.querySelectorAll('.plataforma-item'));
+    const items = Array.from(galeriaPlataformas.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
 
     switch (e.key) {
@@ -115,19 +115,20 @@ document.addEventListener('keydown', e => {
         items[i - 1]?.focus();
         break;
       case 'ArrowDown':
-        buscador?.focus();
+        buscador?.focus();  // Deberías llevar el foco al buscador si se presiona 'ArrowDown'
         break;
       case 'ArrowUp':
-        document.querySelector('#navPlataformas')?.focus();
+        document.querySelector('#navPlataformas')?.focus();  // Llevar el foco a la categoría de Plataformas
         break;
-case 'Enter':
-  const plataforma = actual.getAttribute('aria-label');
-  if (plataforma && typeof filtrar === 'function') {
-    filtrar(plataforma.toLowerCase());
-  }
-  break;
+      case 'Enter':
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+        }
+        break;
     }
 
+    // Reproducir sonido al mover el foco
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
