@@ -62,7 +62,6 @@ window.filtrar = function (categoria) {
 
 const filtros = {
   todos: () => true,
-  favoritos: p => p.favorito === true,
   estrenos2025: p => p.anio === 2025,
   estrenos2024: p => p.anio === 2024,
 
@@ -76,10 +75,11 @@ const filtros = {
   fantasia: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('fantasía'),
   romance: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('romance'),
   suspense: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('suspense'),
-  terror: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('terror')
+  terror: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('terror'),
   netflix: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('netflix'),
   amazon: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('amazon'),
   disney: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('disney'),
+  2025: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('2025'),
 };
 
   const filtro = filtros[categoria] || (() => true);
