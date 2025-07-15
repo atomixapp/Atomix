@@ -171,33 +171,38 @@ main {
 }
 
 .galeria-plataformas {
-  display: flex;
-  justify-content: center;
-  gap: 3rem;
-  margin-bottom: 2rem;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .plataforma-item {
-  flex: 0 0 auto;
-  max-width: 150px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #111;
+  border-radius: 12px;
+  overflow: hidden;
   cursor: pointer;
-  outline: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
 }
 
 .plataforma-item img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
-  border-radius: 8px;
 }
 
 .plataforma-item:focus,
 .plataforma-item:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   box-shadow: 0 0 15px #ff3d00;
 }
 
