@@ -101,8 +101,7 @@ const filtros = {
 
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-  
-  // Si estamos en el input del buscador, evitar el resto de la lógica
+
   if (
     actual.tagName === 'INPUT' ||
     actual.tagName === 'TEXTAREA' ||
@@ -111,7 +110,6 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Solo activar si estamos en un ítem de plataforma
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -128,14 +126,14 @@ document.addEventListener('keydown', e => {
         break;
 
       case 'ArrowDown':
-        // Mover hacia el primer item de la galería (si existe)
+        // Foco hacia el primer item de la galería (películas)
         const primeraPelicula = document.querySelector('.pelicula');
         primeraPelicula?.focus();
         break;
 
       case 'ArrowUp':
-        // Foco hacia el nav de plataformas
-        document.querySelector('#navPlataformas')?.focus();
+        // Foco hacia el buscador
+        buscador?.focus();
         break;
 
       case 'Enter':
@@ -152,6 +150,40 @@ document.addEventListener('keydown', e => {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
+  }
+
+  // Si estamos en el buscador, manejar la navegación hacia abajo
+  if (actual === buscador && e.key === 'ArrowDown') {
+    // Foco a la primera película de la galería
+    const primeraPelicula = document.querySelector('.pelicula');
+    primeraPelicula?.focus();
+  }
+
+  // Si estamos en el buscador, manejar la navegación hacia arriba
+  if (actual === buscador && e.key === 'ArrowUp') {
+    // Foco hacia el primer item de plataforma
+    const primeraPlataforma = document.querySelector('.plataforma-item');
+    primeraPlataforma?.focus();
+  }
+
+  // Sonido de click para el buscador
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
+});
+
+// Asegurarse de que el foco se coloque en el buscador cuando sea necesario
+document.addEventListener('DOMContentLoaded', () => {
+  // Foco en el primer item de plataforma al cargar la página
+  const primeraPlataforma = document.querySelector('.plataforma-item');
+  if (primeraPlataforma) {
+    setTimeout(() => primeraPlataforma.focus(), 100);
+  }
+
+  // Foco en el buscador al acceder a la sección de plataformas
+  if (galeriaPlataformas.style.display === 'flex') {
+    buscador.focus();
   }
 });
   
