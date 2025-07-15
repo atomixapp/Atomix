@@ -189,9 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-});
-
-
   function establecerFocoInicial() {
     setTimeout(() => {
       const navLinks = document.querySelectorAll('header .nav-left a');
