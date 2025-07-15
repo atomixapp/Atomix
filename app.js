@@ -99,11 +99,10 @@ const filtros = {
     });
   }
 
-// Navegación dentro de plataforma-item (galeriaPlataformas)
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-
-  // ✅ Si estamos en el input del buscador, salir
+  
+  // Si estamos en el input del buscador, evitar el resto de la lógica
   if (
     actual.tagName === 'INPUT' ||
     actual.tagName === 'TEXTAREA' ||
@@ -129,7 +128,7 @@ document.addEventListener('keydown', e => {
         break;
 
       case 'ArrowDown':
-        // Aquí no queremos que el foco baje al buscador, solo a las películas de la galería
+        // Mover hacia el primer item de la galería (si existe)
         const primeraPelicula = document.querySelector('.pelicula');
         primeraPelicula?.focus();
         break;
@@ -153,14 +152,6 @@ document.addEventListener('keydown', e => {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
-  }
-});
-
-// Inicializar el foco en la primera plataforma cuando se entra en la sección
-document.addEventListener('DOMContentLoaded', () => {
-  const primeraPlataforma = document.querySelector('.plataforma-item');
-  if (primeraPlataforma) {
-    setTimeout(() => primeraPlataforma.focus(), 100);  // Esperar para asegurar que se cargue
   }
 });
   
