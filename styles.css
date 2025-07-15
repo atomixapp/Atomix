@@ -200,10 +200,17 @@ main {
   object-fit: contain;
 }
 
-.plataforma-item:focus,
 .plataforma-item:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px #ff3d00;
+  box-shadow: 0 0 15px #00ffcc;
+}
+
+.plataforma-item:focus {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px #00ffcc, 0 0 15px rgba(0, 255, 204, 0.6);
+  outline: none;
+  z-index: 10;
+  animation: brilloFoco 2s ease-in-out infinite;
 }
 
 /* GALERIA DE PELICULAS */
