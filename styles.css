@@ -181,8 +181,6 @@ main {
 }
 
 .plataforma-item {
-  position: relative;
-  box-shadow: none;
   width: 100%;
   aspect-ratio: 16 / 9;
   display: flex;
@@ -194,18 +192,6 @@ main {
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
-}
-
-.plataforma-item:focus::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 3px solid #00ffcc;
-  border-radius: 12px;
-  pointer-events: none;
-  box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
-  animation: brilloFoco 2s ease-in-out infinite;
-  z-index: 2;
 }
 
 .plataforma-item img {
