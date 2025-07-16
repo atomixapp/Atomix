@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuUsuario = document.getElementById('menuUsuario');
   const tituloCategoria = document.getElementById('tituloCategoria');
   const sonidoClick = new Audio('assets/sounds/click.mp3');
-  const asideItems = Array.from(document.querySelectorAll('aside li'));
+  const sonidoClick = new Audio('assets/sounds/click.mp3');
+const asideItems = Array.from(document.querySelectorAll('aside li'));
+
   
   let todasPeliculas = [];
   let peliculaActiva = null;
@@ -165,42 +167,15 @@ document.addEventListener('keydown', e => {
   }
 });
 
-galeriaPlataformas.addEventListener('keydown', e => {
-  const items = Array.from(document.querySelectorAll('#galeriaPlataformas .plataforma-item'));
-  const i = items.indexOf(document.activeElement);
-  if (i === -1) return;
-
-  switch (e.key) {
-    case 'ArrowRight':
-      items[i + 1]?.focus();
-      break;
-
-    case 'ArrowLeft':
-      if (i === 0) {
-        document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
-      } else {
-        items[i - 1]?.focus();
-      }
-      break;
-
-    case 'ArrowDown':
-      items[i + 4]?.focus(); // Suponiendo 4 columnas
-      break;
-
-    case 'ArrowUp':
-      if (i < 4) buscador.focus();
-      else items[i - 4]?.focus();
-      break;
-
-    case 'Enter':
-      items[i].click();
-      break;
-  }
-
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
-  }
+// Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
+document.querySelectorAll('.plataforma-item').forEach(card => {
+  card.addEventListener('click', e => {
+    // Al hacer clic, obtener el aria-label de la card y aplicar la acción deseada
+    const plataforma = card.getAttribute('aria-label');
+    if (plataforma && typeof filtrar === 'function') {
+      filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
+    }
+  });
 });
   
   function configurarNavegacionLateral() {
