@@ -164,13 +164,27 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
-document.querySelectorAll('.plataforma-item').forEach(card => {
-  card.addEventListener('click', e => {
-    // Al hacer clic, obtener el aria-label de la card y aplicar la acción deseada
-    const plataforma = card.getAttribute('aria-label');
-    if (plataforma && typeof filtrar === 'function') {
-      filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
+document.querySelectorAll('#galeriaPlataformas .plataforma-item').forEach((item, index, items) => {
+  item.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') {
+      if (index === 0) {
+        document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+      } else {
+        items[index - 1]?.focus();
+      }
+    } else if (e.key === 'ArrowRight') {
+      items[index + 1]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      if (index >= 2) items[index - 2]?.focus();
+    } else if (e.key === 'ArrowDown') {
+      items[index + 2]?.focus();
+    } else if (e.key === 'Enter') {
+      item.click();
+    }
+
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
     }
   });
 });
