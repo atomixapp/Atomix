@@ -323,6 +323,15 @@ galeria.addEventListener('keydown', e => {
     });
   }
 
+  // Después de pintar y asignar eventos
+  setTimeout(() => {
+    const primeraCard = galeria.querySelector('.pelicula');
+    if (primeraCard) {
+      primeraCard.focus();
+      console.log('🎯 Foco inicial en película:', document.activeElement);
+    }
+  }, 100); // Da tiempo a que el DOM se actualice
+  
   let ultimaTarjetaActiva = null;
 
 function abrirModal(pelicula) {
