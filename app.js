@@ -135,13 +135,21 @@ document.addEventListener('keydown', e => {
         document.querySelector('.plataforma-item')?.focus();
         break;
 
-      case 'Enter':
-        // Al presionar Enter, abrir la plataforma como lo hacíamos antes
-        const plataforma = actual.getAttribute('aria-label');
-        if (plataforma && typeof filtrar === 'function') {
-          filtrar(plataforma.toLowerCase()); // Llamar a la función para abrir o filtrar la plataforma
-        }
-        break;
+case 'Enter':
+  const plataforma = actual.getAttribute('aria-label');
+  if (plataforma && typeof filtrar === 'function') {
+    filtrar(plataforma.toLowerCase());
+
+    // Espera un poco y enfoca la primera tarjeta de película
+    setTimeout(() => {
+      const primeraCard = document.querySelector('.pelicula');
+      if (primeraCard) {
+        primeraCard.focus();
+        console.log('🎯 Foco en película:', document.activeElement);
+      }
+    }, 300); // Da tiempo a que se rendericen
+  }
+  break;
     }
 
     // Reproducir sonido de clic para las teclas
