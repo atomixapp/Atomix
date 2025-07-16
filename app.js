@@ -39,15 +39,18 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
   galeria.style.display = 'none';
   galeriaPlataformas.style.display = 'none';
 
-  if (categoriaNombre === 'plataformas') {
-    tituloCategoria.textContent = 'PLATAFORMAS';
-    galeriaPlataformas.style.display = 'flex';
+if (categoriaNombre === 'plataformas') {
+  tituloCategoria.textContent = 'PLATAFORMAS';
+  galeriaPlataformas.style.display = 'flex';
 
-    // Enfocar primer ítem de plataforma
-    const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
-    if (items.length > 0) {
-      setTimeout(() => items[0].focus(), 100);
-    }
+  const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
+  if (items.length > 0) {
+    setTimeout(() => {
+      items[0].focus();
+      console.log('✅ Foco en plataforma:', document.activeElement);
+    }, 100);
+  }
+}
   } else {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
@@ -153,11 +156,9 @@ document.addEventListener('keydown', e => {
   if (actual === buscador) {
     switch (e.key) {
       case 'ArrowUp':
-        // Subir al primer ítem de la galería
         document.querySelector('.plataforma-item')?.focus();
         break;
       case 'ArrowDown':
-        // Mover al primer item si el foco está en el buscador
         const items = Array.from(document.querySelectorAll('.plataforma-item'));
         items[0]?.focus(); // Mover al primer item de la galería
         break;
@@ -168,7 +169,6 @@ document.addEventListener('keydown', e => {
 // Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
 document.querySelectorAll('.plataforma-item').forEach(card => {
   card.addEventListener('click', e => {
-    // Al hacer clic, obtener el aria-label de la card y aplicar la acción deseada
     const plataforma = card.getAttribute('aria-label');
     if (plataforma && typeof filtrar === 'function') {
       filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
