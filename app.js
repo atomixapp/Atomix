@@ -164,29 +164,42 @@ document.addEventListener('keydown', e => {
   }
 });
 
-document.querySelectorAll('#galeriaPlataformas .plataforma-item').forEach((item, index, items) => {
-  item.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft') {
-      if (index === 0) {
+galeriaPlataformas.addEventListener('keydown', e => {
+  const items = Array.from(document.querySelectorAll('#galeriaPlataformas .plataforma-item'));
+  const i = items.indexOf(document.activeElement);
+  if (i === -1) return;
+
+  switch (e.key) {
+    case 'ArrowRight':
+      items[i + 1]?.focus();
+      break;
+
+    case 'ArrowLeft':
+      if (i === 0) {
         document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
       } else {
-        items[index - 1]?.focus();
+        items[i - 1]?.focus();
       }
-    } else if (e.key === 'ArrowRight') {
-      items[index + 1]?.focus();
-    } else if (e.key === 'ArrowUp') {
-      if (index >= 2) items[index - 2]?.focus();
-    } else if (e.key === 'ArrowDown') {
-      items[index + 2]?.focus();
-    } else if (e.key === 'Enter') {
-      item.click();
-    }
+      break;
 
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
-    }
-  });
+    case 'ArrowDown':
+      items[i + 4]?.focus(); // Suponiendo 4 columnas
+      break;
+
+    case 'ArrowUp':
+      if (i < 4) buscador.focus();
+      else items[i - 4]?.focus();
+      break;
+
+    case 'Enter':
+      items[i].click();
+      break;
+  }
+
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
 });
   
   function configurarNavegacionLateral() {
