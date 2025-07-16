@@ -50,7 +50,6 @@ if (categoriaNombre === 'plataformas') {
       console.log('✅ Foco en plataforma:', document.activeElement);
     }, 100);
   }
-}
   } else {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
