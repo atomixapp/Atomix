@@ -214,22 +214,31 @@ li.addEventListener('keydown', e => {
 
     navLinks.forEach((link, i) => {
       link.setAttribute('tabindex', '0');
-      link.addEventListener('keydown', e => {
-        if (e.key === 'ArrowRight') {
-          if (i < navLinks.length - 1) navLinks[i + 1].focus();
-          else botonCuenta.focus();
-        } else if (e.key === 'ArrowLeft') {
-          if (i > 0) navLinks[i - 1].focus();
-        } else if (e.key === 'ArrowDown') {
-          asideItems[0]?.focus();
-        }
-      });
-    });
+link.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') {
+    if (i < navLinks.length - 1) navLinks[i + 1].focus();
+    else botonCuenta.focus();
+  } else if (e.key === 'ArrowLeft') {
+    if (i > 0) navLinks[i - 1].focus();
+  } else if (e.key === 'ArrowDown') {
+    asideItems[0]?.focus();
+  }
 
-    botonCuenta.setAttribute('tabindex', '0');
-    botonCuenta.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
-    });
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
+});
+
+botonCuenta.setAttribute('tabindex', '0');
+botonCuenta.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
+
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    sonidoClick.currentTime = 0;
+    sonidoClick.play().catch(() => {});
+  }
+});
 
 galeria.addEventListener('keydown', e => {
   const cards = peliculas();
