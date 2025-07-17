@@ -193,6 +193,7 @@ asideItems.forEach((li, idx) => {
   li.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       li.click();
+      peliculas()[0]?.focus();
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     } else if (e.key === 'ArrowDown') {
