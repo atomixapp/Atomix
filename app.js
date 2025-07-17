@@ -39,21 +39,26 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
   galeria.style.display = 'none';
   galeriaPlataformas.style.display = 'none';
 
-if (categoriaNombre === 'plataformas') {
-  tituloCategoria.textContent = 'PLATAFORMAS';
-  galeriaPlataformas.style.display = 'flex';
+  if (categoriaNombre === 'plataformas') {
+    tituloCategoria.textContent = 'PLATAFORMAS';
+    galeriaPlataformas.style.display = 'flex';
 
-  const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
-  if (items.length > 0) {
-    setTimeout(() => {
-      items[0].focus();
-      console.log('✅ Foco en plataforma:', document.activeElement);
-    }, 100);
-  }
+    const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
+    if (items.length > 0) {
+      setTimeout(() => {
+        items[0].focus();
+        console.log('✅ Foco en plataforma:', document.activeElement);
+      }, 100);
+    }
   } else {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
-    renderPeliculas(todasPeliculas.filter(filtro));
+
+    // ✅ Aquí está el cambio clave
+    renderPeliculas(todasPeliculas.filter(filtro), () => {
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) primera.focus();
+    });
   }
 }
 
@@ -322,22 +327,28 @@ buscador.addEventListener('keydown', e => {
     }, 300);
   }
 
-  function renderPeliculas(lista) {
-    galeria.innerHTML = lista.length
-      ? lista.map(p => `
-          <div class="pelicula" tabindex="0">
-            <div class="imagen-contenedor">
-              <img src="${p.imagen || 'img/placeholder.png'}" alt="${p.titulo}">
-            </div>
-            <h3>${p.titulo}</h3>
+function renderPeliculas(lista, callback) {
+  galeria.innerHTML = lista.length
+    ? lista.map(p => `
+        <div class="pelicula" tabindex="0">
+          <div class="imagen-contenedor">
+            <img src="${p.imagen || 'img/placeholder.png'}" alt="${p.titulo}">
           </div>
-        `).join('')
-      : '<p>No hay películas para mostrar.</p>';
+          <h3>${p.titulo}</h3>
+        </div>
+      `).join('')
+    : '<p>No hay películas para mostrar.</p>';
 
-    galeria.querySelectorAll('.pelicula').forEach((card, i) => {
-      card.addEventListener('click', () => abrirModal(lista[i]));
-    });
+  // Asigna evento click a cada tarjeta
+  galeria.querySelectorAll('.pelicula').forEach((card, i) => {
+    card.addEventListener('click', () => abrirModal(lista[i]));
+  });
+
+  // ✅ Llamar callback si se pasó
+  if (typeof callback === 'function') {
+    setTimeout(callback, 0); // Espera a que el DOM se pinte completamente
   }
+}
 
   // Después de pintar y asignar eventos
   setTimeout(() => {
