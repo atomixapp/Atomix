@@ -190,27 +190,28 @@ document.querySelectorAll('.plataforma-item').forEach(card => {
 
 asideItems.forEach((li, idx) => {
   li.setAttribute('tabindex', '0');
-li.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    li.click();
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
-  } else if (e.key === 'ArrowDown') {
-    if (idx < asideItems.length - 1) {
-      asideItems[idx + 1].focus();
+  li.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      li.click();
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    } else if (e.key === 'ArrowDown') {
+      if (idx < asideItems.length - 1) {
+        asideItems[idx + 1].focus();
+      }
+    } else if (e.key === 'ArrowUp') {
+      if (idx > 0) asideItems[idx - 1].focus();
+      else navLinks[0]?.focus();
+    } else if (e.key === 'ArrowRight') {
+      peliculas()[0]?.focus();
     }
-  } else if (e.key === 'ArrowUp') {
-    if (idx > 0) asideItems[idx - 1].focus();
-    else navLinks[0]?.focus();
-  } else if (e.key === 'ArrowRight') {
-    peliculas()[0]?.focus();
-  }
 
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
-  }
-});
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  }); // <- CIERRA addEventListener
+});   // ✅ CIERRA forEach correctamente
 
 // =================== NAVLINKS ===================
 navLinks.forEach((link, i) => {
