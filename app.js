@@ -212,24 +212,27 @@ li.addEventListener('keydown', e => {
   }
 });
 
-    navLinks.forEach((link, i) => {
-      link.setAttribute('tabindex', '0');
-link.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') {
-    if (i < navLinks.length - 1) navLinks[i + 1].focus();
-    else botonCuenta.focus();
-  } else if (e.key === 'ArrowLeft') {
-    if (i > 0) navLinks[i - 1].focus();
-  } else if (e.key === 'ArrowDown') {
-    asideItems[0]?.focus();
-  }
+// =================== NAVLINKS ===================
+navLinks.forEach((link, i) => {
+  link.setAttribute('tabindex', '0');
+  link.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') {
+      if (i < navLinks.length - 1) navLinks[i + 1].focus();
+      else botonCuenta.focus();
+    } else if (e.key === 'ArrowLeft') {
+      if (i > 0) navLinks[i - 1].focus();
+    } else if (e.key === 'ArrowDown') {
+      asideItems[0]?.focus();
+    }
 
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
-    sonidoClick.currentTime = 0;
-    sonidoClick.play().catch(() => {});
-  }
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  });
 });
 
+// =================== CUENTA ===================
 botonCuenta.setAttribute('tabindex', '0');
 botonCuenta.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') navLinks[navLinks.length - 1]?.focus();
@@ -240,6 +243,7 @@ botonCuenta.addEventListener('keydown', e => {
   }
 });
 
+// =================== GALERÍA ===================
 galeria.addEventListener('keydown', e => {
   const cards = peliculas();
   const columnas = 4;
@@ -253,7 +257,6 @@ galeria.addEventListener('keydown', e => {
 
     case 'ArrowLeft':
       if (i === 0) {
-        // Solo desde la primera card se vuelve al aside
         document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
       } else {
         cards[i - 1]?.focus();
@@ -280,13 +283,13 @@ galeria.addEventListener('keydown', e => {
   }
 });
 
-    buscador.setAttribute('tabindex', '0');
-    buscador.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown') {
-        peliculas()[0]?.focus();
-      }
-    });
+// =================== BUSCADOR ===================
+buscador.setAttribute('tabindex', '0');
+buscador.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') {
+    peliculas()[0]?.focus();
   }
+});
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
