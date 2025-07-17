@@ -289,8 +289,9 @@ buscador.setAttribute('tabindex', '0');
 buscador.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') {
     peliculas()[0]?.focus();
+      }
+    });
   }
-});
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
