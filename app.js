@@ -113,9 +113,7 @@ document.addEventListener('keydown', e => {
   const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
   const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-  if (escribiendo && !teclasDeNavegacion.includes(e.key)) {
-    // Deja escribir libremente, no toques el foco ni nada
-    return;
+if (escribiendo) return;
   }
   
   // Si el foco está en una plataforma (card de galería)
