@@ -227,6 +227,7 @@ main {
   justify-items: center;
   overflow: visible;
   flex: none;
+  min-height: 0;
 }
 
 .pelicula {
