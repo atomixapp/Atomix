@@ -155,8 +155,6 @@ document.addEventListener('keydown', e => {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
-  }
-   });
 
   if (actual === buscador) {
     switch (e.key) {
