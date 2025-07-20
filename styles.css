@@ -216,7 +216,7 @@ main {
 /* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 180px));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
   gap: 1.5rem;
   padding: 0.4rem;
   justify-content: center;
@@ -227,8 +227,6 @@ main {
 }
 
 .pelicula {
-  height: auto;
-  max-height: 360px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -238,8 +236,8 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
-  width: 180px;
-  max-width: none;
+  width: 100%;
+  max-width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
