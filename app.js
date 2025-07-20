@@ -504,10 +504,13 @@ function manejarNavegacionModal(e) {
     btnSinopsis.focus();
   }
 
-  // Subir desde sinopsis
-  else if (actual === btnSinopsis && e.key === 'ArrowUp') {
-    btnVerTrailer.focus(); // Puedes cambiar a btnVerAhora si prefieres
+else if (actual === btnSinopsis && e.key === 'ArrowUp') {
+  if (btnVerTrailer.style.display !== 'none') {
+    btnVerTrailer.focus();
+  } else {
+    btnVerAhora.focus();
   }
+}
 
   // Subir desde ver ahora/trailer hacia la X
   else if ((actual === btnVerAhora || actual === btnVerTrailer) && e.key === 'ArrowUp') {
