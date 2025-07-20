@@ -305,41 +305,21 @@ galeria.addEventListener('keydown', e => {
 });
 
 // =================== BUSCADOR ===================
-// =================== BUSCADOR ===================
-function configurarBuscador() {
-  buscador.addEventListener('input', e => {
-    // Filtra las películas según el texto que escribes
-    filtrarYPintar(p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase()));
-  });
-
-  buscador.addEventListener('keydown', e => {
-    // Si el foco está en el buscador, no perderlo
-    if (document.activeElement === buscador) {
-      switch (e.key) {
-        case 'ArrowDown':
-          // Si se presiona "ArrowDown", enfoca el primer ítem de la galería
-          const primeraPelicula = document.querySelector('.pelicula');
-          if (primeraPelicula) primeraPelicula.focus();
-          break;
-        case 'ArrowUp':
-          // Si se presiona "ArrowUp", se vuelve a la primera plataforma (opcional)
-          const primeraPlataforma = document.querySelector('.plataforma-item');
-          if (primeraPlataforma) primeraPlataforma.focus();
-          break;
-        default:
-          break;
+buscador.setAttribute('tabindex', '0');
+buscador.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') {
+    peliculas()[0]?.focus();
       }
-    }
-  });
-} // Aquí falta el cierre de la función
+    });
+  }
 
-function cargarPeliculas() {
-  db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
-    todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    renderPeliculas(todasPeliculas);
-    establecerFocoInicial();
-  });
-}
+  function cargarPeliculas() {
+    db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
+      todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderPeliculas(todasPeliculas);
+      establecerFocoInicial();
+    });
+  }
 
   function actualizarPeliculasSinFecha() {
     db.collection("peliculas").get().then(snapshot => {
