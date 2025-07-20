@@ -174,7 +174,7 @@ main {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  padding: 20px;
+  padding: 0px;
 }
 
 .pelicula {
@@ -194,7 +194,7 @@ main {
 }
 
 .pelicula h3 {
-  padding: 0rem;
+  padding: 0.7rem;
   font-size: 1rem;
   text-align: center;
   background-color: #2c2c2c;
