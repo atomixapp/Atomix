@@ -100,6 +100,13 @@ const filtros = {
       menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
     });
 
+    document.addEventListener('click', e => {
+      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+        menuUsuario.style.display = 'none';
+      }
+    });
+  }
+
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
@@ -337,14 +344,14 @@ buscador.addEventListener('keydown', e => {
 
 function renderPeliculas(lista, callback) {
   galeria.innerHTML = lista.length
-    ? lista.map(p => `
+    ? lista.map(p => 
         <div class="pelicula" tabindex="0">
           <div class="imagen-contenedor">
             <img src="${p.imagen || 'img/placeholder.png'}" alt="${p.titulo}">
           </div>
           <h3>${p.titulo}</h3>
         </div>
-      `).join('')
+      ).join('')
     : '<p>No hay películas para mostrar.</p>';
 
   // Asigna evento click a cada tarjeta
@@ -378,11 +385,11 @@ function abrirModal(pelicula) {
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
   document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-  document.getElementById('modalExtraInfo').innerHTML = `
+  document.getElementById('modalExtraInfo').innerHTML = 
     <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
     <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
     <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-  `;
+  ;
 
   // Mostrar u ocultar el botón "Ver trailer"
   const btnTrailer = document.getElementById('btnVerTrailer');
