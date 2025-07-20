@@ -190,6 +190,135 @@ document.querySelectorAll('.plataforma-item').forEach(card => {
 });
 
 let bloquearPrimerEnterEnGaleria = false;
+
+function configurarNavegacionLateral() {
+  // El código de navegación lateral aquí
+}
+Cambios realizados:
+Reestructuración del bloque if (actual === buscador && document.activeElement === buscador):
+
+Lo he movido dentro del bloque keydown correctamente, de modo que no esté fuera de lugar, lo que estaba causando el error.
+
+Verificación de la sintaxis general:
+
+He eliminado la doble declaración de document.addEventListener('click', ...) que era innecesaria.
+
+Aseguré que los bloques de código estén debidamente cerrados.
+
+Este código ahora debería funcionar correctamente, sin errores de paréntesis y sin interferir con el funcionamiento del buscador.
+
+Pruébalo y dime si sigue habiendo algún problema.
+
+
+
+
+
+
+
+
+Tú dijiste:
+siempre da error: app.js:623 Uncaught SyntaxError: Unexpected token ')' (at app.js:623:2)
+
+
+ChatGPT Plus
+El error Uncaught SyntaxError: Unexpected token ')' normalmente ocurre cuando hay un paréntesis o corchete adicional o mal cerrado. Al observar el código que me has proporcionado, parece que hay algún paréntesis o corchete mal ubicado en la estructura de tu código.
+
+Voy a proporcionar una versión revisada y simplificada, asegurando que todas las llaves y paréntesis estén correctamente emparejados.
+
+Revisión y Código Corregido:
+js
+Copiar
+Editar
+document.addEventListener('click', e => {
+  if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+    menuUsuario.style.display = 'none';
+  }
+});
+
+document.addEventListener('keydown', e => {
+  const actual = document.activeElement;
+  const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
+
+  // Si estás escribiendo, no hacemos nada más
+  if (escribiendo) return;
+
+  const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+  if (actual.classList.contains('plataforma-item')) {
+    const items = Array.from(document.querySelectorAll('.plataforma-item'));
+    const i = items.indexOf(actual);
+
+    switch (e.key) {
+      case 'ArrowRight':
+        if (i + 1 < items.length) items[i + 1].focus();
+        break;
+      case 'ArrowLeft':
+        if (i - 1 >= 0) items[i - 1].focus();
+        else {
+          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
+        }
+        break;
+      case 'ArrowUp':
+        if (buscador) buscador.focus();
+        break;
+      case 'ArrowDown':
+        document.querySelector('.plataforma-item')?.focus();
+        break;
+      case 'Enter':
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+          setTimeout(() => {
+            const primeraCard = document.querySelector('.pelicula');
+            if (primeraCard) {
+              primeraCard.focus();
+              console.log('🎯 Foco en película:', document.activeElement);
+            }
+          }, 300);
+        }
+        break;
+    }
+
+    if (teclasDeNavegacion.concat('Enter').includes(e.key)) {
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
+    }
+  }
+
+  // Si estás en el buscador, no hacemos nada
+  if (actual === buscador) {
+    return;
+  }
+
+  // Solo mover foco con flechas si no hay texto o el cursor está vacío
+  if (actual === buscador && document.activeElement === buscador) {
+    if (e.key === 'ArrowDown' && buscador.value.trim() === '') {
+      const items = Array.from(document.querySelectorAll('.plataforma-item'));
+      items[0]?.focus();
+      e.preventDefault();
+    }
+
+    if (e.key === 'ArrowUp') {
+      const plataformaActiva = document.querySelector('.plataforma-item');
+      if (plataformaActiva) {
+        plataformaActiva.focus();
+        e.preventDefault();
+      }
+    }
+  }
+});
+
+// Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
+document.querySelectorAll('.plataforma-item').forEach(card => {
+  card.addEventListener('click', e => {
+    const plataforma = card.getAttribute('aria-label');
+    if (plataforma && typeof filtrar === 'function') {
+      filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
+    }
+  });
+});
+
+let bloquearPrimerEnterEnGaleria = false;
   
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
