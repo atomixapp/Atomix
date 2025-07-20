@@ -109,8 +109,7 @@ function configurarCuenta() {
 
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-  const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
-
+  const escribiendo = actual.matches('input, textarea, [contenteditable="true"]');
   if (escribiendo) return;
 
   const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -300,14 +299,13 @@ galeria.addEventListener('keydown', e => {
   }
 });
 
-// =================== BUSCADOR ===================
-buscador.setAttribute('tabindex', '0');
 buscador.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    e.stopPropagation();
     peliculas()[0]?.focus();
-      }
-    });
   }
+});
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
