@@ -224,29 +224,32 @@ main {
   padding: 20px;
 }
 
-/* Cada logo de plataforma */
 .plataforma-item {
   width: 280px;
   height: 160px;
   background-color: #111;
-  border-radius: 10px;
+  border-radius: 12px; /* igual al del outline */
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, outline 0.3s ease;
+  outline: none; /* importante para evitar doble borde */
 }
 
 .plataforma-item img {
-  max-width: 80%;
-  max-height: 100%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* llena bien el contenedor */
+  border-radius: 12px; /* igual que el contenedor */
+  transition: transform 0.3s ease;
 }
 
-.plataforma-item:hover,
-.plataforma-item:focus {
-  transform: scale(1.05);
-  outline: 2px solid cyan;
+.plataforma-item:focus,
+.plataforma-item:hover {
+  outline: 3px solid #00ffff; /* cyan */
+  border-radius: 12px;
+  transform: scale(1.03);
   z-index: 2;
 }
 
