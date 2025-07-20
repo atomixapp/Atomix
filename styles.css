@@ -219,7 +219,7 @@ main {
 /* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, 180px);
   gap: 1.5rem;
   padding: 0.4rem;
   justify-content: center;
@@ -241,6 +241,7 @@ main {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
   width: 180px;
+  max-width: unset;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
