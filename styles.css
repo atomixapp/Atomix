@@ -156,17 +156,15 @@ main {
   border-radius: 5px;
   flex: 1;
   outline: none;
-}
-
-#buscadorPeliculas {
-  -webkit-appearance: none; /* Elimina efectos nativos WebKit */
-  -moz-appearance: none; /* Para Firefox */
+  -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
 }
 
+
 #buscadorPeliculas:focus {
   outline: none;
-  box-shadow: 0 0 0 3px #00bfff; /* Un halo del color que quieres */
+  box-shadow: 0 0 0 3px #00bfff;
   border: 2px solid #00bfff;
 }
 
@@ -541,7 +539,7 @@ main {
     gap: 2rem;
   }
     .pelicula {
-    max-width: 200px;
+    max-width: 180px;
   }
   .galeria-header {
     justify-content: space-between;
@@ -560,7 +558,7 @@ main {
     gap: 2rem;
   }
   .pelicula {
-    max-width: 200px;
+    max-width: 180px;
   }
   #buscadorPeliculas {
     width: 320px;
@@ -573,7 +571,7 @@ main {
     width: 400px;
   }
   .pelicula {
-    max-width: 200px;
+    max-width: 180px;
   }
   .titulo-categoria {
     font-size: 2rem;
