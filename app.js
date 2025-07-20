@@ -109,7 +109,9 @@ function configurarCuenta() {
 
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-  const escribiendo = actual.matches('input, textarea, [contenteditable="true"]');
+  const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
+
+  // Si estás escribiendo, no hacemos nada más
   if (escribiendo) return;
 
   const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -154,6 +156,12 @@ document.addEventListener('keydown', e => {
       sonidoClick.play().catch(() => {});
     }
   }
+
+  if (actual === buscador) {
+    // Si estás en el buscador, no se hace nada
+    return;
+  }
+});
 
 if (actual === buscador && document.activeElement === buscador) {
   // Solo mover foco con flechas si no hay texto o el cursor está vacío
