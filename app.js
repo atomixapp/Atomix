@@ -94,216 +94,86 @@ const filtros = {
   filtrarYPintar(filtro, categoria);
 };
   
-function configurarCuenta() {
-  botonCuenta.addEventListener('click', e => {
-    e.stopPropagation();
-    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-  });
+  function configurarCuenta() {
+    botonCuenta.addEventListener('click', e => {
+      e.stopPropagation();
+      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+    });
 
-document.addEventListener('click', e => {
-  if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-    menuUsuario.style.display = 'none';
+    document.addEventListener('click', e => {
+      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+        menuUsuario.style.display = 'none';
+      }
+    });
   }
-});
 
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-  const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
 
-  // Si estás escribiendo, no hacemos nada más
-  if (escribiendo) return;
-
-  const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-
+  // Si el foco está en una plataforma (card de galería)
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
 
     switch (e.key) {
       case 'ArrowRight':
+        // Mover el foco a la siguiente plataforma, si existe
         if (i + 1 < items.length) items[i + 1].focus();
         break;
+
       case 'ArrowLeft':
+        // Mover el foco a la plataforma anterior, si existe
         if (i - 1 >= 0) items[i - 1].focus();
         else {
+          // Si estamos en la primera plataforma, ir al aside
           document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
         }
         break;
+
       case 'ArrowUp':
+        // Mover el foco al buscador
         if (buscador) buscador.focus();
         break;
+
       case 'ArrowDown':
+        // Mover el foco al primer ítem de la galería
         document.querySelector('.plataforma-item')?.focus();
         break;
-      case 'Enter':
-        const plataforma = actual.getAttribute('aria-label');
-        if (plataforma && typeof filtrar === 'function') {
-          filtrar(plataforma.toLowerCase());
-          setTimeout(() => {
-            const primeraCard = document.querySelector('.pelicula');
-            if (primeraCard) {
-              primeraCard.focus();
-              console.log('🎯 Foco en película:', document.activeElement);
-            }
-          }, 300);
-        }
-        break;
+
+case 'Enter':
+  const plataforma = actual.getAttribute('aria-label');
+  if (plataforma && typeof filtrar === 'function') {
+    filtrar(plataforma.toLowerCase());
+
+    // Espera un poco y enfoca la primera tarjeta de película
+    setTimeout(() => {
+      const primeraCard = document.querySelector('.pelicula');
+      if (primeraCard) {
+        primeraCard.focus();
+        console.log('🎯 Foco en película:', document.activeElement);
+      }
+    }, 300); // Da tiempo a que se rendericen
+  }
+  break;
     }
 
-    if (teclasDeNavegacion.concat('Enter').includes(e.key)) {
+    // Reproducir sonido de clic para las teclas
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
   }
 
-  // Si estás en el buscador, no hacemos nada
+  // Foco en el buscador
   if (actual === buscador) {
-    return;
-  }
-
-  // Solo mover foco con flechas si no hay texto o el cursor está vacío
-  if (actual === buscador && document.activeElement === buscador) {
-    if (e.key === 'ArrowDown' && buscador.value.trim() === '') {
-      const items = Array.from(document.querySelectorAll('.plataforma-item'));
-      items[0]?.focus();
-      e.preventDefault();
-    }
-
-    if (e.key === 'ArrowUp') {
-      const plataformaActiva = document.querySelector('.plataforma-item');
-      if (plataformaActiva) {
-        plataformaActiva.focus();
-        e.preventDefault();
-      }
-    }
-  }
-});
-
-// Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
-document.querySelectorAll('.plataforma-item').forEach(card => {
-  card.addEventListener('click', e => {
-    const plataforma = card.getAttribute('aria-label');
-    if (plataforma && typeof filtrar === 'function') {
-      filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
-    }
-  });
-});
-
-let bloquearPrimerEnterEnGaleria = false;
-
-function configurarNavegacionLateral() {
-  // El código de navegación lateral aquí
-}
-Cambios realizados:
-Reestructuración del bloque if (actual === buscador && document.activeElement === buscador):
-
-Lo he movido dentro del bloque keydown correctamente, de modo que no esté fuera de lugar, lo que estaba causando el error.
-
-Verificación de la sintaxis general:
-
-He eliminado la doble declaración de document.addEventListener('click', ...) que era innecesaria.
-
-Aseguré que los bloques de código estén debidamente cerrados.
-
-Este código ahora debería funcionar correctamente, sin errores de paréntesis y sin interferir con el funcionamiento del buscador.
-
-Pruébalo y dime si sigue habiendo algún problema.
-
-
-
-
-
-
-
-
-Tú dijiste:
-siempre da error: app.js:623 Uncaught SyntaxError: Unexpected token ')' (at app.js:623:2)
-
-
-ChatGPT Plus
-El error Uncaught SyntaxError: Unexpected token ')' normalmente ocurre cuando hay un paréntesis o corchete adicional o mal cerrado. Al observar el código que me has proporcionado, parece que hay algún paréntesis o corchete mal ubicado en la estructura de tu código.
-
-Voy a proporcionar una versión revisada y simplificada, asegurando que todas las llaves y paréntesis estén correctamente emparejados.
-
-Revisión y Código Corregido:
-js
-Copiar
-Editar
-document.addEventListener('click', e => {
-  if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-    menuUsuario.style.display = 'none';
-  }
-});
-
-document.addEventListener('keydown', e => {
-  const actual = document.activeElement;
-  const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
-
-  // Si estás escribiendo, no hacemos nada más
-  if (escribiendo) return;
-
-  const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-
-  if (actual.classList.contains('plataforma-item')) {
-    const items = Array.from(document.querySelectorAll('.plataforma-item'));
-    const i = items.indexOf(actual);
-
     switch (e.key) {
-      case 'ArrowRight':
-        if (i + 1 < items.length) items[i + 1].focus();
-        break;
-      case 'ArrowLeft':
-        if (i - 1 >= 0) items[i - 1].focus();
-        else {
-          document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
-        }
-        break;
       case 'ArrowUp':
-        if (buscador) buscador.focus();
-        break;
-      case 'ArrowDown':
         document.querySelector('.plataforma-item')?.focus();
         break;
-      case 'Enter':
-        const plataforma = actual.getAttribute('aria-label');
-        if (plataforma && typeof filtrar === 'function') {
-          filtrar(plataforma.toLowerCase());
-          setTimeout(() => {
-            const primeraCard = document.querySelector('.pelicula');
-            if (primeraCard) {
-              primeraCard.focus();
-              console.log('🎯 Foco en película:', document.activeElement);
-            }
-          }, 300);
-        }
+      case 'ArrowDown':
+        const items = Array.from(document.querySelectorAll('.plataforma-item'));
+        items[0]?.focus(); // Mover al primer item de la galería
         break;
-    }
-
-    if (teclasDeNavegacion.concat('Enter').includes(e.key)) {
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
-    }
-  }
-
-  // Si estás en el buscador, no hacemos nada
-  if (actual === buscador) {
-    return;
-  }
-
-  // Solo mover foco con flechas si no hay texto o el cursor está vacío
-  if (actual === buscador && document.activeElement === buscador) {
-    if (e.key === 'ArrowDown' && buscador.value.trim() === '') {
-      const items = Array.from(document.querySelectorAll('.plataforma-item'));
-      items[0]?.focus();
-      e.preventDefault();
-    }
-
-    if (e.key === 'ArrowUp') {
-      const plataformaActiva = document.querySelector('.plataforma-item');
-      if (plataformaActiva) {
-        plataformaActiva.focus();
-        e.preventDefault();
-      }
     }
   }
 });
@@ -434,13 +304,13 @@ galeria.addEventListener('keydown', e => {
   }
 });
 
+// =================== BUSCADOR ===================
+buscador.setAttribute('tabindex', '0');
 buscador.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    e.stopPropagation();
     peliculas()[0]?.focus();
-  }
-});
+      }
+    });
   }
 
   function cargarPeliculas() {
@@ -488,8 +358,9 @@ function renderPeliculas(lista, callback) {
     card.addEventListener('click', () => abrirModal(lista[i]));
   });
 
+  // ✅ Llamar callback si se pasó
   if (typeof callback === 'function') {
-    setTimeout(callback, 0);
+    setTimeout(callback, 0); // Espera a que el DOM se pinte completamente
   }
 }
 
@@ -513,11 +384,11 @@ function abrirModal(pelicula) {
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
   document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
-document.getElementById('modalExtraInfo').innerHTML = `
-  <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
-  <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
-  <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
-`;
+  document.getElementById('modalExtraInfo').innerHTML = `
+    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+    <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
+    <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
+  `;
 
   // Mostrar u ocultar el botón "Ver trailer"
   const btnTrailer = document.getElementById('btnVerTrailer');
