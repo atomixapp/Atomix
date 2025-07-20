@@ -156,17 +156,22 @@ document.addEventListener('keydown', e => {
     }
   }
 
-  if (actual === buscador) {
-    switch (e.key) {
-      case 'ArrowUp':
-        document.querySelector('.plataforma-item')?.focus();
-        break;
-      case 'ArrowDown':
-        const items = Array.from(document.querySelectorAll('.plataforma-item'));
-        items[0]?.focus();
-        break;
+if (actual === buscador && document.activeElement === buscador) {
+  // Solo mover foco con flechas si no hay texto o el cursor está vacío
+  if (e.key === 'ArrowDown' && buscador.value.trim() === '') {
+    const items = Array.from(document.querySelectorAll('.plataforma-item'));
+    items[0]?.focus();
+    e.preventDefault();
+  }
+
+  if (e.key === 'ArrowUp') {
+    const plataformaActiva = document.querySelector('.plataforma-item');
+    if (plataformaActiva) {
+      plataformaActiva.focus();
+      e.preventDefault();
     }
   }
+}
 });
 
 // Escuchar clic en las cards (asegurarnos de que las cards abran correctamente al hacer clic)
