@@ -306,6 +306,7 @@ buscador.addEventListener('keydown', e => {
     peliculas()[0]?.focus();
   }
 });
+  }
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
