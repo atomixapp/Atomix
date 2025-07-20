@@ -156,8 +156,8 @@ document.addEventListener('keydown', e => {
       sonidoClick.play().catch(() => {});
     }
   }
+   });
 
-  // Si el foco está en el buscador
   if (actual === buscador) {
     switch (e.key) {
       case 'ArrowUp':
