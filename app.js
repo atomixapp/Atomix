@@ -107,6 +107,12 @@ function configurarCuenta() {
   });
 }
 
+document.addEventListener('click', e => {
+  if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+    menuUsuario.style.display = 'none';
+  }
+});
+
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
   const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
@@ -158,7 +164,7 @@ document.addEventListener('keydown', e => {
   }
 
   if (actual === buscador) {
-    // Si estás en el buscador, no se hace nada
+    // Si estás en el buscador, no hacemos nada
     return;
   }
 });
