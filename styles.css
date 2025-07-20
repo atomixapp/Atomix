@@ -6,6 +6,8 @@
 }
 
 body {
+  height: auto;
+  min-height: 100%;
   font-family: 'Segoe UI', sans-serif;
   background-color: #101010;
   color: #fff;
@@ -118,16 +120,14 @@ aside::-webkit-scrollbar {
   display: none; /* Chrome, Edge y derivados */
 }
 
-/* MAIN */
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;       /* Solo este contenedor maneja el scroll vertical */
+  overflow-y: auto;
   padding: 20px;
 }
 
-/* GALERIA HEADER */
 .galeria-header {
   display: flex;
   align-items: center;
@@ -236,8 +236,7 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
-  width: 100%;
-  max-width: 200px;
+  width: 180px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
