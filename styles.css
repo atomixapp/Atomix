@@ -171,29 +171,24 @@ main {
 }
 
 .galeria {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2rem;
   padding: 0.4rem;
-  justify-content: center;
-  align-content: start;
-  justify-items: center;
-  overflow: visible;
-  flex: none;
 }
 
 .pelicula {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  width: 200px;
   background-color: #1e1e1e;
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
-  width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   z-index: 1;
 }
 
@@ -508,6 +503,9 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
     gap: 2rem;
   }
+    .pelicula {
+    max-width: 240px;
+  }
   .galeria-header {
     justify-content: space-between;
   }
@@ -524,7 +522,9 @@ main {
   .galeria {
     gap: 2rem;
   }
-
+  .pelicula {
+    max-width: 240px;
+  }
   #buscadorPeliculas {
     width: 320px;
   }
@@ -535,7 +535,9 @@ main {
   #buscadorPeliculas {
     width: 400px;
   }
-
+  .pelicula {
+    max-width: 240px;
+  }
   .titulo-categoria {
     font-size: 2rem;
   }
