@@ -227,6 +227,8 @@ main {
 }
 
 .pelicula {
+  height: auto;
+  max-height: 360px;
   position: relative;
   display: flex;
   flex-direction: column;
