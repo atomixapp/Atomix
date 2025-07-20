@@ -110,6 +110,14 @@ const filtros = {
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
+  const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
+  const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+  if (escribiendo && !teclasDeNavegacion.includes(e.key)) {
+    // Deja escribir libremente, no toques el foco ni nada
+    return;
+  }
+  
   // Si el foco está en una plataforma (card de galería)
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
