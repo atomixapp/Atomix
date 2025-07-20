@@ -111,7 +111,6 @@ document.addEventListener('keydown', e => {
   const actual = document.activeElement;
   const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
 
-  // Si estás escribiendo, no hagas nada
   if (escribiendo) return;
 
   const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
@@ -155,6 +154,7 @@ document.addEventListener('keydown', e => {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
+  }
 
   if (actual === buscador) {
     switch (e.key) {
