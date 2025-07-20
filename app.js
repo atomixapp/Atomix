@@ -161,7 +161,7 @@ document.addEventListener('keydown', e => {
     return;
   }
 });
-
+  
 if (actual === buscador && document.activeElement === buscador) {
   // Solo mover foco con flechas si no hay texto o el cursor está vacío
   if (e.key === 'ArrowDown' && buscador.value.trim() === '') {
