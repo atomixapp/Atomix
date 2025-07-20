@@ -222,8 +222,8 @@ main {
   justify-content: center;
   align-content: start;
   justify-items: center;
-  overflow: visible;     /* Ya no debe controlar scroll */
-  flex: none;            /* Evita que se expanda en altura innecesariamente */
+  overflow: visible;
+  flex: none;
 }
 
 .pelicula {
@@ -236,7 +236,8 @@ main {
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
-  width: 180px;
+  width: 100%;
+  max-width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
