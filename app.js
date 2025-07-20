@@ -187,20 +187,23 @@ document.querySelectorAll('.plataforma-item').forEach(card => {
     }
   });
 });
+
+let bloquearPrimerEnterEnGaleria = false;
   
   function configurarNavegacionLateral() {
     const asideItems = Array.from(document.querySelectorAll('aside li'));
     const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
     const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
 
-asideItems.forEach((li, idx) => {
-  li.setAttribute('tabindex', '0');
-  li.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      li.click();
-      peliculas()[0]?.focus();
-      sonidoClick.currentTime = 0;
-      sonidoClick.play().catch(() => {});
+if (e.key === 'Enter') {
+  li.click();
+  bloquearPrimerEnterEnGaleria = true; // 🛑 activa el bloqueo
+  setTimeout(() => {
+    peliculas()[0]?.focus();
+  }, 100);
+  sonidoClick.currentTime = 0;
+  sonidoClick.play().catch(() => {});
+}
     } else if (e.key === 'ArrowDown') {
       if (idx < asideItems.length - 1) {
         asideItems[idx + 1].focus();
@@ -279,10 +282,13 @@ galeria.addEventListener('keydown', e => {
       else cards[i - columnas]?.focus();
       break;
 
-    case 'Enter':
-      cards[i].click();
-      break;
+case 'Enter':
+  if (bloquearPrimerEnterEnGaleria) {
+    bloquearPrimerEnterEnGaleria = false; // 🔓 desactiva para futuros ENTER
+    return; // 🚫 NO abrir modal en este primer ENTER
   }
+  cards[i].click();
+  break;
 
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
     sonidoClick.currentTime = 0;
