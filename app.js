@@ -94,30 +94,28 @@ const filtros = {
   filtrarYPintar(filtro, categoria);
 };
   
-  function configurarCuenta() {
-    botonCuenta.addEventListener('click', e => {
-      e.stopPropagation();
-      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-    });
+function configurarCuenta() {
+  botonCuenta.addEventListener('click', e => {
+    e.stopPropagation();
+    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+  });
 
-    document.addEventListener('click', e => {
-      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-        menuUsuario.style.display = 'none';
-      }
-    });
-  }
+  document.addEventListener('click', e => {
+    if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+      menuUsuario.style.display = 'none';
+    }
+  });
+}
 
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
-
   const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
 
-  // Si estás escribiendo, no hagas nada con ninguna tecla
+  // Si estás escribiendo, no hagas nada
   if (escribiendo) return;
 
   const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-  // Si el foco está en una plataforma (card de galería)
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
     const i = items.indexOf(actual);
@@ -126,22 +124,18 @@ document.addEventListener('keydown', e => {
       case 'ArrowRight':
         if (i + 1 < items.length) items[i + 1].focus();
         break;
-
       case 'ArrowLeft':
         if (i - 1 >= 0) items[i - 1].focus();
         else {
           document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
         }
         break;
-
       case 'ArrowUp':
         if (buscador) buscador.focus();
         break;
-
       case 'ArrowDown':
         document.querySelector('.plataforma-item')?.focus();
         break;
-
       case 'Enter':
         const plataforma = actual.getAttribute('aria-label');
         if (plataforma && typeof filtrar === 'function') {
@@ -157,15 +151,13 @@ document.addEventListener('keydown', e => {
         break;
     }
 
-    // Reproducir sonido de clic para teclas
     if (teclasDeNavegacion.concat('Enter').includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
   }
-});
 
-  // Foco en el buscador
+  // Si el foco está en el buscador
   if (actual === buscador) {
     switch (e.key) {
       case 'ArrowUp':
@@ -173,7 +165,7 @@ document.addEventListener('keydown', e => {
         break;
       case 'ArrowDown':
         const items = Array.from(document.querySelectorAll('.plataforma-item'));
-        items[0]?.focus(); // Mover al primer item de la galería
+        items[0]?.focus();
         break;
     }
   }
