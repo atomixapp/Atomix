@@ -305,6 +305,7 @@ galeria.addEventListener('keydown', e => {
 });
 
 // =================== BUSCADOR ===================
+// =================== BUSCADOR ===================
 function configurarBuscador() {
   buscador.addEventListener('input', e => {
     // Filtra las películas según el texto que escribes
@@ -330,15 +331,15 @@ function configurarBuscador() {
       }
     }
   });
-}
+} // Aquí falta el cierre de la función
 
-  function cargarPeliculas() {
-    db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
-      todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderPeliculas(todasPeliculas);
-      establecerFocoInicial();
-    });
-  }
+function cargarPeliculas() {
+  db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
+    todasPeliculas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderPeliculas(todasPeliculas);
+    establecerFocoInicial();
+  });
+}
 
   function actualizarPeliculasSinFecha() {
     db.collection("peliculas").get().then(snapshot => {
