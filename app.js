@@ -195,22 +195,29 @@ let bloquearPrimerEnterEnGaleria = false;
     const navLinks = Array.from(document.querySelectorAll('header .nav-left a'));
     const peliculas = () => Array.from(document.querySelectorAll('.pelicula'));
 
-if (e.key === 'Enter') {
-  li.click();
-  bloquearPrimerEnterEnGaleria = true; // 🛑 activa el bloqueo
-  setTimeout(() => {
-    peliculas()[0]?.focus();
-  }, 100);
-  sonidoClick.currentTime = 0;
-  sonidoClick.play().catch(() => {});
-}
+asideItems.forEach((li, idx) => {
+  li.setAttribute('tabindex', '0');
+  li.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      li.click();
+      bloquearPrimerEnterEnGaleria = true; // 🛑 activa el bloqueo
+
+      setTimeout(() => {
+        peliculas()[0]?.focus();
+      }, 100);
+
+      sonidoClick.currentTime = 0;
+      sonidoClick.play().catch(() => {});
     } else if (e.key === 'ArrowDown') {
       if (idx < asideItems.length - 1) {
         asideItems[idx + 1].focus();
       }
     } else if (e.key === 'ArrowUp') {
-      if (idx > 0) asideItems[idx - 1].focus();
-      else navLinks[0]?.focus();
+      if (idx > 0) {
+        asideItems[idx - 1].focus();
+      } else {
+        navLinks[0]?.focus();
+      }
     } else if (e.key === 'ArrowRight') {
       peliculas()[0]?.focus();
     }
@@ -219,8 +226,8 @@ if (e.key === 'Enter') {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
-  }); // <- CIERRA addEventListener
-});   // ✅ CIERRA forEach correctamente
+  });
+});
 
 // =================== NAVLINKS ===================
 navLinks.forEach((link, i) => {
@@ -282,13 +289,14 @@ galeria.addEventListener('keydown', e => {
       else cards[i - columnas]?.focus();
       break;
 
-case 'Enter':
-  if (bloquearPrimerEnterEnGaleria) {
-    bloquearPrimerEnterEnGaleria = false; // 🔓 desactiva para futuros ENTER
-    return; // 🚫 NO abrir modal en este primer ENTER
+    case 'Enter':
+      if (bloquearPrimerEnterEnGaleria) {
+        bloquearPrimerEnterEnGaleria = false; // 🔓 desactiva para futuros ENTER
+        return; // 🚫 NO abrir modal en este primer ENTER
+      }
+      cards[i].click();
+      break;
   }
-  cards[i].click();
-  break;
 
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
     sonidoClick.currentTime = 0;
