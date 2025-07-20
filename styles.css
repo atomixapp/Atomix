@@ -170,17 +170,16 @@ main {
   border: 2px solid #00bfff;
 }
 
-/* GALERIA DE PELICULAS */
 .galeria {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 180px));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
   padding: 0.4rem;
   justify-content: center;
   align-content: start;
   justify-items: center;
-  overflow: visible;     /* Ya no debe controlar scroll */
-  flex: none;            /* Evita que se expanda en altura innecesariamente */
+  overflow: visible;
+  flex: none;
 }
 
 .pelicula {
@@ -194,7 +193,6 @@ main {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   outline: none;
   width: 100%;
-  max-width: 200px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
   z-index: 1;
 }
@@ -510,9 +508,6 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
     gap: 2rem;
   }
-  .pelicula {
-    max-width: 240px;
-  }
   .galeria-header {
     justify-content: space-between;
   }
@@ -525,9 +520,6 @@ main {
 }
 
 @media (min-width: 1366px) {
-  .pelicula {
-    max-width: 220px;
-  }
 
   .galeria {
     gap: 2rem;
@@ -539,9 +531,6 @@ main {
 }
 
 @media (min-width: 1920px) {
-  .pelicula {
-    max-width: 260px;
-  }
 
   #buscadorPeliculas {
     width: 400px;
