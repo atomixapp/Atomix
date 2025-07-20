@@ -111,11 +111,12 @@ document.addEventListener('keydown', e => {
   const actual = document.activeElement;
 
   const escribiendo = actual.tagName === 'INPUT' || actual.tagName === 'TEXTAREA' || actual.isContentEditable;
+
+  // Si estás escribiendo, no hagas nada con ninguna tecla
+  if (escribiendo) return;
+
   const teclasDeNavegacion = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
-if (escribiendo) return;
-  }
-  
   // Si el foco está en una plataforma (card de galería)
   if (actual.classList.contains('plataforma-item')) {
     const items = Array.from(document.querySelectorAll('.plataforma-item'));
@@ -123,52 +124,46 @@ if (escribiendo) return;
 
     switch (e.key) {
       case 'ArrowRight':
-        // Mover el foco a la siguiente plataforma, si existe
         if (i + 1 < items.length) items[i + 1].focus();
         break;
 
       case 'ArrowLeft':
-        // Mover el foco a la plataforma anterior, si existe
         if (i - 1 >= 0) items[i - 1].focus();
         else {
-          // Si estamos en la primera plataforma, ir al aside
           document.querySelector('aside li.activo')?.focus() || asideItems[0]?.focus();
         }
         break;
 
       case 'ArrowUp':
-        // Mover el foco al buscador
         if (buscador) buscador.focus();
         break;
 
       case 'ArrowDown':
-        // Mover el foco al primer ítem de la galería
         document.querySelector('.plataforma-item')?.focus();
         break;
 
-case 'Enter':
-  const plataforma = actual.getAttribute('aria-label');
-  if (plataforma && typeof filtrar === 'function') {
-    filtrar(plataforma.toLowerCase());
-
-    // Espera un poco y enfoca la primera tarjeta de película
-    setTimeout(() => {
-      const primeraCard = document.querySelector('.pelicula');
-      if (primeraCard) {
-        primeraCard.focus();
-        console.log('🎯 Foco en película:', document.activeElement);
-      }
-    }, 300); // Da tiempo a que se rendericen
-  }
-  break;
+      case 'Enter':
+        const plataforma = actual.getAttribute('aria-label');
+        if (plataforma && typeof filtrar === 'function') {
+          filtrar(plataforma.toLowerCase());
+          setTimeout(() => {
+            const primeraCard = document.querySelector('.pelicula');
+            if (primeraCard) {
+              primeraCard.focus();
+              console.log('🎯 Foco en película:', document.activeElement);
+            }
+          }, 300);
+        }
+        break;
     }
 
-    // Reproducir sonido de clic para las teclas
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+    // Reproducir sonido de clic para teclas
+    if (teclasDeNavegacion.concat('Enter').includes(e.key)) {
       sonidoClick.currentTime = 0;
       sonidoClick.play().catch(() => {});
     }
   }
+});
 
   // Foco en el buscador
   if (actual === buscador) {
