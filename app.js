@@ -100,13 +100,6 @@ function configurarCuenta() {
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
   });
 
-  document.addEventListener('click', e => {
-    if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-      menuUsuario.style.display = 'none';
-    }
-  });
-}
-
 document.addEventListener('click', e => {
   if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
     menuUsuario.style.display = 'none';
@@ -163,8 +156,8 @@ document.addEventListener('keydown', e => {
     }
   }
 
+  // Si estás en el buscador, no hacemos nada
   if (actual === buscador) {
-    // Si estás en el buscador, no hacemos nada
     return;
   }
 });
