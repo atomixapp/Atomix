@@ -63,7 +63,7 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
       if (primera) primera.focus();
     }
   });
-
+}
 const filtros = {
   todos: () => true,
   estrenos2025: p => p.anio === 2025,
