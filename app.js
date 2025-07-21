@@ -62,7 +62,7 @@ renderPeliculas(todasPeliculas.filter(filtro), () => {
     const primera = galeria.querySelector('.pelicula');
     if (primera) primera.focus();
    }
-});
+}
 
 window.filtrar = function (categoria) {
   if (categoria === 'plataformas') {
@@ -622,5 +622,4 @@ function verVideo() {
 
   setTimeout(() => cerrarVideo.focus(), 100);
 }
-   }
 });
