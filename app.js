@@ -33,10 +33,9 @@ function configurarBuscador() {
 
   let filtroActual = () => true;
 
-function filtrarYPintar(filtro, categoriaNombre = '') {
+function filtrarYPintar(filtro, categoriaNombre = '', moverFoco = true) {
   filtroActual = filtro;
-  
-  // Ocultar ambas galerías
+
   galeria.style.display = 'none';
   galeriaPlataformas.style.display = 'none';
 
@@ -45,7 +44,7 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     galeriaPlataformas.style.display = 'flex';
 
     const items = galeriaPlataformas.querySelectorAll('.plataforma-item');
-    if (items.length > 0) {
+    if (items.length > 0 && moverFoco) {
       setTimeout(() => {
         items[0].focus();
         console.log('✅ Foco en plataforma:', document.activeElement);
@@ -55,8 +54,8 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
 
-    // ✅ Aquí está el cambio clave
     renderPeliculas(todasPeliculas.filter(filtro), () => {
+      if (!moverFoco) return;
       const primera = galeria.querySelector('.pelicula');
       if (primera) primera.focus();
     });
