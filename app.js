@@ -64,14 +64,9 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     }
   });
 
-} // ← ESTE CIERRE FALTABA 👈👈👈
+}
 
-window.filtrar = function (categoria) {
-  if (categoria === 'plataformas') {
-    filtrarYPintar(() => true, 'plataformas');
-    return;
-  }
-
+// Declaración global del mapa de filtros
 const filtros = {
   todos: () => true,
   estrenos2025: p => p.anio === 2025,
@@ -92,6 +87,13 @@ const filtros = {
   disney: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('disney'),
   2025: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('2025'),
 };
+
+// Función para filtrar según categoría
+window.filtrar = function (categoria) {
+  if (categoria === 'plataformas') {
+    filtrarYPintar(() => true, 'plataformas');
+    return;
+  }
 
   const filtro = filtros[categoria] || (() => true);
   filtrarYPintar(filtro, categoria);
