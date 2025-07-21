@@ -54,15 +54,13 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
 
-renderPeliculas(todasPeliculas.filter(filtro), () => {
-  const active = document.activeElement;
-  const esBuscadorActivo = active === buscador || buscador.contains?.(active);
-
-  if (!esBuscadorActivo) {
-    const primera = galeria.querySelector('.pelicula');
-    if (primera) primera.focus();
+    // ✅ Aquí está el cambio clave
+    renderPeliculas(todasPeliculas.filter(filtro), () => {
+      const primera = galeria.querySelector('.pelicula');
+      if (primera) primera.focus();
+    });
   }
-});
+}
 
 window.filtrar = function (categoria) {
   if (categoria === 'plataformas') {
@@ -186,8 +184,7 @@ document.querySelectorAll('.plataforma-item').forEach(card => {
     const plataforma = card.getAttribute('aria-label');
     if (plataforma && typeof filtrar === 'function') {
       filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
-      }
-    });
+    }
   });
 });
 
@@ -623,19 +620,4 @@ function verVideo() {
 
   setTimeout(() => cerrarVideo.focus(), 100);
 }
-
-function cerrarVideoManual() {
-  const modalVideo = document.getElementById('modalVideo');
-  modalVideo.style.display = 'none';
-
-  if (videoRef) {
-    videoRef.pause();
-    videoRef.src = '';
-    videoRef = null;
-  }
-
-  document.exitFullscreen?.();
-
-  document.removeEventListener('keydown', manejarEscape);
-  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
-}
+});
