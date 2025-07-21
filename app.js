@@ -71,13 +71,11 @@ window.filtrar = function (categoria) {
     filtrarYPintar(() => true, 'plataformas');
     return;
   }
-};
 
 const filtros = {
   todos: () => true,
   estrenos2025: p => p.anio === 2025,
   estrenos2024: p => p.anio === 2024,
-
   accion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('acción'),
   animacion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('animación'),
   artesmarciales: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('artes marciales'),
