@@ -64,9 +64,6 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     }
   });
 
-}
-
-// Declaración global del mapa de filtros
 const filtros = {
   todos: () => true,
   estrenos2025: p => p.anio === 2025,
