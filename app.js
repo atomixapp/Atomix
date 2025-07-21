@@ -70,7 +70,7 @@ window.filtrar = function (categoria) {
   if (categoria === 'plataformas') {
     filtrarYPintar(() => true, 'plataformas');
     return;
-  }
+  };
 
 const filtros = {
   todos: () => true,
