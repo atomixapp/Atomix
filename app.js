@@ -61,6 +61,7 @@ renderPeliculas(todasPeliculas.filter(filtro), () => {
   if (!esBuscadorActivo) {
     const primera = galeria.querySelector('.pelicula');
     if (primera) primera.focus();
+   }
   }
 });
 
