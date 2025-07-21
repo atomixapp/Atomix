@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarPeliculasSinFecha();
     cargarPeliculas();
   }
-
+});
   function configurarBuscador() {
     buscador.addEventListener('input', e => {
       filtrarYPintar(p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase()));
