@@ -64,6 +64,7 @@ renderPeliculas(todasPeliculas.filter(filtro), () => {
     if (primera) primera.focus();
   }
 });
+   }
 
 window.filtrar = function (categoria) {
   if (categoria === 'plataformas') {
