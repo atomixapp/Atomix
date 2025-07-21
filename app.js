@@ -56,8 +56,8 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
 
 renderPeliculas(todasPeliculas.filter(filtro), () => {
   const active = document.activeElement;
-  const esBuscadorActivo = active === buscador || buscador.contains(active);
-  
+  const esBuscadorActivo = active === buscador || buscador.contains?.(active);
+
   if (!esBuscadorActivo) {
     const primera = galeria.querySelector('.pelicula');
     if (primera) primera.focus();
