@@ -621,5 +621,4 @@ function verVideo() {
 
   setTimeout(() => cerrarVideo.focus(), 100);
 } // <- Fin de verVideo()
-
-}); // <- ✅ ESTA llave cierra el DOMContentLoaded que abriste al principio
+  
