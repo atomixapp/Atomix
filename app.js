@@ -24,11 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarPeliculas();
   }
 
-  function configurarBuscador() {
-    buscador.addEventListener('input', e => {
-      filtrarYPintar(p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase()));
-    });
-  }
+function configurarBuscador() {
+  buscador.addEventListener('input', e => {
+    const texto = e.target.value.toLowerCase();
+    filtrarYPintar(p => p.titulo?.toLowerCase().includes(texto), '', false); // <- moverFoco = false
+  });
+}
 
   let filtroActual = () => true;
 
