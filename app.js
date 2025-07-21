@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarPeliculasSinFecha();
     cargarPeliculas();
   }
-});
+
   function configurarBuscador() {
     buscador.addEventListener('input', e => {
       filtrarYPintar(p => p.titulo?.toLowerCase().includes(e.target.value.toLowerCase()));
@@ -54,20 +54,25 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
 
-  renderPeliculas(todasPeliculas.filter(filtro), () => {
-    const active = document.activeElement;
-    const esBuscadorActivo = active === buscador || buscador.contains(active);
-
-    if (!esBuscadorActivo) {
+    // ✅ Aquí está el cambio clave
+    renderPeliculas(todasPeliculas.filter(filtro), () => {
       const primera = galeria.querySelector('.pelicula');
       if (primera) primera.focus();
-    }
-  });
+    });
+  }
 }
+
+window.filtrar = function (categoria) {
+  if (categoria === 'plataformas') {
+    filtrarYPintar(() => true, 'plataformas');
+    return;
+  }
+
 const filtros = {
   todos: () => true,
   estrenos2025: p => p.anio === 2025,
   estrenos2024: p => p.anio === 2024,
+
   accion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('acción'),
   animacion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('animación'),
   artesmarciales: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('artes marciales'),
@@ -84,13 +89,6 @@ const filtros = {
   disney: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('disney'),
   2025: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('2025'),
 };
-
-// Función para filtrar según categoría
-window.filtrar = function (categoria) {
-  if (categoria === 'plataformas') {
-    filtrarYPintar(() => true, 'plataformas');
-    return;
-  }
 
   const filtro = filtros[categoria] || (() => true);
   filtrarYPintar(filtro, categoria);
@@ -313,6 +311,7 @@ buscador.addEventListener('keydown', e => {
     peliculas()[0]?.focus();
       }
     });
+  }
 
   function cargarPeliculas() {
     db.collection('peliculas').orderBy('fechaCreacion', 'desc').get().then(snapshot => {
@@ -620,4 +619,5 @@ function verVideo() {
   document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
 
   setTimeout(() => cerrarVideo.focus(), 100);
-} // <- Fin de verVideo()
+}
+});
