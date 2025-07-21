@@ -54,13 +54,15 @@ function filtrarYPintar(filtro, categoriaNombre = '') {
     tituloCategoria.textContent = categoriaNombre.toUpperCase();
     galeria.style.display = 'flex';
 
-    // ✅ Aquí está el cambio clave
-    renderPeliculas(todasPeliculas.filter(filtro), () => {
-      const primera = galeria.querySelector('.pelicula');
-      if (primera) primera.focus();
-    });
+renderPeliculas(todasPeliculas.filter(filtro), () => {
+  const active = document.activeElement;
+  const esBuscadorActivo = active === buscador || buscador.contains(active);
+  
+  if (!esBuscadorActivo) {
+    const primera = galeria.querySelector('.pelicula');
+    if (primera) primera.focus();
   }
-}
+});
 
 window.filtrar = function (categoria) {
   if (categoria === 'plataformas') {
