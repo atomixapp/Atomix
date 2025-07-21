@@ -616,9 +616,21 @@ function verVideo() {
 
   video.requestFullscreen?.().catch(() => {});
 
-  cerrarVideo.onclick = cerrarVideoManual;
-  document.addEventListener('keydown', manejarEscape);
-  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
+function cerrarVideoManual() {
+  const modalVideo = document.getElementById('modalVideo');
+  modalVideo.style.display = 'none';
+
+  if (videoRef) {
+    videoRef.pause();
+    videoRef.src = '';
+    videoRef = null;
+  }
+
+  document.exitFullscreen?.();
+
+  document.removeEventListener('keydown', manejarEscape);
+  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
+}
 
   setTimeout(() => cerrarVideo.focus(), 100);
 }
