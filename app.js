@@ -61,8 +61,8 @@ renderPeliculas(todasPeliculas.filter(filtro), () => {
   if (!esBuscadorActivo) {
     const primera = galeria.querySelector('.pelicula');
     if (primera) primera.focus();
-   }
-}
+  }
+});
 
 window.filtrar = function (categoria) {
   if (categoria === 'plataformas') {
