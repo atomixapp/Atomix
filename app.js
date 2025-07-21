@@ -616,6 +616,13 @@ function verVideo() {
 
   video.requestFullscreen?.().catch(() => {});
 
+  cerrarVideo.onclick = cerrarVideoManual;
+  document.addEventListener('keydown', manejarEscape);
+  document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
+
+  setTimeout(() => cerrarVideo.focus(), 100);
+}
+
 function cerrarVideoManual() {
   const modalVideo = document.getElementById('modalVideo');
   modalVideo.style.display = 'none';
@@ -630,7 +637,4 @@ function cerrarVideoManual() {
 
   document.removeEventListener('keydown', manejarEscape);
   document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
-}
-
-  setTimeout(() => cerrarVideo.focus(), 100);
 }
