@@ -186,7 +186,8 @@ document.querySelectorAll('.plataforma-item').forEach(card => {
     const plataforma = card.getAttribute('aria-label');
     if (plataforma && typeof filtrar === 'function') {
       filtrar(plataforma.toLowerCase()); // Aquí se abriría o filtra la plataforma según el nombre
-    }
+      }
+    });
   });
 });
 
