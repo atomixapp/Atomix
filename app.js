@@ -384,8 +384,23 @@ function abrirModal(pelicula) {
   document.getElementById('modalImagen').src = pelicula.imagen_detalles || pelicula.imagen || 'img/placeholder.png';
   document.getElementById('modalTitulo').textContent = pelicula.titulo || 'Sin título';
   document.getElementById('modalDescripcion').textContent = pelicula.sinopsis || pelicula.descripcion || 'Sin descripción disponible.';
+
+  // Lista de géneros válidos a mostrar (los principales)
+  const generosValidos = [
+    'acción', 'animación', 'artes marciales', 'aventura', 'ciencia ficción',
+    'comedia', 'drama', 'fantasía', 'romance', 'suspense', 'terror'
+  ];
+
+  // Filtrar y capitalizar los géneros válidos
+  const generosAMostrar = Array.isArray(pelicula.genero)
+    ? pelicula.genero
+        .filter(g => generosValidos.includes(g.toLowerCase()))
+        .map(g => g.charAt(0).toUpperCase() + g.slice(1))
+        .join(', ')
+    : 'No disponible';
+
   document.getElementById('modalExtraInfo').innerHTML = `
-    <p><strong>Género:</strong> ${pelicula.genero || 'No disponible'}</p>
+    <p><strong>Género:</strong> ${generosAMostrar}</p>
     <p><strong>Año:</strong> ${pelicula.anio || 'Desconocido'}</p>
     <p><strong>Puntuación:</strong> ${pelicula.puntuacion || 'N/A'}</p>
   `;
