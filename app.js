@@ -429,6 +429,7 @@ function abrirModal(pelicula) {
     video.src = peliculaActiva.trailerUrl;
     video.controls = true;
     video.autoplay = true;
+    video.muted = true;
     video.id = 'trailerVideo';
     video.style.width = '100%';
     video.style.height = '100%';
@@ -601,6 +602,7 @@ function verVideo() {
   video.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
   video.controls = true;
   video.autoplay = true;
+  video.muted = true;
   video.id = 'videoPrincipal';
   video.style.width = '100%';
   video.style.height = '100%';
