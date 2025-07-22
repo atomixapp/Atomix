@@ -428,8 +428,14 @@ function abrirModal(pelicula) {
     const video = document.createElement('video');
     video.src = peliculaActiva.trailerUrl;
     video.controls = true;
-    video.autoplay = true;
-    video.muted = true;
+video.autoplay = true;
+video.muted = false;
+video.play().catch(err => {
+  // Si falla, prueba desmutear después de una interacción
+  console.warn('Autoplay con sonido bloqueado:', err);
+  video.muted = true; // fallback
+  video.play().catch(() => {});
+});
     video.id = 'trailerVideo';
     video.style.width = '100%';
     video.style.height = '100%';
