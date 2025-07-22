@@ -70,8 +70,8 @@ window.filtrar = function (categoria) {
 
 const filtros = {
   todos: () => true,
-  estrenos2025: p => p.anio === 2025,
-  estrenos2024: p => p.anio === 2024,
+estrenos2025: p => p.anio === '2025',
+estrenos2024: p => p.anio === '2024',
 
   accion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('acción'),
   animacion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('animación'),
@@ -90,8 +90,18 @@ const filtros = {
   2025: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('2025'),
 };
 
-  const filtro = filtros[categoria] || (() => true);
-  filtrarYPintar(filtro, categoria);
+const filtro = filtros[categoria] || (() => true);
+
+// Ajustar el nombre que se mostrará como título
+let nombreCategoria = categoria;
+
+// Si la categoría es 'estrenos2025' o 'estrenos2024', lo convertimos a 'ESTRENOS 2025'
+if (categoria.startsWith('estrenos')) {
+  const anio = categoria.replace('estrenos', '');
+  nombreCategoria = `estrenos ${anio}`;
+}
+
+filtrarYPintar(filtro, nombreCategoria);
 };
   
   function configurarCuenta() {
