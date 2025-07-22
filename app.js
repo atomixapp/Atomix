@@ -474,28 +474,33 @@ video.play().catch(err => {
     }
   }
 
-  function cerrarVideoTrailer() {
-    const modal = document.getElementById('modalVideo');
-    const contenedor = document.getElementById('contenedorVideo');
+function cerrarVideoTrailer() {
+  const modal = document.getElementById('modalVideo');
+  const contenedor = document.getElementById('contenedorVideo');
 
-    try {
-      if (videoRef instanceof HTMLVideoElement) {
-        videoRef.pause();
-        videoRef.currentTime = 0;
-      }
-    } catch (err) {
-      console.warn('Error al cerrar el video:', err);
+  try {
+    if (videoRef instanceof HTMLVideoElement) {
+      videoRef.pause();
+      videoRef.currentTime = 0;
     }
-
-    contenedor.innerHTML = '';
-    modal.style.display = 'none';
-    document.getElementById('modalPelicula').style.display = 'flex';
-    document.getElementById('btnVerTrailer')?.focus();
-
-    document.removeEventListener('keydown', manejarEscape);
-    document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
-    videoRef = null;
+  } catch (err) {
+    console.warn('Error al cerrar el video:', err);
   }
+
+  contenedor.innerHTML = '';
+  modal.style.display = 'none';
+  document.getElementById('modalPelicula').style.display = 'flex';
+  document.getElementById('btnVerTrailer')?.focus();
+
+  document.removeEventListener('keydown', manejarEscape);
+  document.removeEventListener('fullscreenchange', manejarSalidaFullscreen);
+
+  // 🔽 Eliminar listeners de mostrar/ocultar la "X"
+  document.removeEventListener('mousemove', window.__videoMostrarCerrar__);
+  document.removeEventListener('keydown', window.__videoMostrarCerrar__);
+
+  videoRef = null;
+}
 
 function manejarNavegacionModal(e) {
   const btnVerAhora = document.getElementById('btnVerAhora');
