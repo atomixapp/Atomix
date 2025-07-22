@@ -601,8 +601,15 @@ function verVideo() {
   const video = document.createElement('video');
   video.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
   video.controls = true;
-  video.autoplay = true;
-  video.muted = true;
+video.autoplay = true;
+video.muted = false;
+video.play().catch(err => {
+  // Si falla, prueba desmutear después de una interacción
+  console.warn('Autoplay con sonido bloqueado:', err);
+  video.muted = true; // fallback
+  video.play().catch(() => {});
+});
+
   video.id = 'videoPrincipal';
   video.style.width = '100%';
   video.style.height = '100%';
