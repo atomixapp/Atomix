@@ -607,14 +607,13 @@ function verVideo() {
   const video = document.createElement('video');
   video.src = peliculaActiva.videoUrl || 'https://ia601607.us.archive.org/17/items/Emdmb/Emdmb.ia.mp4';
   video.controls = true;
-video.autoplay = true;
-video.muted = false;
-video.play().catch(err => {
-  // Si falla, prueba desmutear después de una interacción
-  console.warn('Autoplay con sonido bloqueado:', err);
-  video.muted = true; // fallback
-  video.play().catch(() => {});
-});
+  video.autoplay = true;
+  video.muted = false;
+  video.play().catch(err => {
+    console.warn('Autoplay con sonido bloqueado:', err);
+    video.muted = true;
+    video.play().catch(() => {});
+  });
 
   video.id = 'videoPrincipal';
   video.style.width = '100%';
@@ -634,5 +633,32 @@ video.play().catch(err => {
   document.addEventListener('fullscreenchange', manejarSalidaFullscreen);
 
   setTimeout(() => cerrarVideo.focus(), 100);
+
+  // ========================
+  // Ocultar "X" tras 5 segundos
+  // ========================
+  let temporizadorOcultar = null;
+
+  function ocultarCerrarVideo() {
+    cerrarVideo.style.opacity = '0';
+    cerrarVideo.style.pointerEvents = 'none';
+  }
+
+  function mostrarCerrarVideo() {
+    cerrarVideo.style.opacity = '1';
+    cerrarVideo.style.pointerEvents = 'auto';
+
+    clearTimeout(temporizadorOcultar);
+    temporizadorOcultar = setTimeout(ocultarCerrarVideo, 5000);
+  }
+
+  // Mostrar primero, luego ocultar tras 5 seg
+  mostrarCerrarVideo();
+
+  document.addEventListener('mousemove', mostrarCerrarVideo);
+  document.addEventListener('keydown', mostrarCerrarVideo);
+
+  // Guardamos referencia para poder eliminar los listeners luego
+  window.__videoMostrarCerrar__ = mostrarCerrarVideo;
 }
 });
