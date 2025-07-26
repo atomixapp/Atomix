@@ -105,31 +105,48 @@ filtrarYPintar(filtro, nombreCategoria);
 };
   
 function configurarCuenta() {
+  // Mostrar y ocultar el menú "Mi cuenta" al hacer clic en el botón
   botonCuenta.addEventListener('click', e => {
-    e.stopPropagation();  // Evita que el clic se propague y cierre el menú inmediatamente
-    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';  // Alterna la visibilidad
+    e.stopPropagation();
+    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
   });
 
-  // Cerrar el menú si se hace clic fuera del menú o del botón
+  // Cerrar el menú al hacer clic fuera de él
   document.addEventListener('click', e => {
     if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-      menuUsuario.style.display = 'none';  // Cierra el menú si el clic es fuera
+      menuUsuario.style.display = 'none';
     }
   });
-  
+
+  // Función para cerrar sesión al hacer clic en el botón
+  const cerrarSesionBtn = document.querySelector('#menuUsuario button');
+  cerrarSesionBtn.addEventListener('click', () => {
+    firebase.auth().signOut().then(() => {
+      // Redirigir a la página de login (o donde desees)
+      window.location.href = 'index.html'; // O cualquier página de login que tengas
+    }).catch((error) => {
+      console.error("Error al cerrar sesión: ", error);
+    });
+
+    // Ocultar el menú después de cerrar sesión
+    menuUsuario.style.display = 'none';
+  });
+
   // Escuchar las teclas ESC para cerrar el menú
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      menuUsuario.style.display = 'none';  // Cierra el menú cuando se presiona ESC
+      menuUsuario.style.display = 'none'; // Cierra el menú cuando se presiona ESC
     }
   });
 
-  // Asegúrate de que los datos del usuario se actualicen si están disponibles
+  // Asegurarse de que los datos del usuario se actualicen correctamente al iniciar sesión
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
+      // Si hay un usuario logueado, mostrar su nombre y correo
       nombreUsuario.textContent = user.displayName || "Usuario";
       correoUsuario.textContent = user.email || "correo@correo.com";
     } else {
+      // Si no hay un usuario logueado, mostrar valores predeterminados
       nombreUsuario.textContent = "Usuario";
       correoUsuario.textContent = "correo@correo.com";
     }
