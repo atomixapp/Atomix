@@ -141,6 +141,7 @@ function configurarCuenta() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       menuUsuario.style.display = 'none'; // Cierra el menú cuando se presiona ESC
+      botonCuenta.focus(); // Mueve el foco al botón "Mi cuenta" al cerrar el menú
     }
   });
 
@@ -154,6 +155,17 @@ function configurarCuenta() {
       // Si no hay un usuario logueado, mostrar valores predeterminados
       nombreUsuario.textContent = "Usuario";
       correoUsuario.textContent = "correo@correo.com";
+    }
+  });
+
+  // Hacer que el foco pueda moverse entre el desplegable
+  menuUsuario.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp') {
+      // Mover el foco al botón "Mi cuenta" si estamos en "Cerrar sesión"
+      botonCuenta.focus();
+    } else if (e.key === 'ArrowDown') {
+      // Si tienes más botones en el desplegable, puedes mover el foco hacia abajo (agrega más condiciones si es necesario)
+      cerrarSesionBtn.focus();  // Este es el foco inicial del menú, así que debería funcionar correctamente.
     }
   });
 }
