@@ -106,24 +106,30 @@ filtrarYPintar(filtro, nombreCategoria);
   
 function configurarCuenta() {
   botonCuenta.addEventListener('click', e => {
-    e.stopPropagation();
-    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+    e.stopPropagation();  // Evita que el clic se propague y cierre el menú inmediatamente
+    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';  // Alterna la visibilidad
   });
 
+  // Cerrar el menú si se hace clic fuera del menú o del botón
   document.addEventListener('click', e => {
     if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-      menuUsuario.style.display = 'none';
+      menuUsuario.style.display = 'none';  // Cierra el menú si el clic es fuera
+    }
+  });
+  
+  // Escuchar las teclas ESC para cerrar el menú
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      menuUsuario.style.display = 'none';  // Cierra el menú cuando se presiona ESC
     }
   });
 
-  // Asegúrate de que Firebase Authentication esté cargado y el usuario esté autenticado
+  // Asegúrate de que los datos del usuario se actualicen si están disponibles
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
-      // Si hay un usuario logueado, muestra su nombre y correo
-      nombreUsuario.textContent = user.displayName || "Usuario"; // Usa displayName si está disponible
-      correoUsuario.textContent = user.email || "correo@correo.com"; // Muestra el correo
+      nombreUsuario.textContent = user.displayName || "Usuario";
+      correoUsuario.textContent = user.email || "correo@correo.com";
     } else {
-      // Si no hay un usuario autenticado, muestra valores predeterminados
       nombreUsuario.textContent = "Usuario";
       correoUsuario.textContent = "correo@correo.com";
     }
