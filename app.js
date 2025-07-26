@@ -109,6 +109,11 @@ function configurarCuenta() {
   botonCuenta.addEventListener('click', e => {
     e.stopPropagation();
     menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+
+    // Mover el foco al botón "Cerrar sesión" cuando se abra el menú
+    if (menuUsuario.style.display === 'block') {
+      cerrarSesionBtn.focus();
+    }
   });
 
   // Cerrar el menú al hacer clic fuera de él
