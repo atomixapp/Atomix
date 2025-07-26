@@ -72,7 +72,6 @@ const filtros = {
   todos: () => true,
 estrenos2025: p => p.anio === '2025',
 estrenos2024: p => p.anio === '2024',
-
   accion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('acción'),
   animacion: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('animación'),
   artesmarciales: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('artes marciales'),
@@ -87,7 +86,7 @@ estrenos2024: p => p.anio === '2024',
   netflix: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('netflix'),
   amazon: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('amazon'),
   disney: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('disney'),
-  2025: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('2025'),
+  movistar: p => Array.isArray(p.genero) && p.genero.map(g => g.toLowerCase()).includes('movistar'),
 };
 
 const filtro = filtros[categoria] || (() => true);
