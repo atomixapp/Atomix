@@ -104,18 +104,31 @@ if (categoria.startsWith('estrenos')) {
 filtrarYPintar(filtro, nombreCategoria);
 };
   
-  function configurarCuenta() {
-    botonCuenta.addEventListener('click', e => {
-      e.stopPropagation();
-      menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
-    });
+function configurarCuenta() {
+  botonCuenta.addEventListener('click', e => {
+    e.stopPropagation();
+    menuUsuario.style.display = menuUsuario.style.display === 'block' ? 'none' : 'block';
+  });
 
-    document.addEventListener('click', e => {
-      if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
-        menuUsuario.style.display = 'none';
-      }
-    });
-  }
+  document.addEventListener('click', e => {
+    if (!menuUsuario.contains(e.target) && !botonCuenta.contains(e.target)) {
+      menuUsuario.style.display = 'none';
+    }
+  });
+
+  // Asegúrate de que Firebase Authentication esté cargado y el usuario esté autenticado
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      // Si hay un usuario logueado, muestra su nombre y correo
+      nombreUsuario.textContent = user.displayName || "Usuario"; // Usa displayName si está disponible
+      correoUsuario.textContent = user.email || "correo@correo.com"; // Muestra el correo
+    } else {
+      // Si no hay un usuario autenticado, muestra valores predeterminados
+      nombreUsuario.textContent = "Usuario";
+      correoUsuario.textContent = "correo@correo.com";
+    }
+  });
+}
 
 document.addEventListener('keydown', e => {
   const actual = document.activeElement;
