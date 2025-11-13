@@ -1,6 +1,6 @@
 /* global auth, db, firebase */
 document.addEventListener('DOMContentLoaded', () => {
-  const auth = window.auth; // 👈 necesario para evitar la ❌ roja de GitHub web
+  const auth = window.auth; // necesario para evitar la ❌ roja de GitHub web
   const form = document.getElementById('authForm');
   const toggleAuth = document.getElementById('toggleAuth');
   const forgotPassword = document.getElementById('forgotPassword');
@@ -9,18 +9,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isLogin = true;
 
-  // Verificar si el usuario ya estaba logueado
+  // Si hay usuario lo llevamos a home (ahora no exigimos emailVerified)
   auth.onAuthStateChanged(user => {
-    if (user && user.emailVerified) {
+    if (user) {
       window.location.href = 'home.html';
     }
   });
 
   function updateForm() {
-    btnSubmit.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
-    toggleAuth.textContent = isLogin
-      ? '¿No tienes cuenta? Regístrate aquí'
-      : '¿Ya tienes cuenta? Inicia sesión';
+    // Puedes cambiar el texto del botón/links según isLogin
+    if (isLogin) {
+      btnSubmit.textContent = 'Iniciar sesión';
+      toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
+    } else {
+      btnSubmit.textContent = 'Crear cuenta';
+      toggleAuth.textContent = '¿Ya tienes cuenta? Inicia sesión';
+    }
   }
 
   toggleAuth.addEventListener('click', (e) => {
@@ -37,22 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (isLogin) {
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        const result = await auth.signInWithEmailAndPassword(email, password);
-
-        if (!result.user.emailVerified) {
-          errorMsg.textContent = "Verifica tu correo antes de continuar.";
-          await auth.signOut();
-          return;
-        }
-
-        window.location.href = 'home.html';
+        await auth.signInWithEmailAndPassword(email, password);
+        // onAuthStateChanged redirigirá
       } else {
-        const result = await auth.createUserWithEmailAndPassword(email, password);
-        await result.user.sendEmailVerification();
-        errorMsg.textContent = "Cuenta creada. Revisa tu correo.";
-        await auth.signOut();
+        // Crear usuario y mantenerlo logueado directamente (no enviamos verificación)
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        await auth.createUserWithEmailAndPassword(email, password);
+        // El usuario queda ya autenticado; onAuthStateChanged redirigirá a home
+        errorMsg.style.color = 'green';
+        errorMsg.textContent = "Cuenta creada. Redirigiendo...";
       }
     } catch (error) {
+      errorMsg.style.color = 'red';
       errorMsg.textContent = error.message;
     }
   });
@@ -66,8 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     try {
       await auth.sendPasswordResetEmail(email);
+      errorMsg.style.color = 'green';
       errorMsg.textContent = 'Correo de recuperación enviado.';
     } catch (err) {
+      errorMsg.style.color = 'red';
       errorMsg.textContent = err.message;
     }
   });
