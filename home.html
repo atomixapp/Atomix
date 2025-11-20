@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Películas || Atomix IPTV</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Firebase SDK (si tu firebase.js inicializa window.firebase y window.auth) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <script src="firebase.js"></script>
   <script src="https://www.youtube.com/iframe_api"></script>
 </head>
@@ -16,16 +18,17 @@
 
 <header>
   <nav class="nav-left">
+    <!-- usa enlaces absolutos para evitar problemas en WebView -->
     <a href="https://atomixapp.github.io/Atomix/tv.html" tabindex="-1">TV</a>
-    <a class="activo" href="#" tabindex="-1">Películas</a>
-    <a href="#" tabindex="-1">Series</a>
+    <a class="activo" href="https://atomixapp.github.io/Atomix/home.html" tabindex="-1">Películas</a>
+    <a href="https://atomixapp.github.io/Atomix/series.html" tabindex="-1">Series</a>
   </nav>
   <div class="nav-right" style="position:relative;">
-   <button id="botonCuenta" tabindex="-1">Mi cuenta</button>
+    <button id="botonCuenta" tabindex="-1">Mi cuenta</button>
     <div id="menuUsuario">
       <p id="nombreUsuario">Usuario</p>
       <p id="correoUsuario">correo@correo.com</p>
-      <button onclick="cerrarSesion()" tabindex="-1" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
+      <button id="cerrarSesionBtn" tabindex="-1" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
     </div>
   </div>
 </header>
@@ -33,46 +36,46 @@
 <div class="app-container">
   <aside>
     <h2>Categorías</h2>
-  <ul>
-    <li id="navPlataformas" tabindex="0" onclick="filtrar('plataformas')">📺 Plataformas</li>
-    <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
-    <li id="navEstrenos2025" tabindex="0" onclick="filtrar('estrenos2025')">🆕 Estrenos 2025</li>
-    <li id="navEstrenos2024" tabindex="0" onclick="filtrar('estrenos2024')">🎬 Estrenos 2024</li>
-    <li id="navAccion" tabindex="0" onclick="filtrar('accion')">🔥 Acción</li>
-    <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐽 Animación</li>
-    <li id="navArtesmarciales" tabindex="0" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
-    <li id="navAventura" tabindex="0" onclick="filtrar('aventuras')">🌋 Aventuras</li>
-    <li id="navCienciaficcion" tabindex="0" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
-    <li id="navComedia" tabindex="0" onclick="filtrar('comedia')">😂 Comedia</li>
-    <li id="navDrama" tabindex="0" onclick="filtrar('drama')">🎭 Drama</li>
-    <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧙 Fantasía</li>
-    <li id="navRomance" tabindex="0" onclick="filtrar('romance')">💘 Romance</li>
-    <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
-    <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
-  </ul>
-</aside>
-  
+    <ul>
+      <li id="navPlataformas" tabindex="0" onclick="filtrar('plataformas')">📺 Plataformas</li>
+      <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
+      <li id="navEstrenos2025" tabindex="0" onclick="filtrar('estrenos2025')">🆕 Estrenos 2025</li>
+      <li id="navEstrenos2024" tabindex="0" onclick="filtrar('estrenos2024')">🎬 Estrenos 2024</li>
+      <li id="navAccion" tabindex="0" onclick="filtrar('accion')">🔥 Acción</li>
+      <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐽 Animación</li>
+      <li id="navArtesmarciales" tabindex="0" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
+      <li id="navAventura" tabindex="0" onclick="filtrar('aventuras')">🌋 Aventuras</li>
+      <li id="navCienciaficcion" tabindex="0" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
+      <li id="navComedia" tabindex="0" onclick="filtrar('comedia')">😂 Comedia</li>
+      <li id="navDrama" tabindex="0" onclick="filtrar('drama')">🎭 Drama</li>
+      <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧙 Fantasía</li>
+      <li id="navRomance" tabindex="0" onclick="filtrar('romance')">💘 Romance</li>
+      <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
+      <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
+    </ul>
+  </aside>
+
   <main>
     <div class="galeria-header">
       <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
       <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
     </div>
     <div id="galeria" class="galeria"></div>
-    
-<div id="galeriaPlataformas" class="galeria-plataformas" style="display: none;">
-  <div class="plataforma-item" tabindex="0" aria-label="netflix">
-    <img src="https://i.postimg.cc/5y2rY0Vx/netflix.png" alt="netflix">
-  </div>
-  <div class="plataforma-item" tabindex="0" aria-label="Amazon">
-    <img src="https://i.postimg.cc/vBRLtsZ9/amazonp.jpg" alt="amazon">
-  </div>
-  <div class="plataforma-item" tabindex="0" aria-label="movistar">
-    <img src="https://i.postimg.cc/j2BsLZXs/mov.jpg" alt="movistar">
-  </div>
-  <div class="plataforma-item" tabindex="0" aria-label="disney">
-    <img src="https://i.postimg.cc/wvGX2TNx/Disney.webp" alt="disney">
-  </div>
-</div>
+
+    <div id="galeriaPlataformas" class="galeria-plataformas" style="display: none;">
+      <div class="plataforma-item" tabindex="0" aria-label="netflix">
+        <img src="https://i.postimg.cc/5y2rY0Vx/netflix.png" alt="netflix">
+      </div>
+      <div class="plataforma-item" tabindex="0" aria-label="Amazon">
+        <img src="https://i.postimg.cc/vBRLtsZ9/amazonp.jpg" alt="amazon">
+      </div>
+      <div class="plataforma-item" tabindex="0" aria-label="movistar">
+        <img src="https://i.postimg.cc/j2BsLZXs/mov.jpg" alt="movistar">
+      </div>
+      <div class="plataforma-item" tabindex="0" aria-label="disney">
+        <img src="https://i.postimg.cc/wvGX2TNx/Disney.webp" alt="disney">
+      </div>
+    </div>
 
   </main>
 </div>
@@ -113,7 +116,3 @@
 <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
