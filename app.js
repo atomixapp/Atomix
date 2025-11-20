@@ -1,28 +1,15 @@
-/* global firebase */
 document.addEventListener('DOMContentLoaded', () => {
-  try {
-    // BASE de tu sitio (útil para convertir rutas relativas)
-    const BASE = 'https://atomixapp.github.io/Atomix/';
-
-    // Aseguramos auth: toma window.auth si tu firebase.js lo expone, o firebase.auth() si está disponible
-    const auth = window.auth || (window.firebase && firebase.auth ? firebase.auth() : null);
-
-    // Si auth no está listo, no falles: loguea y evita crashear la app
-    if (!auth) {
-      console.warn('Aviso: auth no disponible en app.js (WebView). La UI podrá quedar sin contenido.');
-    }
-
-    const galeria = document.getElementById('galeria');
-    const galeriaPlataformas = document.getElementById('galeriaPlataformas');
-    const buscador = document.getElementById('buscadorPeliculas');
-    const botonCuenta = document.getElementById('botonCuenta');
-    const menuUsuario = document.getElementById('menuUsuario');
-    const tituloCategoria = document.getElementById('tituloCategoria');
-    const sonidoClick = new Audio(BASE + 'assets/sounds/click.mp3'); // path absoluto por seguridad
-    const asideItems = Array.from(document.querySelectorAll('aside li'));
-
-    let todasPeliculas = [];
-    let peliculaActiva = null;
+  const galeria = document.getElementById('galeria');
+  const galeriaPlataformas = document.getElementById('galeriaPlataformas');
+  const buscador = document.getElementById('buscadorPeliculas');
+  const botonCuenta = document.getElementById('botonCuenta');
+  const menuUsuario = document.getElementById('menuUsuario');
+  const tituloCategoria = document.getElementById('tituloCategoria');
+  const sonidoClick = new Audio('assets/sounds/click.mp3');
+  const asideItems = Array.from(document.querySelectorAll('aside li'));
+  
+  let todasPeliculas = [];
+  let peliculaActiva = null;
 
   auth.onAuthStateChanged(user => {
     if (!user) window.location.href = 'index.html';
