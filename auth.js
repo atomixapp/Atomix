@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Si hay usuario lo llevamos a home (ahora no exigimos emailVerified)
   auth.onAuthStateChanged(user => {
     if (user) {
-      window.location.href = 'home.html';  // <-- FIX
+      window.location.href = 'https://atomixapp.github.io/Atomix/home.html';  // <-- FIX
     }
   });
 
