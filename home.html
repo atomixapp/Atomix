@@ -23,10 +23,105 @@
 
 <body>
 
-  <!-- TODA TU PÁGINA ORIGINAL SIN CAMBIAR NADA -->
-  <!-- navbar, aside, buscador, galería, modales… todo igual -->
+<header>
+  <nav class="nav-left">
+    <!-- usa enlaces absolutos para evitar problemas en WebView -->
+    <a href="https://atomixapp.github.io/Atomix/tv.html" tabindex="-1">TV</a>
+    <a class="activo" href="https://atomixapp.github.io/Atomix/home.html" tabindex="-1">Películas</a>
+    <a href="https://atomixapp.github.io/Atomix/series.html" tabindex="-1">Series</a>
+  </nav>
+  <div class="nav-right" style="position:relative;">
+    <button id="botonCuenta" tabindex="-1">Mi cuenta</button>
+    <div id="menuUsuario">
+      <p id="nombreUsuario">Usuario</p>
+      <p id="correoUsuario">correo@correo.com</p>
+      <button id="cerrarSesionBtn" tabindex="-1" style="width:100%; padding:6px; background:#e74c3c; border:none; border-radius:5px; color:white;">Cerrar sesión</button>
+    </div>
+  </div>
+</header>
+
+<div class="app-container">
+  <aside>
+    <h2>Categorías</h2>
+    <ul>
+      <li id="navPlataformas" tabindex="0" onclick="filtrar('plataformas')">📺 Plataformas</li>
+      <li id="navTodos" tabindex="0" onclick="filtrar('todos')">📁 Todas</li>
+      <li id="navEstrenos2025" tabindex="0" onclick="filtrar('estrenos2025')">🆕 Estrenos 2025</li>
+      <li id="navEstrenos2024" tabindex="0" onclick="filtrar('estrenos2024')">🎬 Estrenos 2024</li>
+      <li id="navAccion" tabindex="0" onclick="filtrar('accion')">🔥 Acción</li>
+      <li id="navAnimacion" tabindex="0" onclick="filtrar('animacion')">🐽 Animación</li>
+      <li id="navArtesmarciales" tabindex="0" onclick="filtrar('artesmarciales')">🥋 Artes Marciales</li>
+      <li id="navAventura" tabindex="0" onclick="filtrar('aventuras')">🌋 Aventuras</li>
+      <li id="navCienciaficcion" tabindex="0" onclick="filtrar('cienciaficcion')">👽 Ciencia Ficción</li>
+      <li id="navComedia" tabindex="0" onclick="filtrar('comedia')">😂 Comedia</li>
+      <li id="navDrama" tabindex="0" onclick="filtrar('drama')">🎭 Drama</li>
+      <li id="navFantasia" tabindex="0" onclick="filtrar('fantasia')">🧙 Fantasía</li>
+      <li id="navRomance" tabindex="0" onclick="filtrar('romance')">💘 Romance</li>
+      <li id="navSuspense" tabindex="0" onclick="filtrar('suspense')">😱 Suspense</li>
+      <li id="navTerror" tabindex="0" onclick="filtrar('terror')">👻 Terror</li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="galeria-header">
+      <h2 id="tituloCategoria" class="titulo-categoria">TODAS</h2>
+      <input type="text" id="buscadorPeliculas" placeholder="Buscar películas…">
+    </div>
+    <div id="galeria" class="galeria"></div>
+
+    <div id="galeriaPlataformas" class="galeria-plataformas" style="display: none;">
+      <div class="plataforma-item" tabindex="0" aria-label="netflix">
+        <img src="https://i.postimg.cc/5y2rY0Vx/netflix.png" alt="netflix">
+      </div>
+      <div class="plataforma-item" tabindex="0" aria-label="Amazon">
+        <img src="https://i.postimg.cc/vBRLtsZ9/amazonp.jpg" alt="amazon">
+      </div>
+      <div class="plataforma-item" tabindex="0" aria-label="movistar">
+        <img src="https://i.postimg.cc/j2BsLZXs/mov.jpg" alt="movistar">
+      </div>
+      <div class="plataforma-item" tabindex="0" aria-label="disney">
+        <img src="https://i.postimg.cc/wvGX2TNx/Disney.webp" alt="disney">
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal Película -->
+<div id="modalPelicula" class="modal" style="display: none;">
+  <div class="modal-contenido" tabindex="0">
+    <span id="cerrarModal" class="cerrar-modal" tabindex="0">&times;</span>
+    <div class="modal-imagen-contenedor">
+      <img id="modalImagen" class="imagen-detalles" src="" alt="Imagen película">
+      <div class="botones-accion">
+        <button id="btnVerAhora" class="btn-ver-ahora" tabindex="0">▶ Ver ahora</button>
+        <button id="btnVerTrailer" class="btn-ver-trailer" tabindex="0">▶ Ver trailer</button>
+      </div>
+    </div>
+    <h2 id="modalTitulo" class="titulo-modal"></h2>
+    <div class="modal-extra" id="modalExtraInfo"></div>
+    <button id="btnMostrarSinopsis" class="btn-sinopsis" tabindex="0">📖 Ver sinopsis</button>
+  </div>
+</div>
+
+<!-- Overlay Sinopsis -->
+<div id="overlaySinopsis" class="overlay-sinopsis" style="display: none;">
+  <div class="sinopsis-contenido" tabindex="0">
+    <span id="cerrarSinopsis" class="cerrar-modal" tabindex="0">&times;</span>
+    <h3>Sinopsis</h3>
+    <p id="modalDescripcion"></p>
+  </div>
+</div>
+
+<div id="modalVideo">
+  <div class="video-contenido">
+    <span id="cerrarVideo" tabindex="0">&times;</span>
+    <div id="contenedorVideo"></div>
+  </div>
+</div>
 
   <script src="app.js?v=9999"></script>
 
 </body>
 </html>
+
