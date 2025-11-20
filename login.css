@@ -7,10 +7,11 @@
 body {
   background-color: #06142e;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  height: 100vh;
+  min-height: 100vh;          /* asegura que cubra toda la pantalla */
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0;
 }
 
 .contenedor-login {
@@ -18,15 +19,15 @@ body {
   padding: 40px;
   border-radius: 16px;
   box-shadow: 0 0 25px rgba(0, 119, 255, 0.5);
-  width: 100%;
-  max-width: 400px;
+  width: 80%;                 /* ocupa 80% del ancho de pantalla */
+  max-width: 600px;           /* evita que sea demasiado grande en pantallas gigantes */
   text-align: center;
 }
 
 .contenedor-login h1 {
   color: #0077ff;
   margin-bottom: 25px;
-  font-size: 34px;
+  font-size: 5vw;             /* escala con el ancho de pantalla */
   letter-spacing: 2px;
 }
 
