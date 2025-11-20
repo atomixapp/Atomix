@@ -5,12 +5,15 @@
 }
 
 body {
-  background-color: #06142e;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   height: 100%;
   width: 100%;
-  position: relative;
-  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  inset: 0;
 }
 
 .contenedor-login {
