@@ -127,7 +127,7 @@ function configurarCuenta() {
   cerrarSesionBtn.addEventListener('click', () => {
     firebase.auth().signOut().then(() => {
       // Redirigir a la página de login (o donde desees)
-      window.location.href = 'index.html'; // O cualquier página de login que tengas
+      window.location.href = 'https://atomixapp.github.io/Atomix/home.html'; // O cualquier página de login que tengas
     }).catch((error) => {
       console.error("Error al cerrar sesión: ", error);
     });
