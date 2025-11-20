@@ -20,7 +20,17 @@
 
 <body>
 
-  <!-- tu login original sin cambiar nada -->
+    <div class="contenedor-login">
+    <h1>ATOMIX</h1>
+    <form id="authForm" class="formulario">
+      <input type="email" id="email" placeholder="Correo electrónico" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+      <button type="submit" id="btnSubmit">Iniciar sesión</button>
+      <p><a href="#" id="toggleAuth">¿No tienes cuenta? Regístrate aquí</a></p>
+      <p><a href="#" id="forgotPassword">¿Olvidaste tu contraseña?</a></p>
+      <p id="errorMsg" style="color:red;"></p>
+    </form>
+  </div>
 
   <script src="login.js?v=9999"></script>
 
