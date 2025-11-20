@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let peliculaActiva = null;
 
   auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = 'index.html';
+    if (!user) window.location.href = 'https://atomixapp.github.io/Atomix/home.html';
     else inicializarPeliculas();
   });
 
