@@ -12,12 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Si hay usuario lo llevamos a home (ahora no exigimos emailVerified)
   auth.onAuthStateChanged(user => {
     if (user) {
-      window.location.href = 'home.html';
+      window.location.href = 'https://atomixapp.github.io/Atomix/home.html';  // <-- FIX
     }
   });
 
   function updateForm() {
-    // Puedes cambiar el texto del botón/links según isLogin
     if (isLogin) {
       btnSubmit.textContent = 'Iniciar sesión';
       toggleAuth.textContent = '¿No tienes cuenta? Regístrate aquí';
@@ -44,10 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
         await auth.signInWithEmailAndPassword(email, password);
         // onAuthStateChanged redirigirá
       } else {
-        // Crear usuario y mantenerlo logueado directamente (no enviamos verificación)
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         await auth.createUserWithEmailAndPassword(email, password);
-        // El usuario queda ya autenticado; onAuthStateChanged redirigirá a home
         errorMsg.style.color = 'green';
         errorMsg.textContent = "Cuenta creada. Redirigiendo...";
       }
