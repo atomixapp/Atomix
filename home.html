@@ -114,7 +114,18 @@
 </div>
 
 <script src="app.js"></script>
+
+<script>
+window.onerror = function (msg, url, line, col, error) {
+  document.body.innerHTML = 
+    "<pre style='color:white; font-size:30px; white-space:pre-wrap;'>ERROR WEBVIEW:\n" 
+    + msg + "\n" + url + ":" + line + "</pre>";
+};
+</script>
+
+  
 </body>
 </html>
+
 
 
