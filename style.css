@@ -191,8 +191,7 @@ box-shadow:0 10px 25px rgba(0,0,0,.15);
 }
 
 .downloader-code img{
-    width: 500px;     /* tamaño fijo */
-    max-width: 90vw;   /* para móviles */
+    width: min(500px, 80vw);
     height: auto;
     display: block;
     border-radius: 10px;
