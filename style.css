@@ -184,6 +184,18 @@ box-shadow:0 10px 25px rgba(0,0,0,.15);
 
 }
 
+.downloader-code {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.downloader-code img {
+    max-width: 350px;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
 .features{
 
 padding:70px 20px;
