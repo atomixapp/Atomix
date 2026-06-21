@@ -184,15 +184,17 @@ box-shadow:0 10px 25px rgba(0,0,0,.15);
 
 }
 
-.downloader-code {
-    margin-top: 20px;
-    text-align: center;
+.downloader-code{
+    margin-top: 35px; /* separación respecto al botón */
+    display: flex;
+    justify-content: center;
 }
 
-.downloader-code img {
-    max-width: 250px;
-    width: 100%;
+.downloader-code img{
+    width: 220px;      /* tamaño fijo */
+    max-width: 90vw;   /* para móviles */
     height: auto;
+    display: block;
     border-radius: 10px;
 }
 
