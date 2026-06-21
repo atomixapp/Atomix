@@ -16,19 +16,107 @@ color:#222;
 
 /* ===== HEADER ===== */
 
+/*================ HEADER ================*/
+
 .topbar{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
 
     height:90px;
 
-    background:linear-gradient(90deg,#2b2b2b,#3a3a3a,#4a4a4a);
-
     display:flex;
+
+    justify-content:space-between;
 
     align-items:center;
 
-    padding:0 40px;
+    padding:0 50px;
 
-    box-shadow:0 4px 15px rgba(0,0,0,.18);
+    background:linear-gradient(135deg,#1d1d1d,#303030,#505050);
+
+    box-shadow:0 4px 15px rgba(0,0,0,.25);
+
+    z-index:999;
+
+    transition:.35s;
+
+}
+
+/* cuando hacemos scroll */
+
+.topbar.scrolled{
+
+    height:70px;
+
+    background:rgba(35,35,35,.75);
+
+    backdrop-filter:blur(10px);
+
+}
+
+.logo{
+
+    width:210px;
+
+    display:block;
+
+}
+
+nav{
+
+    display:flex;
+
+    gap:35px;
+
+}
+
+nav a{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    transition:.25s;
+
+    position:relative;
+
+}
+
+nav a:hover{
+
+    color:#4ea3ff;
+
+}
+
+nav a::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    bottom:-5px;
+
+    width:0;
+
+    height:2px;
+
+    background:#4ea3ff;
+
+    transition:.3s;
+
+}
+
+nav a:hover::after{
+
+    width:100%;
 
 }
 
@@ -46,7 +134,21 @@ color:#222;
 
     text-align:center;
 
-    padding:80px 20px;
+    max-width:900px;
+
+    margin:auto;
+
+    padding:170px 20px 90px;
+
+}
+
+.hero p{
+
+    font-size:22px;
+
+    color:#666;
+
+    line-height:1.7;
 
 }
 
@@ -55,20 +157,6 @@ h1{
 font-size:50px;
 
 margin-bottom:10px;
-
-}
-
-header p{
-
-max-width:700px;
-
-margin:auto;
-
-font-size:20px;
-
-color:#666;
-
-line-height:1.6;
 
 }
 
@@ -222,23 +310,103 @@ color:#666;
 
 @media(max-width:768px){
 
-h1{
+.topbar{
 
-font-size:36px;
+    flex-direction:column;
+
+    justify-content:center;
+
+    height:auto;
+
+    padding:20px;
 
 }
 
-header p{
+.logo{
 
-font-size:17px;
+    width:170px;
+
+    margin-bottom:20px;
+
+}
+
+nav{
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+}
+
+.hero{
+
+    padding-top:180px;
+
+}
+
+.hero p{
+
+    font-size:18px;
 
 }
 
 .download{
 
-width:100%;
+    width:100%;
+    max-width:300px;
 
-max-width:300px;
+}
+
+}@media(max-width:768px){
+
+.topbar{
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    height:auto;
+
+    padding:20px;
+
+}
+
+.logo{
+
+    width:170px;
+
+    margin-bottom:20px;
+
+}
+
+nav{
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+}
+
+.hero{
+
+    padding-top:180px;
+
+}
+
+.hero p{
+
+    font-size:18px;
+
+}
+
+.download{
+
+    width:100%;
+    max-width:300px;
 
 }
 
